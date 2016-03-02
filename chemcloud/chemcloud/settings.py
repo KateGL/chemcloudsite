@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'registration', # add in the registration package  django-registration-redux
+    'chemmain', # main pages of site
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -52,10 +54,12 @@ MIDDLEWARE_CLASSES = [
 
 ROOT_URLCONF = 'chemcloud.urls'
 
+TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_PATH,],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,8 +80,15 @@ WSGI_APPLICATION = 'chemcloud.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+
+#        'ENGINE': 'django.db.backends.sqlite3',        'NAME': os.path.join(BASE_DIR, #'db.sqlite3'),
+         'ENGINE': 'django.db.backends.mysql',
+         'NAME': 'chemdb',
+         'USER': 'root',
+         'PASSWORD': 'mysql_pass',
+         'HOST': 'localhost',   # Or an IP that your DB is hosted on
+         'PORT': '3306',
+
     }
 }
 
@@ -118,4 +129,20 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+STATIC_PATH = os.path.join(BASE_DIR,'static')
+
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    #STATIC_PATH,
+    BASE_DIR+STATIC_URL,
+)
+
+
+#django-registration-redux options
+REGISTRATION_OPEN = True                # If True, users can register
+ACCOUNT_ACTIVATION_DAYS = 7     # One-week activation window; you may, of course, use a different value.
+REGISTRATION_AUTO_LOGIN = True  # If True, the user will be automatically logged in.
+LOGIN_REDIRECT_URL = '/'  # The page you want users to arrive at after they successful log in
+LOGIN_URL = '/accounts/login/'  # The page users are directed to if they are not logged in,
+    
