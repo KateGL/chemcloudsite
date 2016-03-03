@@ -43,19 +43,30 @@
                 </ul>
                 
                 <!-- User login/logout -->
-                <ul class="nav navbar-nav navbar-right">
+                <div class="nav navbar-nav navbar-right">
+                         
                           
                   {% if user.is_authenticated %}
+                  <ul class="list-inline">
+                   <li><a>Список реакций</a></li>
+                  </ul>
+                  
+                  <ul class="list-inline">
                    <li><a>Hi, {{ user.username }}!</a></li>
-                   <li><a href="{% url 'auth_logout' %}">Logout</a></li>
-                  {% else %}
-                   <li><a href="{% url 'registration_register' %}">Register Here</a></li>
-                   <li><a href="{% url 'auth_login' %}">Login</a></li>
+                   <li><a href="{% url 'auth_logout' %}">Выйти</a></li>
+                  </ul>
+                  {% else %}                 
+                   
+                   <ul class="list-inline">
+                   <li><a href="{% url 'registration_register' %}">Регистрация</a></li>
+                   <li><a href="{% url 'auth_login' %}">Вход</a></li>
+                   </ul>
                   {% endif %}  
                     
                     
                     
-                 </ul>
+                 
+                 </div>
             </div>
             <!-- /.navbar-collapse -->
             
