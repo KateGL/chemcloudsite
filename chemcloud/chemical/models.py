@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
 from django.db import models
@@ -5,6 +6,7 @@ from django.db import models
 # Create your models here.
 
 
+# Атом
 class Atom(models.Model): 
     atom_number = models.IntegerField(primary_key = True)
     symbol = models.CharField(max_length=3, unique=True)
@@ -12,7 +14,7 @@ class Atom(models.Model):
     name = models.CharField(max_length=100, unique=True)
     name_latin = models.CharField(max_length=100, unique=True) 
  
-
+# Вещество
 class Substance(models.Model): 
     id_substance = models.AutoField(primary_key = True)
     name = models.CharField(max_length=255)
@@ -23,9 +25,9 @@ class Substance(models.Model):
     #formula_mol = models.FileField()
     #formula_picture = models.ImageField()
 
-#
+# Состав вещества
 
-#
+# Реакция
 class Reaction(models.Model):
     id_reaction = models.AutoField(primary_key = True)
     name = models.CharField(max_length=300)
