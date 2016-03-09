@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'registration', # add in the registration package  django-registration-redux
     'chemmain', # main pages of site
+    'chemical', #models and views of main chemical entyties: atom, substance, reaction, mechanism, etc
 ]
 
 MIDDLEWARE_CLASSES = [

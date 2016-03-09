@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static 
 
 import chemmain.views
+import chemical.views
 from django.conf.urls import include
 
 from registration.backends.simple.views import RegistrationView
@@ -41,5 +42,8 @@ urlpatterns = [
 
     url(r'^accounts/register/$', MyRegistrationView.as_view(), name='registration_register'),
     url(r'^accounts/', include('registration.backends.simple.urls')),
+    url(r'^reaction/all/$', chemical.views.reactions_all, name='reactions_all'),
+    url(r'^substance_dict/$', chemical.views.substance_dict, name='substance_dict'),
+    url(r'^calculation/all/$', chemical.views.calculations_all, name='calculations_all'),
   
 ]

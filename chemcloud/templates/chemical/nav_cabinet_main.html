@@ -17,7 +17,15 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <ul class="nav navbar-nav navbar-left">
                     <li>
-                        <a href="{% url 'about' %}">О сервисе</a>
+                        <a href="{% url 'reactions_all' %}">Реакции</a>
+                    </li>
+                   
+                   <li>
+                        <a href="{% url 'substance_dict' %}">Справочник веществ</a>
+                    </li>
+                   
+                   <li>
+                        <a href="{% url 'calculations_all' %}">Все расчеты</a>
                     </li>
                    
                     <li>
@@ -28,40 +36,20 @@
                         <a href="{% url 'faq' %}">FAQ</a>
                     </li>
                                                         
+                  
                     
-                    <li>
-                        <a href="{% url 'contact' %}">Контакты</a>
-                    </li>
                     
-                    <li>
-                        <a href="{% url 'news' %}">Новости</a>
-                    </li>
-                    
-                    <li>
-                        <a href="{% url 'prices' %}">Прайс</a>
-                    </li>
                 </ul>
                 
                 <!-- User login/logout -->
                 <div class="nav navbar-nav navbar-right">
                          
-                          
-                  {% if user.is_authenticated %}
-                  <ul class="list-inline">
-                   <li><a href="{% url 'reactions_all' %}">Список реакций</a></li>
-                  </ul>
-                  
+                               
                   <ul class="list-inline">
                    <li><a>Hi, {{ user.username }}!</a></li>
                    <li><a href="{% url 'auth_logout' %}">Выйти</a></li>
                   </ul>
-                  {% else %}                 
-                   
-                   <ul class="list-inline">
-                   <li><a href="{% url 'registration_register' %}">Регистрация</a></li>
-                   <li><a href="{% url 'auth_login' %}">Вход</a></li>
-                   </ul>
-                  {% endif %}  
+                    
                     
                     
                     
