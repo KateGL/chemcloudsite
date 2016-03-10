@@ -21,7 +21,7 @@ class Substance(models.Model):
     charge = models.SmallIntegerField (default = 0)
     is_radical = models.BooleanField(default = False)
     formula_brutto = models.CharField(max_length=255)
-    #note = models.TextField()
+    note = models.TextField()
     #formula_mol = models.FileField()
     #formula_picture = models.ImageField()
 
@@ -31,7 +31,7 @@ class Substance(models.Model):
 class Reaction(models.Model):
     id_reaction = models.AutoField(primary_key = True)
     name = models.CharField(max_length=300)
-    #description = models.TextField()
+    description = models.TextField()
     is_favorite = models.BooleanField(default = False)
     is_stationary = models.BooleanField(default = True)
     is_isothermal = models.BooleanField(default = True)

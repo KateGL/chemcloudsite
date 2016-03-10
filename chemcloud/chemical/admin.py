@@ -12,13 +12,13 @@ admin.site.register(Atom, AtomAdmin)
 
 
 class SubstanceAdmin(admin.ModelAdmin):
-  fields = ['name', 'charge', 'is_radical', 'formula_brutto']
-  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto')
+  fields = ['name', 'charge', 'is_radical', 'formula_brutto','note']
+  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto','note')
 
 admin.site.register(Substance, SubstanceAdmin)
 
 class ReactionAdmin(admin.ModelAdmin):
-  fields = ['name',  'is_favorite', 'is_stationary', 'is_isothermal' ]
-  list_display = ('id_reaction',  'name', 'is_favorite', 'is_stationary', 'is_isothermal' )
+  fields = ['name',  'is_favorite', 'is_stationary', 'is_isothermal','description' ]
+  list_display = ('id_reaction',  'name', 'is_favorite', 'is_stationary', 'is_isothermal','description' )
 
 admin.site.register(Reaction, ReactionAdmin)

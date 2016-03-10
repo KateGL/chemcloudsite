@@ -21,3 +21,11 @@ def substance_dict(request):
 @login_required
 def calculations_all(request):
     return render(request, 'chemical/calculations_all.html', {})
+
+@login_required
+def atoms_all(request):
+    return render(request, 'chemical/atoms_all.html', {})
+
+@login_required
+def dictionaries(request):
+    return render(request, 'chemical/dictionaries.html', {})

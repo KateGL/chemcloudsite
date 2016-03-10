@@ -44,6 +44,8 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.simple.urls')),
     url(r'^reaction/all/$', chemical.views.reactions_all, name='reactions_all'),
     url(r'^substance_dict/$', chemical.views.substance_dict, name='substance_dict'),
+    url(r'^atom/all/$', chemical.views.atoms_all, name='atoms_all'),
+    url(r'^dictionaries/$', chemical.views.dictionaries, name='dictionaries'),
     url(r'^calculation/all/$', chemical.views.calculations_all, name='calculations_all'),
   
 ]
