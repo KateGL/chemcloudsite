@@ -1,0 +1,57 @@
+{% extends 'chemical/base_cabinet.html' %}
+
+{% load staticfiles %}
+
+
+
+{% block body_block %}
+   
+    <div class="page-header">
+
+    <h1> <a href="{% url 'atoms_all' %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>   Детали атома</h1>
+           
+            
+    </div>
+<div class="page-content">
+        
+            
+   <div class="table">
+  <table class="table">
+    <tbody>
+      <tr>
+        <td class="text-right">Обозначение</td>
+        <td class="text-left">{{ atom.symbol }}</td>
+      </tr>
+      <tr>
+        <td class="pull-right">Атомная масса</td>
+        <td class="text-left">{{ atom.atom_mass }}</td>
+      </tr>
+      <tr>
+        <td class="pull-right">Название (рус)</td>
+        <td class="text-left">{{ atom.name }}</td>
+      </tr>
+      
+      <tr>
+        <td class="pull-right">Название (лат)</td>
+        <td class="text-left">{{ atom.name_latin }}</td>
+      </tr>
+      <tr>
+        <td class="pull-right">Атомный номер</td>
+        <td class="text-left">{{ atom.atom_number }}</td>
+      </tr>
+      
+      <tr>
+      <td class="pull-right"></td>
+      </tr>
+      
+      <tr>
+        <td class="pull-right">Прочее</td>
+        <td class="text-left">...</td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>          
+
+            </div>
+{% endblock %}
