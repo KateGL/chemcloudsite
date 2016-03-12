@@ -130,9 +130,9 @@ def scheme_all(request, reaction_id):
 	return render(request, 'chemical/scheme_all.html', context_dict )
 
 @login_required
-def scheme_detail(request, scheme_id):
+def scheme_detail(request, reaction_id, scheme_id):
 	scheme_detail = Reaction_scheme.objects.get(pk=scheme_id)
-	context = {'scheme': scheme_detail}
+	context = {'scheme': scheme_detail, 'id_reaction' : reaction_id}
 	return render(request, 'chemical/scheme_detail.html', context )
 
 @login_required
@@ -164,10 +164,11 @@ def scheme_new(request, reaction_id):
 			scheme.created_by = request.user
 			scheme.save()
 			#return HttpResponseRedirect("/")	
-			return redirect('chemical.views.scheme_detail', scheme.pk)
+			return redirect('chemical.views.scheme_detail', reaction_id, scheme.pk)
 	else:
 		form = ReacSchemeForm()
-	return render(request, 'chemical/scheme_new.html', {'form': form })
+	context_dict = {'form': form, 'id_reaction' : reaction_id}
+	return render(request, 'chemical/scheme_new.html', context_dict)
 	#return render_to_response('chemkinoptima/scheme_new.html', {'form': form }, context_instance = RequestContext(request ) ) #{'form': form }, context_instance =
 
 
@@ -180,28 +181,28 @@ def react_substance_all(request, id_reaction):
 
 # Эксперименты
 @login_required
-def experiment_all(request, id_reaction):
-	return render(request, 'chemical/experiment_all.html', {"id_reaction": id_reaction} )
+def experiment_all(request, reaction_id):
+	return render(request, 'chemical/experiment_all.html', {"id_reaction": reaction_id} )
 
 @login_required
-def experiment_detail(request, id_experiment):
+def experiment_detail(request, reaction_id, id_experiment):
    # try:
     #    atom = Atom.objects.get(pk=atom_number)
    # except Atom.DoesNotExist:
     #    raise Http404("Atom does not exist")
-    return render(request, 'chemical/experiment_detail.html', {"id_reaction": id_reaction})
+    return render(request, 'chemical/experiment_detail.html', {"id_reaction": reaction_id})
 
 @login_required
-def experiment_new(request, id_reaction):
-    return render(request, 'chemical/experiment_new.html', {"id_reaction": id_reaction})
+def experiment_new(request, reaction_id):
+    return render(request, 'chemical/experiment_new.html', {"id_reaction": reaction_id})
 
 @login_required
-def experiment_edit(request, id_experiment):
+def experiment_edit(request, reaction_id, id_experiment):
    # try:
     #    atom = Atom.objects.get(pk=atom_number)
    # except Atom.DoesNotExist:
     #    raise Http404("Atom does not exist")
-    return render(request, 'chemical/experiment_edit.html', {"id_reaction": id_reaction})
+    return render(request, 'chemical/experiment_edit.html', {"id_reaction": reaction_id})
 
 
 #Задачи

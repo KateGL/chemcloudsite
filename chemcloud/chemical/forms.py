@@ -13,10 +13,6 @@ class ReactionForm(forms.ModelForm):
 
 #Механизмы реакции
 class ReacSchemeForm(forms.ModelForm):
-    name        = forms.CharField(max_length=255, label="Название")
-    description = forms.CharField(widget=forms.Textarea, label="Описание")
-    is_possible = forms.BooleanField(label="Вероятный")
-
     class Meta:
         model = Reaction_scheme
         fields = ('name', 'description', 'is_possible',)

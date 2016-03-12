@@ -46,7 +46,7 @@ class SubstanceConsist(models.Model):
 class Reaction(models.Model):
     id_reaction = models.AutoField(primary_key=True, verbose_name='ИД')
     name = models.CharField(max_length=300, verbose_name='Название')
-    description = models.TextField( verbose_name='Описание')
+    description = models.TextField(null = True,  verbose_name='Описание')
     is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
     is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
     is_isothermal = models.BooleanField(default = True, verbose_name='Изотермическая')

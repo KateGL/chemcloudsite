@@ -7,7 +7,7 @@
 		<h1>Механизмы</h1>
 	</div>
 		<div class="page-content">
-			{% if id_reac %}
+			 {% if id_reaction %} 
 			<a class="btn btn-default" href="{% url 'scheme_new' id_reaction %}">Создать механизм</a> <br>
 			{% endif %}
 			{% if schemes %}
@@ -25,12 +25,12 @@
 						<td>TODO</td>
 						<td><input type="checkbox" {% if scheme.is_possible %}checked {% endif %} readonly></td>
 						<td>{{scheme.updated_date}}<!--strftime("%Y-%m-%d %H:%M:%S") --></td>
-						<td><a href="{% url 'scheme_detail' scheme.id_scheme %}"> Детали</a> </td> 
+						<td><a href="{% url 'scheme_detail' id_reaction scheme.id_scheme %}"> Детали</a> </td> 
 					</tr>
 					{% endfor%}
 				</table>
 			{% else %}
-				<strong> Пока не создано ни одного механизмаы </strong>
+				<strong> Пока не создано ни одного механизма </strong>
 			{% endif %}
 
             </div>
