@@ -149,17 +149,19 @@ def scheme_detail(request, reaction_id, scheme_id):
 	return render(request, 'chemical/scheme_detail.html', context )
 
 @login_required
-def scheme_edit(request, scheme_id):
+def scheme_edit(request, reaction_id, scheme_id):
 	try:
 		#получаем объект реакции по reaction_id
 		reac_temp = Reaction.objects.get(pk=reaction_id)
 	except Reaction.DoesNotExist:
 		raise Http404("Reaction does not exist")	    
 	try:
+		#получаем объект схемы по scheme_id		
 		scheme = Reaction_scheme.objects.get(pk=scheme_id)
 	except Reaction_scheme.DoesNotExist:
-		raise Http404("Reaction_scheme does not exist")
-	return render(request, 'chemical/scheme_edit.html', {"scheme": scheme})
+		raise Http404("Reaction scheme does not exist")
+	context = {'scheme': scheme_detail, 'id_reaction' : reaction_id}	
+	return render(request, 'chemical/scheme_edit.html', context)
 
 #      c = RequestContext(request.POST, {})
 @login_required
