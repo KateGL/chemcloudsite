@@ -16,7 +16,7 @@ class Atom(models.Model):
     name_latin = models.CharField(max_length=100, unique=True, verbose_name='Название (лат)')
     class Meta:
         verbose_name = ('Атом')
-        verbose_name_plural = ('Атомов')
+        verbose_name_plural = ('Атомы')
 
 # Вещество
 class Substance(models.Model):
@@ -71,7 +71,7 @@ class Substance(models.Model):
 
     class Meta:
         verbose_name = ('Вещество')
-        verbose_name_plural = ('Веществ')
+        verbose_name_plural = ('Вещества')
 
 # Состав вещества
 class SubstanceConsist(models.Model):
