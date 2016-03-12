@@ -10,7 +10,7 @@ class AtomTable(tables.Table):
     detail_link = tables.LinkColumn('atom_detail', args=[A('pk')], orderable=False,  verbose_name='Ссылка', empty_values=())
 
     def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/atom/detail/%d">Детали</a>'''%record.pk)
+        return mark_safe( ''' <a href="/chemical/atom/detail/%d">Детали</a>'''%record.pk)
 
     class Meta:
         model = Atom
@@ -22,7 +22,7 @@ class SubstanceTable(tables.Table):
     detail_link = tables.LinkColumn('substance_detail', args=[A('pk')], orderable=False,  verbose_name='Ссылка', empty_values=())
 
     def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/substance/detail/%d">Детали</a>'''%record.pk)
+        return mark_safe( ''' <a href="/chemical/substance/detail/%d">Детали</a>'''%record.pk)
 
     class Meta:
         model = Substance
