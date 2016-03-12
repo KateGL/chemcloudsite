@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.utils import timezone
 
 from django.db import models
 
@@ -45,9 +46,23 @@ class Reaction(models.Model):
         verbose_name = ('Реакция')
         verbose_name_plural = ('Реакций')   
 
-#
+#Механизмы реакции
+class Reaction_scheme (models.Model):
+	fid_scheme    = models.AutoField (primary_key = True)
+	fid_reac      = models.IntegerField() #ForeignKey(reaction)
+	fname         = models.CharField (max_length = 250)
+	fdescription  = models.TextField (null = True)        
+	fis_possible  = models.BooleanField () 
+	fcreated_by   = models.TextField ()#todo data type
+	fcreated_date = models.DateTimeField (default=timezone.now)
+	fupdated_by   = models.TextField ()#todo data type
+	fupdated_date = models.DateTimeField (default=timezone.now)
 
-#
+	def __unicode__(self):
+		return self.fname	
+
+
+#Эксперименты
 
 
 

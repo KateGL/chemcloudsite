@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+		<h1>Добавление нового механизма</h1>
+	</div>
+	<div class="page-content">
+		<form method="POST" class="scheme-form">{% csrf_token %}
+			{{ form.as_p }}
+			<button type="submit" class="save btn btn-default">Сохранить</button>
+		</form 
+   </div>
+{% endblock %}

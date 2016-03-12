@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 
 # Register your models here.
@@ -22,3 +23,11 @@ class ReactionAdmin(admin.ModelAdmin):
   list_display = ('id_reaction',  'name', 'is_favorite', 'is_stationary', 'is_isothermal','description' )
 
 admin.site.register(Reaction, ReactionAdmin)
+
+
+#  механизмы реакции
+from .models import Reaction_scheme
+
+#  Эксперименты
+# Register your models here.
+admin.site.register(Reaction_scheme)

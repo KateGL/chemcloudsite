@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from django.shortcuts import render
 
 # Create your views here.
@@ -15,9 +16,13 @@ from django_tables2   import RequestConfig
 from chemical.models import Atom, Substance
 from chemical.tables  import AtomTable, SubstanceTable
 
+# Реакции
+
 @login_required
 def reactions_all(request):
     return render(request, 'chemical/reactions_all.html', {})
+
+# Вещество
 
 @login_required
 def substance_all(request):
@@ -34,11 +39,13 @@ def substance_detail(request, id_substance):
         raise Http404("Substance does not exist")
     return render(request, 'chemical/substance_detail.html', {"substance": substance})
 
+# расчеты
 
 @login_required
 def calculations_all(request):
     return render(request, 'chemical/calculations_all.html', {})
 
+# атом
 @login_required
 def atoms_all(request):
     atom_table = AtomTable(Atom.objects.all())
@@ -53,7 +60,59 @@ def atom_detail(request, atom_number):
         raise Http404("Atom does not exist")
     return render(request, 'chemical/atom_detail.html', {"atom": atom})
 
-
+# Справочники
 @login_required
 def dictionaries(request):
     return render(request, 'chemical/dictionaries.html', {})
+
+#  Механизмы реакции
+#import the Reaction_scheme model
+from chemical.models import Reaction_scheme
+from .forms import ReacSchemeForm
+
+@login_required
+def schemes(request, reaction_id):
+#получаем список всех схем реакций, 
+#сортируем по идентификатору схемы.
+#извлекаем первые пять записей
+#помещаем список в словарь контекста, который будет передан механизму шаблонов	
+	scheme_list = Reaction_scheme.objects.filter(fid_reac=int(reaction_id)).order_by('fid_scheme')[:5]
+	context_dict = {'schemes': scheme_list}
+
+#формируем ответ для клиента по шаблону и отправляем обратно
+	return render(request, 'chemical/schemes.html', context_dict )
+
+@login_required
+def scheme_details(request, reaction_id, scheme_id):
+	scheme_details = Reaction_scheme.objects.filter(fid_scheme=int(scheme_id))
+	context = {'scheme_details': scheme_details}
+
+	return render(request, 'chemical/scheme_details.html', context )
+
+#      c = RequestContext(request.POST, {})
+@login_required
+def scheme_new(request, reaction_id):
+	if request.method == "POST":
+ 		form = ReacSchemeForm(request.POST)
+		if form.is_valid():
+			scheme = form.save(commit=False)
+			scheme.fid_reac = reaction_id			
+			scheme.fname = form.cleaned_data['fname']
+			scheme.fdescription = form.cleaned_data['fdescription']
+			scheme.fis_possible = form.cleaned_data['fis_possible']
+		#   scheme.fcreated_date = timezone.now
+		#	scheme.fupdated_date = timezone.now
+			scheme.fupdated_by = request.user
+			scheme.fcreated_by = request.user
+			scheme.save()
+			#return HttpResponseRedirect("/")	
+			return redirect('chemical.views.scheme_details', reaction_id, scheme.pk)
+	else:
+		form = ReacSchemeForm()
+	return render(request, 'chemical/scheme_new.html', {'form': form })
+	#return render_to_response('chemkinoptima/scheme_new.html', {'form': form }, context_instance = RequestContext(request ) ) #{'form': form }, context_instance =
+
+
+# Эксперименты
+
+

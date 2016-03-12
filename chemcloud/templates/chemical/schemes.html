@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+		<h1>Механизмы</h1>
+	</div>
+		<div class="page-content">
+
+			<a class="btn btn-default" href="new">Создать механизм</a>
+			{% if schemes %}
+				<table>
+					<tr>
+						<td>Название</td>
+						<td>Число стадий</td>
+						<td>Вероятный</td>
+						<td>Дата последних изменений</td>
+						<td></td>
+					</tr>
+					{% for scheme in schemes %}
+					<tr>
+						<td>{{ scheme.fname }}</td>
+						<td>TODO</td>
+						<td><input type="checkbox" {% if scheme.fis_possible %}checked {% endif %} readonly></td>
+						<td>{{scheme.fupdated_date}}<!--strftime("%Y-%m-%d %H:%M:%S") --></td>
+						<td><a href="{{ scheme.fid_scheme }}/details "> Детали</a> </td> 
+					</tr>
+					{% endfor%}
+				</table>
+			{% else %}
+				<strong> There are no schemes </strong>
+			{% endif %}
+
+            </div>
+{% endblock %}
