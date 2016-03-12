@@ -8,7 +8,7 @@
 	</div>
 		<div class="page-content">
 			 {% if id_reaction %} 
-			<a class="btn btn-default" href="{% url 'scheme_new' id_reaction %}">Создать механизм</a> <br>
+			<a class="btn btn-new" href="{% url 'scheme_new' id_reaction %}">Создать механизм</a> <br>
 			{% endif %}
 			{% if schemes %}
 				<table>

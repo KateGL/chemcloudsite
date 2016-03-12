@@ -9,7 +9,7 @@
 	
 <div class="page-content">
     {% if id_reaction %}
-        <a class="btn btn-default" href="{% url 'experiment_new' id_reaction %}">Создать эксперимент</a> <br>
+        <a class="btn btn-new" href="{% url 'experiment_new' id_reaction %}">Создать эксперимент</a> <br>
     {% endif %}
     {% if experiments %}
         <table>
