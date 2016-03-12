@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
 from chemical.models import Atom, Substance, Reaction, SubstanceConsist, Reaction_scheme
+from chemical.models import Scheme_step
 
 class AtomTable(tables.Table):
     detail_link = tables.LinkColumn('atom_detail', args=[A('pk')], orderable=False,  verbose_name='Ссылка', empty_values=())
@@ -74,7 +75,10 @@ class MechanizmTable(tables.Table):
 
 	def render_steps_count(self,record):
 		#TODO число стадий подсчитать и вывести
-		return mark_safe('Row 5') 
+		#получаем число стадий схемы по scheme
+		steps_count = Scheme_step.objects.filter(scheme = record).count()
+		return mark_safe('%d' %steps_count) 
+
 	class Meta:
 		model = Reaction_scheme
 		# add class="paleblue" to <table> tag

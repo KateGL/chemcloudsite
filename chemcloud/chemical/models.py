@@ -84,31 +84,39 @@ class SubstanceConsist(models.Model):
 
 # Реакция
 class Reaction(models.Model):
-    id_reaction      = models.AutoField(primary_key=True, verbose_name='ИД')
-    name             = models.CharField(max_length=300, verbose_name='Название')
-    description      = models.TextField(null = True,  verbose_name='Описание')
-    is_favorite      = models.BooleanField(default = False, verbose_name='Избранное')
-    is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
-    is_isothermal    = models.BooleanField(default = True, verbose_name='Изотермическая')
-    created_by       = models.TextField (verbose_name='Создал(ла)')#todo data type
-    created_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
-    updated_by       = models.TextField (verbose_name='Обновил(а)')#todo data type
-    updated_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата последних изменений')
-    class Meta:
-      verbose_name        = ('Реакция')
-      verbose_name_plural = ('Реакции')
+	id_reaction      = models.AutoField(primary_key=True, verbose_name='ИД')
+	name             = models.CharField(max_length=300, verbose_name='Название')
+	description      = models.TextField(blank = True,  verbose_name='Описание')
+	is_favorite      = models.BooleanField(default = False, verbose_name='Избранное')
+	is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
+	is_isothermal    = models.BooleanField(default = True, verbose_name='Изотермическая')
+	created_by       = models.TextField (verbose_name='Создал(ла)')#todo data type
+	created_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+	updated_by       = models.TextField (verbose_name='Обновил(а)')#todo data type
+	updated_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата последних изменений')
+
+	def __unicode__ (self):
+		return self.name
+
+	class Meta:
+		verbose_name        = ('Реакция')
+		verbose_name_plural = ('Реакции')
 
 #Схема механизма/маршрута реакции
 class Reaction_scheme (models.Model):
 	id_scheme    = models.AutoField (primary_key = True, verbose_name='ИД')
 	reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='+' )
 	name         = models.CharField (max_length = 250, verbose_name='Название')
-	description  = models.TextField (null = True, verbose_name='Описание')
+	description  = models.TextField (blank = True, verbose_name='Описание')
 	is_possible  = models.BooleanField (verbose_name='Вероятный')
 	created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
 	created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
 	updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
 	updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+
+	def __unicode__ (self):
+		return self.name
+
 	class Meta:
 		verbose_name        = ('Механизм')
 		verbose_name_plural = ('Механизмы')
@@ -120,8 +128,10 @@ class Scheme_step(models.Model):
 	name          = models.CharField (max_length = 250, verbose_name='Обозначение')
 	order         = models.IntegerField (verbose_name='№ п/п')
 	is_revers     = models.BooleanField (verbose_name='Обратимая')
-	note	        = models.CharField (max_length = 250, null = True, verbose_name='Примечание')
-	rate_equation = models.TextField (null = True, verbose_name='Выражение для скорости')#todo data type
+	note	        = models.CharField (max_length = 250, blank = True, verbose_name='Примечание')
+	rate_equation = models.TextField (blank= True, verbose_name='Выражение для скорости')#todo data type
+	def __unicode__ (self):
+		return self.name
 	class Meta:
 		verbose_name        = ('Стадия схемы')
 		verbose_name_plural = ('Стадии схемы')
