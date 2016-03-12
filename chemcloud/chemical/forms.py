@@ -28,6 +28,7 @@ class BruttoFormulaField(forms.CharField):
         if not check_blocks(value,'[',']'):
             raise forms.ValidationError("Проверьте правильность расположения квадратных скобок!")
 #не совсем правильно, тк допустива конструкция [(])
+#проверка на то, что в
 
 class SubstanceForm(forms.ModelForm):
     formula_brutto = BruttoFormulaField( label="Брутто-формула")
