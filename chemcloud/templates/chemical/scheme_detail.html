@@ -8,39 +8,37 @@
 		<h1>Детали механизма</h1>
 	</div>
 		<div class="page-content">
-			{% if scheme_detail %}
-{% for scheme in scheme_detail %}
+			{% if scheme %}
 				<table>
 					<tr>
 						<td>Название:</td>
-						<td>{{ scheme.fname }}</td>
+						<td>{{ scheme.name }}</td>
 					</tr>
 					<tr>
 						<td>Описание:</td>
-						<td>{{ scheme.fdescription }}</td>
+						<td>{{ scheme.description }}</td>
 					</tr>
 					<tr>
 						<td>Вероятный:</td>
-						<td><input type="checkbox" {% if scheme.fis_possible %}checked {% endif %} ></td>
+						<td><input type="checkbox" {% if scheme.is_possible %}checked {% endif %} ></td>
 					</tr>
 					<tr>
 						<td>Дата последних изменений:</td>
-						<td>{{scheme.fupdated_date}}</td>
+						<td>{{scheme.updated_date}}</td>
 					</tr>
 					<tr>
 						<td>Изменения внес(ла):</td>
-						<td>{{scheme.fupdated_by}}</td>
+						<td>{{scheme.updated_by}}</td>
 					</tr>
 					<tr>
 						<td>Дата создания:</td>
-						<td>{{scheme.fcreated_date}}</td>
+						<td>{{scheme.created_date}}</td>
 					</tr>
 					<tr>
 						<td>Механизм создал(а):</td>
-						<td>{{scheme.fcreated_by}}</td>
+						<td>{{scheme.created_by}}</td>
 					</tr>
 				</table>
-{% endfor%}
 			{% else %}
 				<strong> Не удалось получить детали схемы </strong>
 			{% endif %}

@@ -8,18 +8,18 @@ from django.db import models
 
 
 # Атом
-class Atom(models.Model): 
+class Atom(models.Model):
     atom_number = models.IntegerField(primary_key = True, verbose_name='Атомный номер')
     symbol = models.CharField(max_length=3, unique=True, verbose_name='Обозначение')
     atom_mass = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Атомная масса')
     name = models.CharField(max_length=100, unique=True, verbose_name='Название (рус)')
-    name_latin = models.CharField(max_length=100, unique=True, verbose_name='Название (лат)') 
+    name_latin = models.CharField(max_length=100, unique=True, verbose_name='Название (лат)')
     class Meta:
         verbose_name = ('Атом')
         verbose_name_plural = ('Атомов')
- 
+
 # Вещество
-class Substance(models.Model): 
+class Substance(models.Model):
     id_substance = models.AutoField(primary_key = True, verbose_name='ИД')
     name = models.CharField(max_length=255, verbose_name='Название')
     charge = models.SmallIntegerField (default = 0, verbose_name='Заряд')
@@ -36,30 +36,36 @@ class Substance(models.Model):
 
 # Реакция
 class Reaction(models.Model):
-    id_reaction = models.AutoField(primary_key = True, verbose_name='ИД')
-    name = models.CharField(max_length=300, verbose_name='Название')
-    description = models.TextField( verbose_name='Описание')
-    is_favorite = models.BooleanField(default = False, verbose_name='Избранное')
-    is_stationary = models.BooleanField(default = True, verbose_name='Стационарная')
-    is_isothermal = models.BooleanField(default = True, verbose_name='Изотермическая')
-    class Meta:
-        verbose_name = ('Реакция')
-        verbose_name_plural = ('Реакций')   
+	id_reaction      = models.AutoField(primary_key=True, verbose_name='ИД')
+	name             = models.CharField(max_length=300, verbose_name='Название')
+	description      = models.TextField( verbose_name='Описание')
+	is_favorite      = models.BooleanField(default = False, verbose_name='Избранное')
+	is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
+	is_isothermal    = models.BooleanField(default = True, verbose_name='Изотермическая')
+	created_by       = models.TextField (verbose_name='Создал(ла)')#todo data type
+	created_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+	updated_by       = models.TextField (verbose_name='Обновил(а)')#todo data type
+	updated_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+	class Meta:
+		verbose_name = ('Реакция')
+		verbose_name_plural = ('Реакции')
 
 #Механизмы реакции
 class Reaction_scheme (models.Model):
-	fid_scheme    = models.AutoField (primary_key = True)
-	fid_reac      = models.IntegerField() #ForeignKey(reaction)
-	fname         = models.CharField (max_length = 250)
-	fdescription  = models.TextField (null = True)        
-	fis_possible  = models.BooleanField () 
-	fcreated_by   = models.TextField ()#todo data type
-	fcreated_date = models.DateTimeField (default=timezone.now)
-	fupdated_by   = models.TextField ()#todo data type
-	fupdated_date = models.DateTimeField (default=timezone.now)
-
+	id_scheme    = models.AutoField (primary_key = True, verbose_name='ИД')
+	reaction      = models.ForeignKey(Reaction) 
+	name         = models.CharField (max_length = 250, verbose_name='Название')
+	description  = models.TextField (null = True, verbose_name='Описание')
+	is_possible  = models.BooleanField (verbose_name='Вероятный')
+	created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
+	created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+	updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
+	updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+	class Meta:
+		verbose_name = ('Механизм')
+		verbose_name_plural = ('Механизмы')
 	def __unicode__(self):
-		return self.fname	
+		return self.name	
 
 
 #Эксперименты
@@ -69,4 +75,4 @@ class Reaction_scheme (models.Model):
 
 
 
- 
+

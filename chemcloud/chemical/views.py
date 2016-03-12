@@ -16,6 +16,8 @@ from django_tables2   import RequestConfig
 from chemical.models import Atom, Substance
 from chemical.tables  import AtomTable, SubstanceTable
 
+from django.shortcuts import redirect
+
 # Вещество
 
 @login_required
@@ -86,32 +88,35 @@ def reaction_new(request):
 
 #  Механизмы реакции
 #import the Reaction_scheme model
+from chemical.models import Reaction
 from chemical.models import Reaction_scheme
 from .forms import ReacSchemeForm
 
 @login_required
 def scheme_all(request, reaction_id):
-#получаем список всех схем реакций, 
-#сортируем по идентификатору схемы.
-#извлекаем первые пять записей
-#помещаем список в словарь контекста, который будет передан механизму шаблонов	
-	scheme_list = Reaction_scheme.objects.filter(fid_reac=int(reaction_id)).order_by('fid_scheme')[:5]
-	context_dict = {'schemes': scheme_list}
-
-#формируем ответ для клиента по шаблону и отправляем обратно
+	#получаем список всех схем реакций, 
+	#сортируем по идентификатору схемы.
+	#для извлечения первых пяти записей - [:5]
+	#помещаем список в словарь контекста, который будет передан механизму шаблонов	
+	try:
+		reac_temp = Reaction.objects.get(pk=reaction_id)
+	except Reaction.DoesNotExist:
+		raise Http404("Reaction does not exist")	
+	scheme_list = Reaction_scheme.objects.filter(reaction = reac_temp).order_by('id_scheme')
+	context_dict = {'schemes': scheme_list, 'id_reac' : reaction_id}
+	#формируем ответ для клиента по шаблону и отправляем обратно
 	return render(request, 'chemical/scheme_all.html', context_dict )
 
 @login_required
-def scheme_detail(request, reaction_id, scheme_id):
-	scheme_details = Reaction_scheme.objects.filter(fid_scheme=int(scheme_id))
-	context = {'scheme_detail': scheme_detail}
-
+def scheme_detail(request, scheme_id):
+	scheme_detail = Reaction_scheme.objects.get(pk=scheme_id)
+	context = {'scheme': scheme_detail}
 	return render(request, 'chemical/scheme_detail.html', context )
 
 @login_required
-def scheme_edit(request, id_scheme):
+def scheme_edit(request, scheme_id):
     try:
-        scheme = Reaction_scheme.objects.get(pk=id_scheme)
+        scheme = Reaction_scheme.objects.get(pk=scheme_id)
     except Reaction_scheme.DoesNotExist:
         raise Http404("Reaction_scheme does not exist")
     return render(request, 'chemical/scheme_edit.html', {"scheme": scheme})
@@ -122,18 +127,22 @@ def scheme_new(request, reaction_id):
 	if request.method == "POST":
  		form = ReacSchemeForm(request.POST)
 		if form.is_valid():
-			scheme = form.save(commit=False)
-			scheme.fid_reac = reaction_id			
-			scheme.fname = form.cleaned_data['fname']
-			scheme.fdescription = form.cleaned_data['fdescription']
-			scheme.fis_possible = form.cleaned_data['fis_possible']
-		#   scheme.fcreated_date = timezone.now
+			try:
+				reaction = Reaction.objects.get(pk=reaction_id)
+			except Reaction.DoesNotExist:
+				raise Http404("Reaction does not exist")			
+			scheme = form.save(commit=False)			
+			scheme.reaction = reaction		
+			scheme.name = form.cleaned_data['name']
+			scheme.description = form.cleaned_data['description']
+			scheme.is_possible = form.cleaned_data['is_possible']
+		#  scheme.fcreated_date = timezone.now
 		#	scheme.fupdated_date = timezone.now
-			scheme.fupdated_by = request.user
-			scheme.fcreated_by = request.user
+			scheme.updated_by = request.user
+			scheme.created_by = request.user
 			scheme.save()
 			#return HttpResponseRedirect("/")	
-			return redirect('chemical.views.scheme_detail', reaction_id, scheme.pk)
+			return redirect('chemical.views.scheme_detail', scheme.pk)
 	else:
 		form = ReacSchemeForm()
 	return render(request, 'chemical/scheme_new.html', {'form': form })
