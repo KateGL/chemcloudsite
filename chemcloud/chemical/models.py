@@ -84,24 +84,24 @@ class SubstanceConsist(models.Model):
 
 # Реакция
 class Reaction(models.Model):
-    id_reaction = models.AutoField(primary_key=True, verbose_name='ИД')
-    name = models.CharField(max_length=300, verbose_name='Название')
-    description = models.TextField(null = True,  verbose_name='Описание')
-    is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
+    id_reaction      = models.AutoField(primary_key=True, verbose_name='ИД')
+    name             = models.CharField(max_length=300, verbose_name='Название')
+    description      = models.TextField(null = True,  verbose_name='Описание')
+    is_favorite      = models.BooleanField(default = False, verbose_name='Избранное')
     is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
-    is_isothermal = models.BooleanField(default = True, verbose_name='Изотермическая')
+    is_isothermal    = models.BooleanField(default = True, verbose_name='Изотермическая')
     created_by       = models.TextField (verbose_name='Создал(ла)')#todo data type
     created_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
     updated_by       = models.TextField (verbose_name='Обновил(а)')#todo data type
     updated_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата последних изменений')
     class Meta:
-      verbose_name = ('Реакция')
+      verbose_name        = ('Реакция')
       verbose_name_plural = ('Реакции')
 
-#Механизмы реакции
+#Схема механизма/маршрута реакции
 class Reaction_scheme (models.Model):
 	id_scheme    = models.AutoField (primary_key = True, verbose_name='ИД')
-	reaction      = models.ForeignKey(Reaction)
+	reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='+' )
 	name         = models.CharField (max_length = 250, verbose_name='Название')
 	description  = models.TextField (null = True, verbose_name='Описание')
 	is_possible  = models.BooleanField (verbose_name='Вероятный')
@@ -110,9 +110,35 @@ class Reaction_scheme (models.Model):
 	updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
 	updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
 	class Meta:
-		verbose_name = ('Механизм')
+		verbose_name        = ('Механизм')
 		verbose_name_plural = ('Механизмы')
 
+#Стадия схемы реакции
+class Scheme_step(models.Model):
+	id_step       = models.AutoField (primary_key = True, verbose_name='ИД')
+	scheme        = models.ForeignKey(Reaction_scheme, null = False, on_delete=models.CASCADE, related_name='+')
+	name          = models.CharField (max_length = 250, verbose_name='Обозначение')
+	order         = models.IntegerField (verbose_name='№ п/п')
+	is_revers     = models.BooleanField (verbose_name='Обратимая')
+	note	        = models.CharField (max_length = 250, null = True, verbose_name='Примечание')
+	rate_equation = models.TextField (null = True, verbose_name='Выражение для скорости')#todo data type
+	class Meta:
+		verbose_name        = ('Стадия схемы')
+		verbose_name_plural = ('Стадии схемы')
+
+#Вещество в стадии схемы реакции
+class Step_subst(models.Model):
+	#первичный ключ, только для возможности django создать ключ
+	id_stepsubst = models.AutoField (primary_key = True, verbose_name='ИД')
+	step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE, related_name='+')
+	#subst       = models.ForeignKey(Reaction_subst, null = False, on_delete=models.CASCADE, related_name='+')
+	substance    = models.IntegerField()
+	position     =	models.IntegerField(verbose_name='Позиция вещества в стадии')
+	stoich_koef  =	models.DecimalField(max_digits=6, decimal_places=3,default = 0, verbose_name='Стехиометрический коэффициент')
+	class Meta:
+		unique_together     = ('step', 'substance')		
+		verbose_name        = ('Вещество стадии')
+		verbose_name_plural = ('Вещества стадии')
 
 #Эксперименты
 class Experiment (models.Model):
