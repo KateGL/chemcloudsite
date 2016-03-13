@@ -7,6 +7,7 @@ urlpatterns = [
         
     url(r'^substance/all/$', views.substance_all, name='substance_all'),
     url(r'^substance/(?P<id_substance>[0-9]+)/detail/$', views.substance_detail, name='substance_detail'),
+    url(r'^substance/new/$', views.substance_new, name='substance_new'),
 
     url(r'^atom/all/$', views.atoms_all, name='atom_all'),
     url(r'^atom/(?P<atom_number>[0-9]+)/detail/$', views.atom_detail, name='atom_detail'),

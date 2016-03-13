@@ -33,6 +33,11 @@ def substance_detail(request, id_substance):
         raise Http404("Substance does not exist")
     return render(request, 'chemical/substance_detail.html', {"substance": substance})
 
+@login_required
+def substance_new(request):
+    return render(request, 'chemical/substance_new.html', {})
+
+
 # расчеты
 
 @login_required
