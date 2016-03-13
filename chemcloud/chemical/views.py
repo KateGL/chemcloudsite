@@ -66,6 +66,18 @@ def dictionaries(request):
 def reaction_all(request):
     return render(request, 'chemical/reaction_all.html', {})
 
+@login_required
+def reaction_detail(request, id_reaction):
+    try:
+        react = Reaction.objects.get(pk=id_reaction)
+    except Reaction.DoesNotExist:
+        raise Http404("Reaction does not exist")
+    return render(request, 'chemical/reaction_detail.html', {"reaction": react})
+
+@login_required
+def reaction_new(request):
+    return render(request, 'chemical/reaction_new.html', {})
+
 
 #  Механизмы реакции
 #import the Reaction_scheme model
@@ -90,6 +102,14 @@ def scheme_detail(request, reaction_id, scheme_id):
 	context = {'scheme_detail': scheme_detail}
 
 	return render(request, 'chemical/scheme_detail.html', context )
+
+@login_required
+def scheme_edit(request, id_scheme):
+    try:
+        scheme = Reaction_scheme.objects.get(pk=id_scheme)
+    except Reaction_scheme.DoesNotExist:
+        raise Http404("Reaction_scheme does not exist")
+    return render(request, 'chemical/scheme_edit.html', {"scheme": scheme})
 
 #      c = RequestContext(request.POST, {})
 @login_required

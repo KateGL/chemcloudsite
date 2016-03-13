@@ -16,11 +16,13 @@ urlpatterns = [
 
 #Реакции
     url(r'^reaction/all/$', views.reaction_all, name='reaction_all'),
-   # url(r'^reaction/detail/(?P<id_substance>[0-9]+)/$', views.substance_detail, name='substance_detail'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/detail/$', views.reaction_detail, name='reaction_detail'),
+    url(r'^reaction/new/$', views.reaction_new, name='reaction_new'),
 
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/all$', views.scheme_all, name='scheme_all'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/all/$', views.scheme_all, name='scheme_all'),
     url(r'^scheme/(?P<id_scheme>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/new/$', views.scheme_new, name='scheme_new'),
+    url(r'^scheme/(?P<id_scheme>[0-9]+)/edit/$', views.scheme_edit, name='scheme_edit'),
 
 #Эксперименты
 
