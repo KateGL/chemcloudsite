@@ -25,5 +25,8 @@ urlpatterns = [
     url(r'^scheme/(?P<id_scheme>[0-9]+)/edit/$', views.scheme_edit, name='scheme_edit'),
 
 #Эксперименты
-
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),
+    url(r'^experiment/(?P<id_experiment>[0-9]+)/detail/$', views.experiment_detail, name='experiment_detail'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),
+    url(r'^experiment/(?P<id_experiment>[0-9]+)/edit/$', views.experiment_edit, name='experiment_edit'),
 ]

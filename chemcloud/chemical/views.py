@@ -136,5 +136,28 @@ def scheme_new(request, reaction_id):
 
 
 # Эксперименты
+@login_required
+def experiment_all(request, id_reaction):
+	return render(request, 'chemical/experiment_all.html', [] )
+
+@login_required
+def experiment_detail(request, id_experiment):
+   # try:
+    #    atom = Atom.objects.get(pk=atom_number)
+   # except Atom.DoesNotExist:
+    #    raise Http404("Atom does not exist")
+    return render(request, 'chemical/experiment_detail.html', [])
+
+@login_required
+def experiment_new(request, id_reaction):
+	return render(request, 'chemical/experiment_new.html', [])
+
+@login_required
+def experiment_edit(request, id_experiment):
+   # try:
+    #    atom = Atom.objects.get(pk=atom_number)
+   # except Atom.DoesNotExist:
+    #    raise Http404("Atom does not exist")
+    return render(request, 'chemical/experiment_edit.html', [])
 
 
