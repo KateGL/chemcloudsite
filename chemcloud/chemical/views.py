@@ -16,12 +16,6 @@ from django_tables2   import RequestConfig
 from chemical.models import Atom, Substance
 from chemical.tables  import AtomTable, SubstanceTable
 
-# Реакции
-
-@login_required
-def reactions_all(request):
-    return render(request, 'chemical/reactions_all.html', {})
-
 # Вещество
 
 @login_required
@@ -42,15 +36,15 @@ def substance_detail(request, id_substance):
 # расчеты
 
 @login_required
-def calculations_all(request):
-    return render(request, 'chemical/calculations_all.html', {})
+def calculation_all(request):
+    return render(request, 'chemical/calculation_all.html', {})
 
 # атом
 @login_required
 def atoms_all(request):
     atom_table = AtomTable(Atom.objects.all())
     RequestConfig(request, paginate={"per_page": 5}).configure(atom_table)
-    return render(request, 'chemical/atoms_all.html',  {"atom": atom_table})
+    return render(request, 'chemical/atom_all.html',  {"atom": atom_table})
 
 @login_required
 def atom_detail(request, atom_number):
@@ -65,13 +59,21 @@ def atom_detail(request, atom_number):
 def dictionaries(request):
     return render(request, 'chemical/dictionaries.html', {})
 
+
+# Реакции
+
+@login_required
+def reaction_all(request):
+    return render(request, 'chemical/reaction_all.html', {})
+
+
 #  Механизмы реакции
 #import the Reaction_scheme model
 from chemical.models import Reaction_scheme
 from .forms import ReacSchemeForm
 
 @login_required
-def schemes(request, reaction_id):
+def scheme_all(request, reaction_id):
 #получаем список всех схем реакций, 
 #сортируем по идентификатору схемы.
 #извлекаем первые пять записей
@@ -80,14 +82,14 @@ def schemes(request, reaction_id):
 	context_dict = {'schemes': scheme_list}
 
 #формируем ответ для клиента по шаблону и отправляем обратно
-	return render(request, 'chemical/schemes.html', context_dict )
+	return render(request, 'chemical/scheme_all.html', context_dict )
 
 @login_required
-def scheme_details(request, reaction_id, scheme_id):
+def scheme_detail(request, reaction_id, scheme_id):
 	scheme_details = Reaction_scheme.objects.filter(fid_scheme=int(scheme_id))
-	context = {'scheme_details': scheme_details}
+	context = {'scheme_detail': scheme_detail}
 
-	return render(request, 'chemical/scheme_details.html', context )
+	return render(request, 'chemical/scheme_detail.html', context )
 
 #      c = RequestContext(request.POST, {})
 @login_required
@@ -106,7 +108,7 @@ def scheme_new(request, reaction_id):
 			scheme.fcreated_by = request.user
 			scheme.save()
 			#return HttpResponseRedirect("/")	
-			return redirect('chemical.views.scheme_details', reaction_id, scheme.pk)
+			return redirect('chemical.views.scheme_detail', reaction_id, scheme.pk)
 	else:
 		form = ReacSchemeForm()
 	return render(request, 'chemical/scheme_new.html', {'form': form })
