@@ -1,6 +1,8 @@
 {% extends 'chemical/base_cabinet.html' %}
 
 {% load staticfiles %}
+{% load render_table from django_tables2 %}
+
 
 
 {% block body_block %}
@@ -8,8 +10,8 @@
                 <h1>Все реакции</h1>
             </div>
             <div class="page-content">
-            список реакций с поиском
+          
            
-
+             {% render_table reaction %}
             </div>
 {% endblock %}
