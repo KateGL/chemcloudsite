@@ -34,8 +34,12 @@
 <body>
 <header>
   
-  <div class="container">      
-    {% include "nav_main.html" %}    
+  <div class="container">    
+   {% if user.is_authenticated %}
+     {% include "chemical/nav_cabinet_main.html" %} 
+    {% else %}    
+    {% include "nav_main.html" %}  
+    {% endif %}  
 </div> 
 </header>
    
