@@ -3,7 +3,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from chemical.models import Atom, Substance, Reaction
+from chemical.models import Atom, Substance, Reaction, Reaction_scheme
 
 class AtomAdmin(admin.ModelAdmin):
   fields = ['atom_number', 'symbol','atom_mass',  'name', 'name_latin']
@@ -19,15 +19,21 @@ class SubstanceAdmin(admin.ModelAdmin):
 admin.site.register(Substance, SubstanceAdmin)
 
 class ReactionAdmin(admin.ModelAdmin):
-  fields = ['name',  'is_favorite', 'is_notstationary', 'is_isothermal','description' ]
-  list_display = ('id_reaction',  'name', 'is_favorite', 'is_notstationary', 'is_isothermal','description' )
+  fields = ['name',  'is_favorite', #'is_notstationary',
+ 'is_isothermal','description' ]
+  list_display = ('id_reaction',  'name', 'is_favorite', #'is_notstationary',
+ 'is_isothermal','description' )
 
 admin.site.register(Reaction, ReactionAdmin)
 
 
 #  механизмы реакции
-from .models import Reaction_scheme
+
+class ReactionSchemeAdmin(admin.ModelAdmin):
+  fields = ['name']
+  list_display = ('id_scheme', 'name')
+
+admin.site.register( Reaction_scheme, ReactionSchemeAdmin)
 
 #  Эксперименты
-# Register your models here.
-admin.site.register(Reaction_scheme)
+

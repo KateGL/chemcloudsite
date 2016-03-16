@@ -1,0 +1,42 @@
+<div class="panel panel-default">
+     
+          <div class="panel-body">
+            
+            
+            <ul class="nav navbar-nav ">
+                    <li>
+                        <a href="{% url 'reaction_detail' id_reaction %}">Детали реакции</a>
+                    </li>
+                   
+                   <li>
+                        <a href="{% url 'react_substance_all' id_reaction %}">Вещества</a>
+                    </li>
+                   <li>
+                        <a href="{% url 'scheme_all' id_reaction %}">Механизмы</a>
+                    </li>
+                   
+                   
+                   <li>
+                        <a href="{% url 'experiment_all' id_reaction %}">Эксперименты</a>
+                    </li>
+                   
+                    <li>
+                        <a href="{% url 'problem_all' id_reaction %}">Задачи</a>
+                    </li>
+                    
+                    <li>
+                        <a href="{% url 'calc_all' id_reaction %}">Решения</a>
+                    </li>
+                         
+                                                        <li>
+                        <a href="{% url 'statistic' id_reaction %}">Статистика</a>
+                    </li>                               
+                  
+                    
+                    
+                </ul>
+            
+            
+            
+          </div>
+        </div>

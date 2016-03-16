@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
 
@@ -8,7 +8,7 @@
 	</div>
 		<div class="page-content">
 			{% if id_reac %}
-			<a class="btn btn-default" href="{% url 'scheme_new' id_reac %}">Создать механизм</a> <br>
+			<a class="btn btn-default" href="{% url 'scheme_new' id_reaction %}">Создать механизм</a> <br>
 			{% endif %}
 			{% if schemes %}
 				<table>

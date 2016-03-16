@@ -3,18 +3,18 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, Http404
+
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import logout
 
-from django_tables2   import RequestConfig
+from django_tables2 import RequestConfig
 
 from chemical.models import Atom, Substance
-from chemical.tables  import AtomTable, SubstanceTable
+from chemical.tables import AtomTable, SubstanceTable
 
 from django.shortcuts import redirect
 
@@ -24,15 +24,15 @@ from django.shortcuts import redirect
 def substance_all(request):
     substance_table = SubstanceTable(Substance.objects.all())
     RequestConfig(request, paginate={"per_page": 5}).configure(substance_table)
-    return render(request, 'chemical/substance_all.html',  {"substance": substance_table})
+    return render(request, 'chemical/substance_all.html', {"substance": substance_table})
 
 
 @login_required
 def substance_detail(request, id_substance):
     try:
-        substance = Substance.objects.get(pk=id_substance)
+      substance = Substance.objects.get(pk=id_substance)
     except Substance.DoesNotExist:
-        raise Http404("Substance does not exist")
+      raise Http404("Substance does not exist")
     return render(request, 'chemical/substance_detail.html', {"substance": substance})
 
 @login_required
@@ -58,7 +58,7 @@ def atom_detail(request, atom_number):
     try:
         atom = Atom.objects.get(pk=atom_number)
     except Atom.DoesNotExist:
-        raise Http404("Atom does not exist")
+      raise Http404("Atom does not exist")
     return render(request, 'chemical/atom_detail.html', {"atom": atom})
 
 # Справочники
@@ -79,7 +79,8 @@ def reaction_detail(request, id_reaction):
         react = Reaction.objects.get(pk=id_reaction)
     except Reaction.DoesNotExist:
         raise Http404("Reaction does not exist")
-    return render(request, 'chemical/reaction_detail.html', {"reaction": react})
+    return render(request, 'chemical/reaction_detail.html',
+         {"reaction": react, "id_reaction": id_reaction})
 
 @login_required
 def reaction_new(request):
@@ -94,7 +95,7 @@ from .forms import ReacSchemeForm
 
 @login_required
 def scheme_all(request, reaction_id):
-	#получаем список всех схем реакций, 
+	#получаем список всех схем реакций,
 	#сортируем по идентификатору схемы.
 	#для извлечения первых пяти записей - [:5]
 	#помещаем список в словарь контекста, который будет передан механизму шаблонов	
@@ -103,7 +104,7 @@ def scheme_all(request, reaction_id):
 	except Reaction.DoesNotExist:
 		raise Http404("Reaction does not exist")	
 	scheme_list = Reaction_scheme.objects.filter(reaction = reac_temp).order_by('id_scheme')
-	context_dict = {'schemes': scheme_list, 'id_reac' : reaction_id}
+	context_dict = {'schemes': scheme_list, 'id_reaction' : reaction_id}
 	#формируем ответ для клиента по шаблону и отправляем обратно
 	return render(request, 'chemical/scheme_all.html', context_dict )
 
@@ -149,10 +150,17 @@ def scheme_new(request, reaction_id):
 	#return render_to_response('chemkinoptima/scheme_new.html', {'form': form }, context_instance = RequestContext(request ) ) #{'form': form }, context_instance =
 
 
+#Вещества реакции
+@login_required
+def react_substance_all(request, id_reaction):
+    return render(request, 'chemical/react_substance_all.html', {"id_reaction": id_reaction})
+
+
+
 # Эксперименты
 @login_required
 def experiment_all(request, id_reaction):
-	return render(request, 'chemical/experiment_all.html', [] )
+	return render(request, 'chemical/experiment_all.html', {"id_reaction": id_reaction} )
 
 @login_required
 def experiment_detail(request, id_experiment):
@@ -160,11 +168,11 @@ def experiment_detail(request, id_experiment):
     #    atom = Atom.objects.get(pk=atom_number)
    # except Atom.DoesNotExist:
     #    raise Http404("Atom does not exist")
-    return render(request, 'chemical/experiment_detail.html', [])
+    return render(request, 'chemical/experiment_detail.html', {"id_reaction": id_reaction})
 
 @login_required
 def experiment_new(request, id_reaction):
-	return render(request, 'chemical/experiment_new.html', [])
+    return render(request, 'chemical/experiment_new.html', {"id_reaction": id_reaction})
 
 @login_required
 def experiment_edit(request, id_experiment):
@@ -172,6 +180,24 @@ def experiment_edit(request, id_experiment):
     #    atom = Atom.objects.get(pk=atom_number)
    # except Atom.DoesNotExist:
     #    raise Http404("Atom does not exist")
-    return render(request, 'chemical/experiment_edit.html', [])
+    return render(request, 'chemical/experiment_edit.html', {"id_reaction": id_reaction})
+
+
+#Задачи
+@login_required
+def problem_all(request, id_reaction):
+    return render(request, 'chemical/problem_all.html', {"id_reaction": id_reaction})
+
+#Решения
+@login_required
+def calc_all(request, id_reaction):
+    return render(request, 'chemical/calc_all.html', {"id_reaction": id_reaction})
+
+
+#Статистика
+@login_required
+def statistic(request, id_reaction):
+    return render(request, 'chemical/statistic.html', {"id_reaction": id_reaction})
+
 
 
