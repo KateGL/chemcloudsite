@@ -14,7 +14,7 @@ from django.contrib.auth import logout
 from django_tables2 import RequestConfig
 
 from chemical.models import Atom, Substance
-from chemical.tables import AtomTable, SubstanceTable
+from chemical.tables import AtomTable, SubstanceTable, ReactionTable
 
 from django.shortcuts import redirect
 
@@ -71,7 +71,9 @@ def dictionaries(request):
 
 @login_required
 def reaction_all(request):
-    return render(request, 'chemical/reaction_all.html', {})
+    reaction_table = ReactionTable(Reaction.objects.all())
+    RequestConfig(request, paginate={"per_page": 15}).configure(reaction_table)
+    return render(request, 'chemical/reaction_all.html', {"reaction": reaction_table})
 
 @login_required
 def reaction_detail(request, id_reaction):
