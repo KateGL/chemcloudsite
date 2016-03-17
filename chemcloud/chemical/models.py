@@ -21,7 +21,7 @@ class Atom(models.Model):
 # Вещество
 class Substance(models.Model):
     id_substance = models.AutoField(primary_key = True, verbose_name='ИД')
-    name = models.CharField(max_length=255, verbose_name='Название')
+    name = models.CharField(max_length=255, verbose_name='Название', unique=True)
     charge = models.SmallIntegerField (default = 0, verbose_name='Заряд')
     is_radical = models.BooleanField(default = False, verbose_name='Радикал')
     formula_brutto = models.CharField(max_length=255, verbose_name='Брутто-формула')
@@ -33,6 +33,13 @@ class Substance(models.Model):
         verbose_name_plural = ('Веществ')
 
 # Состав вещества
+class SubstanceConsist(models.Model):
+    id_substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE)
+    id_atom = models.ForeignKey(Atom, null = False, on_delete=models.CASCADE)
+    atom_count = models.IntegerField(default = 0, verbose_name = 'Количество атомов')
+    class Meta:
+        verbose_name = ('Состав Вещества')
+        verbose_name_plural = ('Составы Вещества')
 
 # Реакция
 class Reaction(models.Model):
@@ -45,7 +52,7 @@ class Reaction(models.Model):
     created_by       = models.TextField (verbose_name='Создал(ла)')#todo data type
     created_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
     updated_by       = models.TextField (verbose_name='Обновил(а)')#todo data type
-    updated_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+    updated_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата последних изменений')
     class Meta:
       verbose_name = ('Реакция')
       verbose_name_plural = ('Реакции')

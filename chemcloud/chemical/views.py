@@ -17,13 +17,20 @@ from chemical.models import Atom, Substance
 from chemical.tables import AtomTable, SubstanceTable, ReactionTable
 
 from django.shortcuts import redirect
+from chemical.forms import SubstanceForm, ReactionForm
+#import the Reaction_scheme model
+from chemical.models import Reaction
+from chemical.models import Reaction_scheme
+from .forms import ReacSchemeForm
+
+from django.core.context_processors import csrf
 
 # Вещество
 
 @login_required
 def substance_all(request):
     substance_table = SubstanceTable(Substance.objects.all())
-    RequestConfig(request, paginate={"per_page": 5}).configure(substance_table)
+    RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
     return render(request, 'chemical/substance_all.html', {"substance": substance_table})
 
 
@@ -37,8 +44,13 @@ def substance_detail(request, id_substance):
 
 @login_required
 def substance_new(request):
-    return render(request, 'chemical/substance_new.html', {})
-
+    form = SubstanceForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            substance = form.save()
+            form.save()
+            return redirect('substance_detail', substance.pk)
+    return render(request,'chemical/substance_new.html', {'form': form})
 
 # расчеты
 
@@ -50,7 +62,7 @@ def calculation_all(request):
 @login_required
 def atoms_all(request):
     atom_table = AtomTable(Atom.objects.all())
-    RequestConfig(request, paginate={"per_page": 5}).configure(atom_table)
+    RequestConfig(request, paginate={"per_page": 30}).configure(atom_table)
     return render(request, 'chemical/atom_all.html',  {"atom": atom_table})
 
 @login_required
@@ -86,14 +98,18 @@ def reaction_detail(request, id_reaction):
 
 @login_required
 def reaction_new(request):
-    return render(request, 'chemical/reaction_new.html', {})
+    form = ReactionForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            reaction = form.save()
+            form.save()
+            return redirect('reaction_detail', reaction.pk)
+    return render(request,'chemical/reaction_new.html', {'form': form})
+
 
 
 #  Механизмы реакции
-#import the Reaction_scheme model
-from chemical.models import Reaction
-from chemical.models import Reaction_scheme
-from .forms import ReacSchemeForm
+
 
 @login_required
 def scheme_all(request, reaction_id):

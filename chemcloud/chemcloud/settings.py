@@ -57,6 +57,8 @@ MIDDLEWARE_CLASSES = [
 
 ROOT_URLCONF = 'chemcloud.urls'
 
+CRISPY_TEMPLATE_PACK = 'bootstrap'
+
 TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
 
 TEMPLATES = [
