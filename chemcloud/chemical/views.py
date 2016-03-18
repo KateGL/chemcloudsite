@@ -13,7 +13,7 @@ from django.contrib.auth import logout
 
 from django_tables2 import RequestConfig
 
-from chemical.models import Atom, Substance
+from chemical.models import Atom, Substance, SubstanceConsist
 from chemical.tables import AtomTable, SubstanceTable, ReactionTable
 
 from django.shortcuts import redirect
@@ -23,7 +23,6 @@ from chemical.models import Reaction
 from chemical.models import Reaction_scheme
 from .forms import ReacSchemeForm
 
-from django.core.context_processors import csrf
 
 # Вещество
 
@@ -38,6 +37,10 @@ def substance_all(request):
 def substance_detail(request, id_substance):
     try:
       substance = Substance.objects.get(pk=id_substance)
+      #a = SubstanceConsist.objects.get_or_create(atom =Atom.objects.get(pk=1), substance = substance, atom_count = 3)[0]
+      #a.save()
+      #substance.consist.add(a)
+      #cnt = substance.consist.count;
     except Substance.DoesNotExist:
       raise Http404("Substance does not exist")
     return render(request, 'chemical/substance_detail.html', {"substance": substance})

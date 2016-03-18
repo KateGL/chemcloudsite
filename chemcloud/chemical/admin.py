@@ -4,6 +4,7 @@ from django.contrib import admin
 # Register your models here.
 
 from chemical.models import Atom, Substance, Reaction, Reaction_scheme
+from chemical.forms import BruttoFormulaField
 
 class AtomAdmin(admin.ModelAdmin):
   fields = ['atom_number', 'symbol','atom_mass',  'name', 'name_latin']
@@ -13,6 +14,7 @@ admin.site.register(Atom, AtomAdmin)
 
 
 class SubstanceAdmin(admin.ModelAdmin):
+  formula_brutto = BruttoFormulaField( label="Брутто-формула")
   fields = ['name', 'charge', 'is_radical', 'formula_brutto','note']
   list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto','note')
 

@@ -25,6 +25,7 @@ class Substance(models.Model):
     charge = models.SmallIntegerField (default = 0, verbose_name='Заряд')
     is_radical = models.BooleanField(default = False, verbose_name='Радикал')
     formula_brutto = models.CharField(max_length=255, verbose_name='Брутто-формула')
+    formula_brutto_formatted = models.CharField(max_length=255, default = '', verbose_name='Брутто-формула')
     note = models.TextField( verbose_name='Примечание')
     #formula_mol = models.FileField()
     #formula_picture = models.ImageField()
@@ -34,8 +35,8 @@ class Substance(models.Model):
 
 # Состав вещества
 class SubstanceConsist(models.Model):
-    id_substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE)
-    id_atom = models.ForeignKey(Atom, null = False, on_delete=models.CASCADE)
+    substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
+    atom = models.ForeignKey(Atom, null = False, on_delete=models.CASCADE, related_name='+')
     atom_count = models.IntegerField(default = 0, verbose_name = 'Количество атомов')
     class Meta:
         verbose_name = ('Состав Вещества')

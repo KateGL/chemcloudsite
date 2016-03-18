@@ -28,8 +28,8 @@ class SubstanceTable(tables.Table):
         model = Substance
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
-        fields =("name", "formula_brutto", "charge", "is_radical")
-        sequence = ("name", "formula_brutto", "charge", "is_radical")
+        fields =("name", "formula_brutto_formatted", "charge", "is_radical")
+        sequence = ("name", "formula_brutto_formatted", "charge", "is_radical")
 
 #Реакции
 class ReactionTable(tables.Table):
