@@ -2,7 +2,7 @@
 from django import forms
 from .models import Reaction_scheme, Substance, Reaction
 import re
-from .utils import check_brackets
+from .utils import check_blocks
 
 
 #Реакции
@@ -25,11 +25,13 @@ class ReacSchemeForm(forms.ModelForm):
 class BruttoFormulaField(forms.CharField):
     def validate(self, value):
         super(BruttoFormulaField, self).validate(value)
-        if re.sub(r'[A-Za-z0-9\(\)]','', value)!= '':
+        if re.sub(r'[A-Za-z0-9\(\)\[\]]','', value)!= '':
             raise forms.ValidationError("Брутто-формула может содержать только числа, латиницу и скобки")
-        if not check_brackets(value):
-            raise forms.ValidationError("Проверьте правильность расположения скобок!")
-
+        if not check_blocks(value,'(',')'):
+            raise forms.ValidationError("Проверьте правильность расположения круглых скобок!")
+        if not check_blocks(value,'[',']'):
+            raise forms.ValidationError("Проверьте правильность расположения квадратных скобок!")
+#не совсем правильно, тк допустива конструкция [(])
 
 class SubstanceForm(forms.ModelForm):
     formula_brutto = BruttoFormulaField( label="Брутто-формула")
