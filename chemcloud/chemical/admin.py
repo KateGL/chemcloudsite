@@ -14,7 +14,7 @@ admin.site.register(Atom, AtomAdmin)
 
 
 class SubstanceAdmin(admin.ModelAdmin):
-  formula_brutto = BruttoFormulaField( label="Брутто-формула")
+  #formula_brutto = BruttoFormulaField( label="Брутто-формула") надо в админке тоже добавить это поле!!!
   fields = ['name', 'charge', 'is_radical', 'formula_brutto','note']
   list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto','note')
 
@@ -31,11 +31,11 @@ admin.site.register(Reaction, ReactionAdmin)
 
 #  механизмы реакции
 
-class ReactionSchemeAdmin(admin.ModelAdmin):
-  fields = ['name']
-  list_display = ('id_scheme', 'name')
+#class ReactionSchemeAdmin(admin.ModelAdmin):
+  #fields = ['name','reaction']
+  #list_display = ('id_scheme', 'name','reaction')
 
-admin.site.register( Reaction_scheme, ReactionSchemeAdmin)
+admin.site.register( Reaction_scheme)#, ReactionSchemeAdmin)
 
 #  Эксперименты
 
