@@ -54,7 +54,7 @@ class ReactionTable(tables.Table):
         model = Reaction
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
-        fields =("id_reaction", "name", "is_favorite", "description", "updated_date")
-        sequence = ("id_reaction", "is_favorite", "name",  "description", "updated_date")
+        fields =("name", "is_favorite", "description", "updated_date")
+        sequence = ("is_favorite", "name",  "description", "updated_date")
 
 #Эксперименты

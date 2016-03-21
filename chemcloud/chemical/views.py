@@ -13,15 +13,16 @@ from django.contrib.auth import logout
 
 from django_tables2 import RequestConfig
 
-from chemical.models import Atom, Substance, SubstanceConsist
+from chemical.models import Atom, Substance, SubstanceConsist, Experiment
 from chemical.tables import AtomTable, SubstanceTable, ReactionTable,ConsistTable
+
 
 from django.shortcuts import redirect
 from chemical.forms import SubstanceForm, ReactionForm
 #import the Reaction_scheme model
 from chemical.models import Reaction
 from chemical.models import Reaction_scheme
-from .forms import ReacSchemeForm
+from .forms import ReacSchemeForm,ExperimentForm
 
 from .utils import decorate_formula
 
@@ -131,9 +132,9 @@ def scheme_all(request, reaction_id):
 	return render(request, 'chemical/scheme_all.html', context_dict )
 
 @login_required
-def scheme_detail(request, scheme_id):
+def scheme_detail(request, reaction_id, scheme_id):
 	scheme_detail = Reaction_scheme.objects.get(pk=scheme_id)
-	context = {'scheme': scheme_detail}
+	context = {'scheme': scheme_detail, 'id_reaction' : reaction_id}
 	return render(request, 'chemical/scheme_detail.html', context )
 
 @login_required
@@ -165,10 +166,11 @@ def scheme_new(request, reaction_id):
 			scheme.created_by = request.user
 			scheme.save()
 			#return HttpResponseRedirect("/")	
-			return redirect('chemical.views.scheme_detail', scheme.pk)
+			return redirect('chemical.views.scheme_detail', reaction_id, scheme.pk)
 	else:
 		form = ReacSchemeForm()
-	return render(request, 'chemical/scheme_new.html', {'form': form })
+	context_dict = {'form': form, 'id_reaction' : reaction_id}
+	return render(request, 'chemical/scheme_new.html', context_dict)
 	#return render_to_response('chemkinoptima/scheme_new.html', {'form': form }, context_instance = RequestContext(request ) ) #{'form': form }, context_instance =
 
 
@@ -177,32 +179,61 @@ def scheme_new(request, reaction_id):
 def react_substance_all(request, id_reaction):
     return render(request, 'chemical/react_substance_all.html', {"id_reaction": id_reaction})
 
-
-
 # Эксперименты
 @login_required
-def experiment_all(request, id_reaction):
-	return render(request, 'chemical/experiment_all.html', {"id_reaction": id_reaction} )
+def experiment_all(request, reaction_id):
+   #получаем список всех экспериментов,
+	#сортируем по идентификатору схемы.
+	#для извлечения первых пяти записей - [:5]
+	#помещаем список в словарь контекста, который будет передан механизму шаблонов	
+   try:
+      reac_temp = Reaction.objects.get(pk=reaction_id)
+   except Reaction.DoesNotExist:
+      raise Http404("Reaction does not exist")	
+   experiment_list = Experiment.objects.filter(reaction = reac_temp).order_by('id_experiment')
+   context_dict = {'experiments': experiment_list, 'id_reaction' : reaction_id}
+   #формируем ответ для клиента по шаблону и отправляем обратно
+   return render(request, 'chemical/experiment_all.html', context_dict )
 
 @login_required
-def experiment_detail(request, id_experiment):
+#def experiment_detail(request, reaction_id, id_experiment):
+def experiment_detail(request, reaction_id, experiment_id):
+    experiment_detail = Experiment.objects.get(pk=experiment_id)
+    context = {'experiment': experiment_detail, 'id_reaction' : reaction_id}
+    return render(request, 'chemical/experiment_detail.html', context)
+
+@login_required
+def experiment_new(request, reaction_id):
+    if request.method == "POST":
+        form = ExperimentForm(request.POST)
+        if form.is_valid():
+            try:
+                reaction = Reaction.objects.get(pk=reaction_id)
+            except Reaction.DoesNotExist:
+                raise Http404("Reaction does not exist")
+
+                experiment = form.save(commit=False)
+                experiment.reaction = reaction
+                experiment.name = form.cleaned_data['name']
+                experiment.description = form.cleaned_data['description']
+                experiment.is_favorite = form.cleaned_data['is_favorite']
+                experiment.updated_by = request.user
+                experiment.created_by = request.user
+                experiment.save()
+
+        return redirect('chemical.views.experiment_detail', reaction_id, experiment.pk)
+    else:
+        form = ExperimentForm()
+        context_dict = {'form': form, 'id_reaction' : reaction_id}
+        return render(request, 'chemical/experiment_new.html', context_dict)
+
+@login_required
+def experiment_edit(request, reaction_id, id_experiment):
    # try:
     #    atom = Atom.objects.get(pk=atom_number)
    # except Atom.DoesNotExist:
     #    raise Http404("Atom does not exist")
-    return render(request, 'chemical/experiment_detail.html', {"id_reaction": id_reaction})
-
-@login_required
-def experiment_new(request, id_reaction):
-    return render(request, 'chemical/experiment_new.html', {"id_reaction": id_reaction})
-
-@login_required
-def experiment_edit(request, id_experiment):
-   # try:
-    #    atom = Atom.objects.get(pk=atom_number)
-   # except Atom.DoesNotExist:
-    #    raise Http404("Atom does not exist")
-    return render(request, 'chemical/experiment_edit.html', {"id_reaction": id_reaction})
+    return render(request, 'chemical/experiment_edit.html', {"id_reaction": reaction_id})
 
 
 #Задачи

@@ -1,0 +1,16 @@
+{% extends 'chemical/base_reaction.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+		<h1>Добавление нового эксперимента</h1>
+	</div>
+	<div class="page-content">
+		<form method="POST" class="experiment-form">{% csrf_token %}
+			{{ form.as_p }}
+		<!-- TODO	<button type="submit" class="save btn btn-default">Сохранить</button>-->
+        </form >
+   </div>
+{% endblock %}

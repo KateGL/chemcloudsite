@@ -1,0 +1,51 @@
+{% extends 'chemical/base_reaction.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+		<h1>Детали эксперимента</h1>
+	</div>
+		<div class="page-content">
+			{% if experiment %}
+				<table>
+					<tr>
+						<td>Название:</td>
+						<td>{{ experiment.name }}</td>
+					</tr>
+					<tr>
+						<td>Описание:</td>
+						<td>{{ experiment.description }}</td>
+					</tr>
+					<tr>
+						<td>Дата проведения:</td>
+						<td>{{ experiment.exper_date }}</td>
+					</tr>
+					<tr>
+						<td>Избранное:</td>
+						<td><input type="checkbox" {% if experiment.is_favorite %}checked {% endif %} ></td>
+					</tr>
+					<tr>
+						<td>Дата последних изменений:</td>
+						<td>{{experiment.updated_date}}</td>
+					</tr>
+					<tr>
+						<td>Изменения внес(ла):</td>
+						<td>{{experiment.updated_by}}</td>
+					</tr>
+					<tr>
+						<td>Дата создания:</td>
+						<td>{{experiment.created_date}}</td>
+					</tr>
+					<tr>
+						<td>Эксперимент создал(а):</td>
+						<td>{{experiment.created_by}}</td>
+					</tr>
+				</table>
+			{% else %}
+				<strong> Не удалось получить детали эксперимента </strong>
+			{% endif %}
+
+            </div>
+{% endblock %}

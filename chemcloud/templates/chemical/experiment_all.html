@@ -2,21 +2,36 @@
 
 {% load staticfiles %}
 
-
-
 {% block body_block %}
-   
-    <div class="page-header">
-
-    <h1> Эксперименты</h1>
-           
-            
-    </div>
+	<div class="page-header">
+		<h1>Эксперименты</h1>
+	</div>
+	
 <div class="page-content">
-        
-            
-
-</div>          
-
-            </div>
+    {% if id_reaction %}
+        <a class="btn btn-default" href="{% url 'experiment_new' id_reaction %}">Создать эксперимент</a> <br>
+    {% endif %}
+    {% if experiments %}
+        <table>
+            <tr>
+                <td>Название</td>
+                <td>Избранное</td>
+                <td>Дата проведения</td>
+                <td>Дата последних изменений</td>
+                <td></td>
+            </tr>
+            {% for experiment in experiments %}
+                <tr>
+                    <td>{{ experiment.name }}</td>
+                    <td><input type="checkbox" {% if experiment.is_favorite %}checked {% endif %} readonly></td>
+                    <td>{{ experiment.exper_date }}<!--strftime("%Y-%m-%d %H:%M:%S") --></td>
+                    <td>{{experiment.updated_date}}<!--strftime("%Y-%m-%d %H:%M:%S") --></td>
+                    <td><a href="{% url 'experiment_detail' id_reaction experiment.id_experiment %}"> Детали</a> </td>
+                </tr>
+            {% endfor%}
+        </table>
+    {% else %}
+        <strong> Пока не создано ни одного эксперимента </strong>
+    {% endif %}
+</div>
 {% endblock %}

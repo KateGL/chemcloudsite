@@ -3,7 +3,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from chemical.models import Atom, Substance, Reaction, Reaction_scheme
+from chemical.models import Atom, Substance, Reaction, Reaction_scheme, Experiment
 from chemical.forms import BruttoFormulaField
 
 class AtomAdmin(admin.ModelAdmin):
@@ -35,7 +35,7 @@ admin.site.register(Reaction, ReactionAdmin)
   #fields = ['name','reaction']
   #list_display = ('id_scheme', 'name','reaction')
 
-admin.site.register( Reaction_scheme)#, ReactionSchemeAdmin)
+admin.site.register(Experiment)#, ReactionSchemeAdmin)
 
 #  Эксперименты
-
+admin.site.register( Reaction_scheme)
