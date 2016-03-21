@@ -24,11 +24,51 @@ class Substance(models.Model):
     name = models.CharField(max_length=255, verbose_name='Название', unique=True)
     charge = models.SmallIntegerField (default = 0, verbose_name='Заряд')
     is_radical = models.BooleanField(default = False, verbose_name='Радикал')
-    formula_brutto = models.CharField(max_length=255, verbose_name='Брутто-формула')
+    formula_brutto = models.CharField(max_length=255, default = '',verbose_name='Брутто-формула')
     formula_brutto_formatted = models.CharField(max_length=255, default = '', verbose_name='Брутто-формула')
     note = models.TextField( verbose_name='Примечание')
     #formula_mol = models.FileField()
     #formula_picture = models.ImageField()
+
+    def consist_create(self):#создает состав вещества на основе брутто-формулы
+        self.consist.all().delete()#clear consist
+        atoms_dict = self.get_atom_dict()# ахтунг! говнокод
+        #atoms_dict = {'H':2, 'Oh':3}
+        for key, val in atoms_dict.items():
+            try:
+              atom = Atom.objects.get(symbol=key)
+              if atom:
+                co = SubstanceConsist.objects.get_or_create(atom =atom, substance = self, atom_count = val)[0]
+                co.save()
+                self.consist.add(co)
+            except:
+                return -1
+            #
+
+
+    def get_atom_dict(self,):# получение словаря с типа атомами
+        formula_s = self.formula_brutto+' '
+        atom_name =''
+        atom_count = ''
+        atoms_dict = {}
+        for s in formula_s:
+            if('A'<=s<='Z') or (s==' '):#начало названия элемента
+               if atom_name !='':
+                   atoms_dict.setdefault(atom_name,0)
+                   if atom_count !='':
+                     atoms_dict[atom_name]+= int(atom_count)
+                   else:
+                     atoms_dict[atom_name]+=1
+               atom_name = s
+               atom_count = ''
+            if('a'<=s<='z'):# продолжение имени
+               atom_name +=s
+               atom_count = ''
+            #кол-во
+            if(s in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']):
+                atom_count += s
+        return atoms_dict
+
     class Meta:
         verbose_name = ('Вещество')
         verbose_name_plural = ('Веществ')

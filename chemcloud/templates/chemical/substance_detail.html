@@ -1,7 +1,7 @@
 {% extends 'chemical/base_cabinet.html' %}
 
 {% load staticfiles %}
-
+{% load render_table from django_tables2 %}
 
 
 {% block body_block %}
@@ -23,17 +23,23 @@
         <td class="text-left">{{  substance.name }}</td>
       </tr>
       <tr>
-        <td class="pull-right">Прочее</td>
-        <td class="text-left">...</td>
+        <td class="pull-right">Брутто-формула</td>
+        <td class="text-left">{{  substance.formula_brutto_formatted | safe}}</td>
       </tr>
       
       <tr>
-      <td class="pull-right"></td>
+      <td class="pull-right">Заряд</td>
+      <td class="text-left">{{  substance.charge }}</td>
       </tr>
       
       <tr>
-        <td class="pull-right">Прочее</td>
-        <td class="text-left">...</td>
+        <td class="pull-right">Радикал</td>
+        <td class="text-left">{{  substance.is_radical }}</td>
+      </tr>
+      
+      <tr>
+        <td class="pull-right">Примечание</td>
+        <td class="text-left">{{  substance.note }}</td>
       </tr>
       
     </tbody>
@@ -41,4 +47,6 @@
 </div>          
 
             </div>
+            <h3> Состав вещества</h3>
+            {% render_table substance_consist %}
 {% endblock %}

@@ -14,7 +14,7 @@ from django.contrib.auth import logout
 from django_tables2 import RequestConfig
 
 from chemical.models import Atom, Substance, SubstanceConsist
-from chemical.tables import AtomTable, SubstanceTable, ReactionTable
+from chemical.tables import AtomTable, SubstanceTable, ReactionTable,ConsistTable
 
 from django.shortcuts import redirect
 from chemical.forms import SubstanceForm, ReactionForm
@@ -23,6 +23,7 @@ from chemical.models import Reaction
 from chemical.models import Reaction_scheme
 from .forms import ReacSchemeForm
 
+from .utils import decorate_formula
 
 # Вещество
 
@@ -37,13 +38,11 @@ def substance_all(request):
 def substance_detail(request, id_substance):
     try:
       substance = Substance.objects.get(pk=id_substance)
-      #a = SubstanceConsist.objects.get_or_create(atom =Atom.objects.get(pk=1), substance = substance, atom_count = 3)[0]
-      #a.save()
-      #substance.consist.add(a)
-      #cnt = substance.consist.count;
+      consist_table = ConsistTable(substance.consist.all())
     except Substance.DoesNotExist:
       raise Http404("Substance does not exist")
-    return render(request, 'chemical/substance_detail.html', {"substance": substance})
+    return render(request, 'chemical/substance_detail.html',
+    {"substance": substance,"substance_consist":consist_table})
 
 @login_required
 def substance_new(request):
@@ -51,6 +50,8 @@ def substance_new(request):
     if request.method == 'POST':
         if form.is_valid():
             substance = form.save()
+            substance.formula_brutto_formatted = decorate_formula(substance.formula_brutto)
+            substance.consist_create()
             form.save()
             return redirect('substance_detail', substance.pk)
     return render(request,'chemical/substance_new.html', {'form': form})
