@@ -33,7 +33,7 @@ urlpatterns = [
 
 #Эксперименты
     url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),
-    url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail/$', views.experiment_detail, name='experiment_detail'),
+    url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/(?P<experiment_id>[0-9]+)/detail/$', views.experiment_detail, name='experiment_detail'),
     url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),
     url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/edit/$', views.experiment_edit, name='experiment_edit'),
 

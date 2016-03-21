@@ -75,7 +75,20 @@ class Reaction_scheme (models.Model):
 
 
 #Эксперименты
-
+class Experiment (models.Model):
+    id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
+    reaction      = models.ForeignKey(Reaction)
+    name         = models.CharField (max_length = 250, verbose_name='Название')
+    description  = models.TextField (null = True, verbose_name='Описание')
+    exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
+    is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
+    created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
+    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+	#updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
+	#updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+    class Meta:
+      verbose_name = ('Эксперимент')
+      verbose_name_plural = ('Эксперименты')
 
 
 
