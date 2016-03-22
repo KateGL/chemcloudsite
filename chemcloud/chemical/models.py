@@ -77,7 +77,7 @@ class Substance(models.Model):
 class SubstanceConsist(models.Model):
     substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
     atom = models.ForeignKey(Atom, null = False, on_delete=models.CASCADE, related_name='+')
-    atom_count = models.IntegerField(default = 0, verbose_name = 'Количество атомов')
+    atom_count = models.DecimalField(max_digits=11, decimal_places=7,default = 0, verbose_name = 'Количество атомов')
     class Meta:
         verbose_name = ('Состав Вещества')
         verbose_name_plural = ('Составы Вещества')
