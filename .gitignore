@@ -67,7 +67,7 @@ target/
 #Temporary html files
 *.html~
 *.js~
-
+*.css~
 #Migrations folder
 migrations/
 
