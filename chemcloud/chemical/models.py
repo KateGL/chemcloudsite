@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.utils import timezone
 
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -97,6 +97,12 @@ class Reaction(models.Model):
 
 	def __unicode__ (self):
 		return self.name
+		
+	def add_owner(self,user_owner):
+	    user_reaction = UserReaction.objects.get_or_create(user =user_owner, reaction = self, is_owner = True)[0]
+	    user_reaction.save()
+	    self.users.add(user_reaction)
+	    user_owner.reactions.add(user_reaction)
 
 	class Meta:
 		verbose_name        = ('Реакция')
@@ -168,6 +174,14 @@ class Experiment (models.Model):
 
 
 
+#Права пользователя
+#Считаем, что если есть запист в этой таблице, то Пользователь имеет право на чтение Реакции
+#Если is_owner == True то пользователь может редактировать реакцию и расшаривать ее другим Пользователям
+class UserReaction(models.Model):
+    reaction = models.ForeignKey(Reaction, related_name='users', verbose_name='Реакция', null = False,on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='reactions', verbose_name='Пользователь', null = False,on_delete=models.CASCADE)
+    is_owner = models.BooleanField(default = False, verbose_name='Владелец')
 
-
-
+    class Meta:
+      verbose_name = ('Доступ к Реакции')
+      verbose_name_plural = ('Права на Реакции ')

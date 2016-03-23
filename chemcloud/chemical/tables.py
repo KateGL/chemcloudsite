@@ -5,7 +5,7 @@ from django_tables2.utils import A  # alias for Accessor
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
-from chemical.models import Atom, Substance, Reaction, SubstanceConsist, Reaction_scheme
+from chemical.models import Atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme
 from chemical.models import Scheme_step
 
 class AtomTable(tables.Table):
@@ -48,16 +48,27 @@ class ConsistTable(tables.Table):
 #Реакции
 class ReactionTable(tables.Table):
     detail_link = tables.LinkColumn('reaction_detail', args=[A('pk')], orderable=False,  verbose_name='Ссылка', empty_values=())
+    name = tables.Column(accessor='reaction.name')
+    is_favorite = tables.Column(accessor='reaction.is_favorite')
+    description = tables.Column(accessor='reaction.description')
+    updated_date = tables.Column(accessor='reaction.updated_date')
+    user_rule = tables.Column(verbose_name='Права', orderable=False, empty_values=())
 
     def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/detail">Детали</a>'''%record.pk)
+        return mark_safe( ''' <a href="/chemical/reaction/%d/detail">Детали</a>'''%record.reaction.pk)
+
+    def render_user_rule(self,record):
+        if record.is_owner:
+            return 'Чтение, Редактирование, Поделиться'
+        else:
+            return 'Чтение'
 
     class Meta:
-        model = Reaction
+        model = UserReaction
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
-        fields =("name", "is_favorite", "description", "updated_date")
-        sequence = ("is_favorite", "name",  "description", "updated_date")
+        fields =("name", "is_favorite", "description", "updated_date", "user_rule", "detail_link")
+        sequence = ("is_favorite", "name",  "description", "updated_date","detail_link", "user_rule")
 
 #Механизмы
 class MechanizmTable(tables.Table):
@@ -77,7 +88,7 @@ class MechanizmTable(tables.Table):
 		#TODO число стадий подсчитать и вывести
 		#получаем число стадий схемы по scheme
 		steps_count = Scheme_step.objects.filter(scheme = record).count()
-		return mark_safe('%d' %steps_count) 
+		return mark_safe('%d' %steps_count)
 
 	class Meta:
 		model = Reaction_scheme

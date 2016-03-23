@@ -13,7 +13,7 @@ from django.contrib.auth import logout
 
 from django_tables2 import RequestConfig
 
-from chemical.models import Atom, Substance, SubstanceConsist, Experiment
+from chemical.models import Atom, Substance, Experiment
 from chemical.tables import AtomTable, SubstanceTable, ReactionTable,ConsistTable, MechanizmTable
 
 
@@ -88,7 +88,7 @@ def dictionaries(request):
 
 @login_required
 def reaction_all(request):
-    reaction_table = ReactionTable(Reaction.objects.all())
+    reaction_table = ReactionTable(request.user.reactions.all())
     RequestConfig(request, paginate={"per_page": 15}).configure(reaction_table)
     return render(request, 'chemical/reaction_all.html', {"reaction": reaction_table})
 
@@ -107,6 +107,7 @@ def reaction_new(request):
     if request.method == 'POST':
         if form.is_valid():
             reaction = form.save()
+            reaction.add_owner(request.user)
             form.save()
             return redirect('reaction_detail', reaction.pk)
     return render(request,'chemical/reaction_new.html', {'form': form})
@@ -127,7 +128,7 @@ def scheme_all(request, reaction_id):
 	#сортируем по идентификатору схемы.
 	#для извлечения первых пяти записей - [:5]
 	scheme_list = Reaction_scheme.objects.filter(reaction = reac_temp).order_by('id_scheme')
-	#формируем таблицу на основе полученного списка механизмов   
+	#формируем таблицу на основе полученного списка механизмов
 	mech_table = MechanizmTable(scheme_list)
 	#RequestConfig(request, paginate={"per_page": 15}).configure(mech_table)
 	#помещаем таблицу со списком механизмов, а также reaction_id в словарь контекста, который будет передан шаблону	
@@ -155,7 +156,7 @@ def scheme_edit(request, reaction_id, scheme_id):
 		#получаем объект реакции по reaction_id
 		reac_temp = Reaction.objects.get(pk=reaction_id)
 	except Reaction.DoesNotExist:
-		raise Http404("Reaction does not exist")	    
+		raise Http404("Reaction does not exist")
 	try:
 		#получаем объект схемы по scheme_id		
 		scheme = Reaction_scheme.objects.get(pk=scheme_id)
