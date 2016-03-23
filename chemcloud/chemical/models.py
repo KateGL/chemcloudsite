@@ -105,7 +105,7 @@ class Reaction(models.Model):
 #Схема механизма/маршрута реакции
 class Reaction_scheme (models.Model):
 	id_scheme    = models.AutoField (primary_key = True, verbose_name='ИД')
-	reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='+' )
+	reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='schemes' )
 	name         = models.CharField (max_length = 250, verbose_name='Название')
 	description  = models.TextField (blank = True, verbose_name='Описание')
 	is_possible  = models.BooleanField (verbose_name='Вероятный')
@@ -118,13 +118,14 @@ class Reaction_scheme (models.Model):
 		return self.name
 
 	class Meta:
+		ordering            = ["updated_date"]		
 		verbose_name        = ('Механизм')
 		verbose_name_plural = ('Механизмы')
 
 #Стадия схемы реакции
 class Scheme_step(models.Model):
 	id_step       = models.AutoField (primary_key = True, verbose_name='ИД')
-	scheme        = models.ForeignKey(Reaction_scheme, null = False, on_delete=models.CASCADE, related_name='+')
+	scheme        = models.ForeignKey(Reaction_scheme, null = False, on_delete=models.CASCADE, related_name='steps')
 	name          = models.CharField (max_length = 250, verbose_name='Обозначение')
 	order         = models.IntegerField (verbose_name='№ п/п')
 	is_revers     = models.BooleanField (verbose_name='Обратимая')
@@ -132,7 +133,9 @@ class Scheme_step(models.Model):
 	rate_equation = models.TextField (blank= True, verbose_name='Выражение для скорости')#todo data type
 	def __unicode__ (self):
 		return self.name
+
 	class Meta:
+		ordering            = ["order"]		
 		verbose_name        = ('Стадия схемы')
 		verbose_name_plural = ('Стадии схемы')
 
@@ -140,7 +143,7 @@ class Scheme_step(models.Model):
 class Step_subst(models.Model):
 	#первичный ключ, только для возможности django создать ключ
 	id_stepsubst = models.AutoField (primary_key = True, verbose_name='ИД')
-	step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE, related_name='+')
+	step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE)
 	#subst       = models.ForeignKey(Reaction_subst, null = False, on_delete=models.CASCADE, related_name='+')
 	substance    = models.IntegerField()
 	position     =	models.IntegerField(verbose_name='Позиция вещества в стадии')
