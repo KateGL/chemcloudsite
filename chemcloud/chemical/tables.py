@@ -7,7 +7,7 @@ from django.utils.safestring import mark_safe
 from chemical.models import Atom, Substance, Reaction,SubstanceConsist
 
 class AtomTable(tables.Table):
-    detail_link = tables.LinkColumn('atom_detail', args=[A('pk')], orderable=False,  verbose_name='Ссылка', empty_values=())
+    detail_link = tables.LinkColumn('atom_detail', orderable=False,  verbose_name='Ссылка', empty_values=())
 
     def render_detail_link(self,record):
         return mark_safe( ''' <a href="/chemical/atom/%d/detail">Детали</a>'''%record.pk)
@@ -19,7 +19,7 @@ class AtomTable(tables.Table):
         sequence = ("atom_number", "symbol", "name", "name_latin", "atom_mass")
 
 class SubstanceTable(tables.Table):
-    detail_link = tables.LinkColumn('substance_detail', args=[A('pk')], orderable=False,  verbose_name='Ссылка', empty_values=())
+    detail_link = tables.LinkColumn('substance_detail', orderable=False,  verbose_name='Ссылка', empty_values=())
 
     def render_formula_brutto_formatted(self,record):
         return mark_safe(record.formula_brutto_formatted)
