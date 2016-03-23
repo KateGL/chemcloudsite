@@ -1,37 +1,25 @@
 {% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
-
+{% load render_table from django_tables2 %}
+d
 {% block body_block %}
 	<div class="page-header">
 		<h1>Механизмы</h1>
 	</div>
-		<div class="page-content">
-			 {% if id_reaction %} 
-			<a class="btn btn-new" href="{% url 'scheme_new' id_reaction %}">Создать механизм</a> <br>
-			{% endif %}
-			{% if schemes %}
-				<table>
-					<tr>
-						<td>Название</td>
-						<td>Число стадий</td>
-						<td>Вероятный</td>
-						<td>Дата последних изменений</td>
-						<td></td>
-					</tr>
-					{% for scheme in schemes %}
-					<tr>
-						<td>{{ scheme.name }}</td>
-						<td>TODO</td>
-						<td><input type="checkbox" {% if scheme.is_possible %}checked {% endif %} readonly></td>
-						<td>{{scheme.updated_date}}<!--strftime("%Y-%m-%d %H:%M:%S") --></td>
-						<td><a href="{% url 'scheme_detail' id_reaction scheme.id_scheme %}"> Детали</a> </td> 
-					</tr>
-					{% endfor%}
-				</table>
-			{% else %}
-				<strong> Пока не создано ни одного механизма </strong>
-			{% endif %}
+	
+	<div class="page-content">
+		{% if id_reaction %} 
+			<div class="panel panel-default">
+				<div class="panel-body"> 
+					<a class = "btn btn-new" href = "{% url 'scheme_new' id_reaction %}" role = "button">Создать механизм</a> <!-- TODO: убрала из кнопки pull-left. Без него кнопка становится нормальной ссылкой, хоть и сбивается выравнивание -->
+				</div>
+			</div>
 
-            </div>
+				{% render_table schemes %}
+		{% endif %}
+	</div>
 {% endblock %}
+       			
+
+
