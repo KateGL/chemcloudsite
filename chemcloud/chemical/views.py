@@ -14,7 +14,8 @@ from django.contrib.auth import logout
 from django_tables2 import RequestConfig
 
 from chemical.models import Atom, Substance, Experiment
-from chemical.tables import AtomTable, SubstanceTable, ReactionTable,ConsistTable, MechanizmTable
+from chemical.tables import AtomTable, SubstanceTable, ReactionTable
+from chemical.tables import ConsistTable, MechanizmTable, ReactionSubstTable
 
 
 from django.shortcuts import redirect
@@ -198,7 +199,37 @@ def scheme_new(request, reaction_id):
 #Вещества реакции
 @login_required
 def react_substance_all(request, id_reaction):
-    return render(request, 'chemical/react_substance_all.html', {"id_reaction": id_reaction})
+    try:
+        react = Reaction.objects.get(pk=id_reaction)
+    except Reaction.DoesNotExist:
+        raise Http404("Reaction does not exist")
+
+    reaction_subst_table = ReactionSubstTable(react.substances.all())
+    RequestConfig(request, paginate={"per_page": 25}).configure(reaction_subst_table)
+    context_dict = {'substance': reaction_subst_table, 'id_reaction': id_reaction}
+    return render(request, 'chemical/react_substance_all.html', context_dict)
+
+
+@login_required
+def react_substance_new(request, id_reaction):
+    context_dict = {'id_reaction': id_reaction}
+    return render(request, 'chemical/react_substance_new.html', context_dict)
+
+
+@login_required
+def react_substance_detail(request, id_reaction, id_react_substance):
+    try:
+        react = Reaction.objects.get(pk=id_reaction)
+    except Reaction.DoesNotExist:
+        raise Http404("Reaction does not exist")
+
+    try:
+        substance = react.substances.get(pk=id_react_substance)
+    except Substance.DoesNotExist:
+        raise Http404("Substance does not exist")
+
+    context = {'id_reaction': id_reaction, "substance": substance}
+    return render(request, 'chemical/react_substance_detail.html', context)
 
 # Эксперименты
 @login_required

@@ -7,6 +7,7 @@ from django.utils.safestring import mark_safe
 
 from chemical.models import Atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme
 from chemical.models import Scheme_step
+from chemical.models import ReactionSubst
 
 class AtomTable(tables.Table):
     detail_link = tables.LinkColumn('atom_detail', orderable=False,  verbose_name='Ссылка', empty_values=())
@@ -96,5 +97,21 @@ class MechanizmTable(tables.Table):
 		attrs = {"class": "paleblue"}
 		fields =("name", "description", "updated_date", "is_possible")
 		sequence = ("name", "description", "steps_count", "is_possible", "updated_date")
+
+#Вещества реакции
+
+
+class ReactionSubstTable(tables.Table):
+    detail_link = tables.LinkColumn('reaction_subst_detail', orderable=False, verbose_name='Ссылка', empty_values=())
+    name = tables.Column(accessor='substance.name')
+
+    def render_detail_link(self, record):
+        return mark_safe( ''' <a href="/chemical/reaction/%d/substance/%d/detail">Детали</a>'''% (record.reaction.id_reaction, record.pk))
+
+    class Meta:
+        model = ReactionSubst
+        attrs = {"class": "paleblue"}
+        fields = ("alias", "brutto_formula_short", "name", "detail_link")
+        sequence = ("alias", "brutto_formula_short", "name", "detail_link")
 
 #Эксперименты

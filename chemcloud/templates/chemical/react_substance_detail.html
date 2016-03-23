@@ -1,0 +1,51 @@
+{% extends 'chemical/base_reaction.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+		   <div class="page-header">
+
+    <h1> <a href="{% url 'react_substance_all' id_reaction %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Детали вещества реакции (read only)</h1>
+           
+            
+    </div>
+<div class="page-content">
+        
+            
+   <div class="table">
+  <table class="table">
+    <tbody>
+     <tr>
+        <td class="text-right">Название</td>
+        <td class="text-left">{{  substance.substance.name }}</td>
+      </tr>
+      <tr>
+        <td class="pull-right">Брутто-формула</td>
+        <td class="text-left">{{  substance.substance.formula_brutto_formatted | safe}}</td>
+      </tr>
+      
+      <tr>
+      <td class="pull-right">Псеводним</td>
+      <td class="text-left">{{  substance.alias }}</td>
+      </tr>
+      
+      <tr>
+        <td class="pull-right">Краткая брутто-формула</td>
+        <td class="text-left">{{  substance.brutto_formula_short }}</td>
+      </tr>
+      
+      <tr>
+        <td class="pull-right">Примечание</td>
+        <td class="text-left">{{  substance.note }}</td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>          
+
+            </div>
+
+            </div>
+{% endblock %}

@@ -37,6 +37,8 @@ class SubstanceForm(forms.ModelForm):
        model = Substance
        fields = ('name', 'charge', 'is_radical', 'formula_brutto', 'note')
 
+#Вещества реакции
+
 #Эксперименты
 class ExperimentForm(forms.ModelForm):
     class Meta:

@@ -159,12 +159,13 @@ class Step_subst(models.Model):
 #Вещества реакции
 class ReactionSubst(models.Model):
     reaction = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='substances' )
-    substance = models.ForeignKey(Substance, on_delete=models.PROTECT, related_name='+' )
+    substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
     alias = models.CharField (max_length = 250, verbose_name='Псевдоним', null = False)
     brutto_formula_short = models.CharField (max_length = 250, verbose_name='Краткая брутто-формула')
-    note = models.TextField(blank = True,  verbose_name='П римечание')
-    def __init__(self):
-        super(ReactionSubst, self).__init__()
+    note = models.TextField(blank = True,  verbose_name='Примечание')
+    class Meta:
+      verbose_name = ('Вещество реакции')
+      verbose_name_plural = ('Вещества реакции')
 
 
 #Эксперименты

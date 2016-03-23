@@ -5,6 +5,7 @@ from django.contrib import admin
 
 from chemical.models import Atom, Substance, Reaction, Reaction_scheme, Experiment
 from chemical.models import Scheme_step, Step_subst
+from chemical.models import ReactionSubst
 from chemical.models import UserReaction
 from chemical.forms import BruttoFormulaField
 
@@ -42,6 +43,9 @@ admin.site.register( Reaction_scheme)
 admin.site.register( Scheme_step)
 
 admin.site.register( Step_subst)
+
+#Вещества реакции
+admin.site.register( ReactionSubst)
 
 #  Эксперименты
 admin.site.register(Experiment)#, ReactionSchemeAdmin)
