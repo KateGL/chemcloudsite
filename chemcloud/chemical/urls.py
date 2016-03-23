@@ -46,4 +46,7 @@ urlpatterns = [
 
 #Статистика
    url(r'^reaction/(?P<id_reaction>[0-9]+)/statistic/$', views.statistic, name='statistic'),
+
+#Журнал изменений
+   url(r'^reaction/(?P<id_reaction>[0-9]+)/log/$', views.log, name='log'),
 ]

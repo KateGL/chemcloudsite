@@ -275,3 +275,10 @@ def statistic(request, id_reaction):
 
 
 
+#Журнал изменений
+@login_required
+def log(request, id_reaction):
+    return render(request, 'chemical/log.html', {"id_reaction": id_reaction})
+
+
+
