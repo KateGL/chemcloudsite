@@ -5,7 +5,7 @@ from django_tables2.utils import A  # alias for Accessor
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
-from chemical.models import Atom, Substance, Reaction, SubstanceConsist, Reaction_scheme
+from chemical.models import Atom, Substance, Reaction, SubstanceConsist, Reaction_scheme,Experiment
 from chemical.models import Scheme_step, Step_subst
 
 class AtomTable(tables.Table):
@@ -78,7 +78,7 @@ class MechanizmTable(tables.Table):
 		#TODO число стадий подсчитать и вывести
 		#получаем число стадий схемы по scheme
 		steps_count = Scheme_step.objects.filter(scheme = record).count()
-		return mark_safe('%d' %steps_count) 
+		return mark_safe('%d' %steps_count)
 
 	class Meta:
 		model = Reaction_scheme
@@ -113,3 +113,26 @@ class StepsTable(tables.Table):
 
 
 #Эксперименты
+class ExperimentTable(tables.Table):
+	detail_link = tables.LinkColumn('experiment_detail', orderable=False,  verbose_name='', empty_values=())
+	name = tables.LinkColumn('experiment_edit', orderable=True)
+	#для колонки с пустым значением render вызывается, если стоит empty_values=()) 	
+	#steps_count = tables.Column(verbose_name='Число стадий', orderable=False, empty_values=())
+
+	def render_detail_link(self,record):
+		return mark_safe( ''' <a href="/chemical/experiment/%d/detail">Детали</a>'''% (record.pk))
+
+	def render_name(self,record):
+		return mark_safe( ''' <a href="/chemical/reaction/%d/experiment/%d/edit">%s</a>'''% (record.reaction.id_reaction, record.pk, record.name))
+
+	#def render_steps_count(self,record):
+	#	#TODO число стадий подсчитать и вывести
+	#	#получаем число стадий схемы по scheme
+	#	steps_count = Scheme_step.objects.filter(scheme = record).count()
+	#	return mark_safe('%d' %steps_count)
+
+	class Meta:
+		model = Experiment
+		attrs = {"class": "paleblue"}
+		fields =("name", "description", "updated_date", "is_favorite")
+		sequence = ("name", "description",  "is_favorite", "updated_date")
