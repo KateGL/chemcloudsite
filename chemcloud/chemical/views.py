@@ -14,7 +14,7 @@ from django.contrib.auth import logout
 from django_tables2 import RequestConfig
 
 from chemical.models import Atom, Substance, SubstanceConsist, Experiment
-from chemical.tables import AtomTable, SubstanceTable, ReactionTable,ConsistTable, MechanizmTable
+from chemical.tables import AtomTable, SubstanceTable, ReactionTable,ConsistTable, MechanizmTable,ExperimentTable
 from chemical.tables import StepsTable
 
 from django.shortcuts import redirect
@@ -130,7 +130,7 @@ def scheme_all(request, reaction_id):
 	#scheme_list = reac_temp.reaction_scheme_set.all()
 	scheme_list = reac_temp.schemes.all()
 
-	#формируем таблицу на основе полученного списка механизмов   
+	#формируем таблицу на основе полученного списка механизмов
 	mech_table = MechanizmTable(scheme_list)
 	
 	#помещаем таблицу со списком механизмов, а также reaction_id в словарь контекста, который будет передан шаблону	
@@ -159,7 +159,7 @@ def scheme_edit(request, reaction_id, scheme_id):
 		#получаем объект реакции по reaction_id
 		reac_temp = Reaction.objects.get(pk=reaction_id)
 	except Reaction.DoesNotExist:
-		raise Http404("Reaction does not exist")	    
+		raise Http404("Reaction does not exist")
 	try:
 		#получаем объект схемы по scheme_id		
 		scheme = Reaction_scheme.objects.get(pk=scheme_id)
@@ -228,11 +228,17 @@ def experiment_all(request, reaction_id):
    try:
       reac_temp = Reaction.objects.get(pk=reaction_id)
    except Reaction.DoesNotExist:
-      raise Http404("Reaction does not exist")	
-   experiment_list = Experiment.objects.filter(reaction = reac_temp).order_by('id_experiment')
-   context_dict = {'experiments': experiment_list, 'id_reaction' : reaction_id}
+      raise Http404("Reaction does not exist")
+   experiment_list = reac_temp.experiments.all()
+   #формируем таблицу на основе полученного списка механизмов
+   exp_table = ExperimentTable(experiment_list)
+   #помещаем таблицу со списком механизмов, а также reaction_id в словарь контекста, который будет передан шаблону
+   context_dict = {'experiments': exp_table, 'id_reaction' : reaction_id}
+
    #формируем ответ для клиента по шаблону и отправляем обратно
    return render(request, 'chemical/experiment_all.html', context_dict )
+
+
 
 @login_required
 #def experiment_detail(request, reaction_id, id_experiment):
