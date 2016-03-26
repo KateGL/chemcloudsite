@@ -91,10 +91,14 @@ class MechanizmTable(tables.Table):
 class StepsTable(tables.Table):
 	detail_link = tables.LinkColumn('step_detail', orderable=False,  verbose_name='', empty_values=())
 	step = tables.Column(verbose_name='Стадия', orderable=False, empty_values=())
-	order_arrows = tables.Column(verbose_name='', orderable=False, empty_values=())
+	order_arrows = tables.LinkColumn('change_step_order', orderable=False,  verbose_name='Переместить', empty_values=())
+
 # &#9660 &#9650
 	def render_detail_link(self,record):
-		return mark_safe( ''' <a href="/chemical/step/%d/detail">Детали</a>'''% (record.pk))
+		return mark_safe( ''' <a href="/chemical/step/%d/detail">Детали</a> '''% (record.pk))
+
+	def render_order_arrows(self,record):
+		return mark_safe( ''' <button id="up" class="btn btn-defualt" type="button">&#9650 %d</button></br><button id="up" class="btn btn-defualt" type="button">&#9660 %d</button>'''% (record.pk, record.pk+1))
 
 	def render_step(self,record):
 		#TODO число стадий подсчитать и вывести
