@@ -121,10 +121,10 @@ def reaction_new(request):
 
 
 @login_required
-def scheme_all(request, reaction_id):
+def scheme_all(request, id_reaction):
 	try:
-		#получаем объект реакции по reaction_id
-		reac_temp = Reaction.objects.get(pk=reaction_id)
+		#получаем объект реакции по id_reaction
+		reac_temp = Reaction.objects.get(pk=id_reaction)
 	except Reaction.DoesNotExist:
 		raise Http404("Reaction does not exist")	
 	#получаем список всех схем реакции
@@ -137,35 +137,35 @@ def scheme_all(request, reaction_id):
 	#формируем таблицу на основе полученного списка механизмов
 	mech_table = MechanizmTable(scheme_list)
 	
-	#помещаем таблицу со списком механизмов, а также reaction_id в словарь контекста, который будет передан шаблону	
-	context_dict = {'schemes': mech_table, 'id_reaction' : reaction_id}
+	#помещаем таблицу со списком механизмов, а также id_reaction в словарь контекста, который будет передан шаблону	
+	context_dict = {'schemes': mech_table, 'id_reaction' : id_reaction}
 	#формируем ответ для клиента по шаблону и отправляем обратно
 	return render(request, 'chemical/scheme_all.html', context_dict)
 
 
 @login_required
-def scheme_detail(request, scheme_id):
+def scheme_detail(request, id_scheme):
 	#try:
-	#	#получаем объект реакции по reaction_id
-	#	reac_temp = Reaction.objects.get(pk=reaction_id)
+	#	#получаем объект реакции по id_reaction
+	#	reac_temp = Reaction.objects.get(pk=id_reaction)
 	#except Reaction.DoesNotExist:
 	#	raise Http404("Reaction does not exist")		
-	#получаем объект схемы по scheme_id	
-	scheme_tmp = Reaction_scheme.objects.get(pk=scheme_id)
+	#получаем объект схемы по id_scheme	
+	scheme_tmp = Reaction_scheme.objects.get(pk=id_scheme)
 	reac_id = scheme_tmp.reaction.id_reaction
 	context = {'scheme': scheme_tmp, 'id_reaction' : reac_id}
 	return render(request, 'chemical/scheme_detail.html', context )
 
 @login_required
-def scheme_edit(request, reaction_id, scheme_id):
+def scheme_edit(request, id_reaction, id_scheme):
 	try:
-		#получаем объект реакции по reaction_id
-		reac_temp = Reaction.objects.get(pk=reaction_id)
+		#получаем объект реакции по id_reaction
+		reac_temp = Reaction.objects.get(pk=id_reaction)
 	except Reaction.DoesNotExist:
 		raise Http404("Reaction does not exist")
 	try:
-		#получаем объект схемы по scheme_id		
-		scheme = Reaction_scheme.objects.get(pk=scheme_id)
+		#получаем объект схемы по id_scheme		
+		scheme = Reaction_scheme.objects.get(pk=id_scheme)
 	except Reaction_scheme.DoesNotExist:
 		raise Http404("Reaction scheme does not exist")
 	reac_id = scheme.reaction.id_reaction	
@@ -176,25 +176,25 @@ def scheme_edit(request, reaction_id, scheme_id):
 	return render(request, 'chemical/scheme_edit.html', context)
 
 @login_required
-def step_detail(request, reaction_id, scheme_id, step_id):
+def step_detail(request, id_reaction, id_scheme, step_id):
 	try:
-		#получаем объект реакции по reaction_id
-		reac_temp = Reaction.objects.get(pk=reaction_id)
+		#получаем объект реакции по id_reaction
+		reac_temp = Reaction.objects.get(pk=id_reaction)
 	except Reaction.DoesNotExist:
 		raise Http404("Reaction does not exist")		
-	#получаем объект схемы по scheme_id	
-	scheme_tmp = Reaction_scheme.objects.get(pk=scheme_id)
-	context = {'scheme': scheme_tmp, 'id_reaction' : reaction_id}
+	#получаем объект схемы по id_scheme	
+	scheme_tmp = Reaction_scheme.objects.get(pk=id_scheme)
+	context = {'scheme': scheme_tmp, 'id_reaction' : id_reaction}
 	return render(request, 'chemical/step_detail.html', context )
 
 #      c = RequestContext(request.POST, {})
 @login_required
-def scheme_new(request, reaction_id):
+def scheme_new(request, id_reaction):
 	if request.method == "POST":
  		form = ReacSchemeForm(request.POST)
 		if form.is_valid():
 			try:
-				reaction = Reaction.objects.get(pk=reaction_id)
+				reaction = Reaction.objects.get(pk=id_reaction)
 			except Reaction.DoesNotExist:
 				raise Http404("Reaction does not exist")			
 			scheme = form.save(commit=False)			
@@ -208,10 +208,10 @@ def scheme_new(request, reaction_id):
 			scheme.created_by = request.user
 			scheme.save()
 			#return HttpResponseRedirect("/")	
-			return redirect('chemical.views.scheme_detail', reaction_id, scheme.pk)
+			return redirect('chemical.views.scheme_detail', scheme.pk)
 	else:
 		form = ReacSchemeForm()
-	context_dict = {'form': form, 'id_reaction' : reaction_id}
+	context_dict = {'form': form, 'id_reaction' : id_reaction}
 	return render(request, 'chemical/scheme_new.html', context_dict)
 	#return render_to_response('chemkinoptima/scheme_new.html', {'form': form }, context_instance = RequestContext(request ) ) #{'form': form }, context_instance =
 
@@ -266,20 +266,20 @@ def react_substance_detail(request, id_reaction, id_react_substance):
 
 # Эксперименты
 @login_required
-def experiment_all(request, reaction_id):
+def experiment_all(request, id_reaction):
    #получаем список всех экспериментов,
 	#сортируем по идентификатору схемы.
 	#для извлечения первых пяти записей - [:5]
 	#помещаем список в словарь контекста, который будет передан механизму шаблонов	
    try:
-      reac_temp = Reaction.objects.get(pk=reaction_id)
+      reac_temp = Reaction.objects.get(pk=id_reaction)
    except Reaction.DoesNotExist:
       raise Http404("Reaction does not exist")
    experiment_list = reac_temp.experiments.all()
    #формируем таблицу на основе полученного списка механизмов
    exp_table = ExperimentTable(experiment_list)
-   #помещаем таблицу со списком механизмов, а также reaction_id в словарь контекста, который будет передан шаблону
-   context_dict = {'experiments': exp_table, 'id_reaction' : reaction_id}
+   #помещаем таблицу со списком механизмов, а также id_reaction в словарь контекста, который будет передан шаблону
+   context_dict = {'experiments': exp_table, 'id_reaction' : id_reaction}
 
    #формируем ответ для клиента по шаблону и отправляем обратно
    return render(request, 'chemical/experiment_all.html', context_dict )
@@ -294,14 +294,14 @@ def experiment_detail(request, experiment_id):
     return render(request, 'chemical/experiment_detail.html', context )
 
 @login_required
-def experiment_edit(request, reaction_id, scheme_id):
+def experiment_edit(request, id_reaction, id_scheme):
 	try:
-		#получаем объект реакции по reaction_id
-		reac_temp = Reaction.objects.get(pk=reaction_id)
+		#получаем объект реакции по id_reaction
+		reac_temp = Reaction.objects.get(pk=id_reaction)
 	except Reaction.DoesNotExist:
 		raise Http404("Reaction does not exist")
 	try:
-		#получаем объект схемы по scheme_id		
+		#получаем объект схемы по id_scheme		
 		experiment = Experiment.objects.get(pk=experiment_id)
 	except Experiment.DoesNotExist:
 		raise Http404("Reaction scheme does not exist")
@@ -311,12 +311,12 @@ def experiment_edit(request, reaction_id, scheme_id):
 
 
 @login_required
-def experiment_new(request, reaction_id):
+def experiment_new(request, id_reaction):
 	if request.method == "POST":
  		form = ExperimentForm(request.POST)
 		if form.is_valid():
 			try:
-				reaction = Reaction.objects.get(pk=reaction_id)
+				reaction = Reaction.objects.get(pk=id_reaction)
 			except Reaction.DoesNotExist:
 				raise Http404("Reaction does not exist")			
 			experiment = form.save(commit=False)			
@@ -328,24 +328,24 @@ def experiment_new(request, reaction_id):
 			experiment.created_by = request.user
 			experiment.save()
 			
-			return redirect('experiment_detail', reaction_id, experiment.pk)
-		context_dict = {'form': form, 'id_reaction' : reaction_id}
+			return redirect('experiment_detail', id_reaction, experiment.pk)
+		context_dict = {'form': form, 'id_reaction' : id_reaction}
 		return render(request,'chemical/experiment_new.html', context_dict)
 
-			#return redirect('chemical/experiment_all.html', reaction_id, experiment.pk)
+			#return redirect('chemical/experiment_all.html', id_reaction, experiment.pk)
 	else:
 		form = ExperimentForm()
-	context_dict = {'form': form, 'id_reaction' : reaction_id}
+	context_dict = {'form': form, 'id_reaction' : id_reaction}
 	return render(request, 'chemical/experiment_new.html', context_dict)
 
 
 @login_required
-def experiment_edit(request, reaction_id, id_experiment):
+def experiment_edit(request, id_reaction, id_experiment):
    # try:
     #    atom = Atom.objects.get(pk=atom_number)
    # except Atom.DoesNotExist:
     #    raise Http404("Atom does not exist")
-    return render(request, 'chemical/experiment_edit.html', {"id_reaction": reaction_id})
+    return render(request, 'chemical/experiment_edit.html', {"id_reaction": id_reaction})
 
 
 #Задачи

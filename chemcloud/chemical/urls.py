@@ -23,11 +23,11 @@ urlpatterns = [
     url(r'^reaction/new/$', views.reaction_new, name='reaction_new'),
 
 #Механизмы реакции
-    url(r'^reaction/(?P<reaction_id>[0-9]+)/scheme/all/$', views.scheme_all, name='scheme_all'),
-    #url(r'^reaction/(?P<reaction_id>[0-9]+)/scheme/(?P<scheme_id>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
-    url(r'^scheme/(?P<scheme_id>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
-    url(r'^reaction/(?P<reaction_id>[0-9]+)/scheme/new/$', views.scheme_new, name='scheme_new'),
-    url(r'^reaction/(?P<reaction_id>[0-9]+)/scheme/(?P<scheme_id>[0-9]+)/edit/$', views.scheme_edit, name='scheme_edit'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/all/$', views.scheme_all, name='scheme_all'),
+    #url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<scheme_id>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
+    url(r'^scheme/(?P<id_scheme>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/new/$', views.scheme_new, name='scheme_new'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/$', views.scheme_edit, name='scheme_edit'),
     url(r'^step(?P<step_id>[0-9]+)/detail/$', views.step_detail, name='step_detail'),
 
 #Вещества реакции
@@ -36,11 +36,11 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/detail/$', views.react_substance_detail, name='react_substance_detail'),
 
 #Эксперименты
-    url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),
     url(r'^experiment/(?P<experiment_id>[0-9]+)/detail/$', views.experiment_detail, name='experiment_detail'),
 
-    url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),
-    url(r'^reaction/(?P<reaction_id>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/edit/$', views.experiment_edit, name='experiment_edit'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/edit/$', views.experiment_edit, name='experiment_edit'),
 
 #Задачи
     url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/all/$', views.problem_all, name='problem_all'),

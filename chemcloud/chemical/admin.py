@@ -7,7 +7,7 @@ from chemical.models import Atom, Substance, Reaction, Reaction_scheme, Experime
 from chemical.models import Scheme_step, Step_subst
 from chemical.models import ReactionSubst
 from chemical.models import UserReaction
-from chemical.forms import BruttoFormulaField
+
 
 class AtomAdmin(admin.ModelAdmin):
   fields = ['atom_number', 'symbol','atom_mass',  'name', 'name_latin']
