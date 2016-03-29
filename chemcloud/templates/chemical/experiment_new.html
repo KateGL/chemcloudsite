@@ -8,9 +8,14 @@
 		<h1>Добавление нового эксперимента</h1>
 	</div>
 	<div class="page-content">
-		<form method="POST" class="experiment-form">{% csrf_token %}
-			{{ form.as_p }}
-		<button type="submit" class="save btn btn-default">Сохранить</button>
-        </form >
+
+        
+        <form method="POST" class="form" action="{% url 'experiment_new' id_reaction %}">  
+            
+            {% include "chemical/form_body_new.html" %} 
+            
+            
+</form >
+  
    </div>
 {% endblock %}

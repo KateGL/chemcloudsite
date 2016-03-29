@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from .models import Reaction_scheme, Substance, Reaction, Experiment, ReactionSubst
+from .chemical_models import Reaction_scheme, Substance, Reaction, Experiment, ReactionSubst
 import re
 from .utils import check_blocks
 

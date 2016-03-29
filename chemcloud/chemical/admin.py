@@ -3,10 +3,10 @@ from django.contrib import admin
 
 # Register your models here.
 
-from chemical.models import Atom, Substance, Reaction, Reaction_scheme, Experiment
-from chemical.models import Scheme_step, Step_subst
-from chemical.models import ReactionSubst
-from chemical.models import UserReaction
+from chemical.chemical_models import Atom, Substance, Reaction, Reaction_scheme, Experiment
+from chemical.chemical_models import Scheme_step, Step_subst
+from chemical.chemical_models import ReactionSubst
+from chemical.chemical_models import UserReaction
 
 
 class AtomAdmin(admin.ModelAdmin):

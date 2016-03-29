@@ -1,0 +1,24 @@
+{% extends 'chemical/base_reaction.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+		<h1>Редактирование эксперимента {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %}</h1>
+	</div>
+		<div class="page-content">
+			{% if experiment %}
+				<table>
+					<tr>
+						<td>Название:</td>
+						<td>{{ experiment.name }}</td>
+					</tr>					
+					
+				</table>
+			{% else %}
+				<strong> Не удалось получить детали эксперимента </strong>
+			{% endif %}
+
+            </div>
+{% endblock %}
