@@ -4,6 +4,8 @@ import django_tables2 as tables
 from django_tables2.utils import A  # alias for Accessor
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
+from table import Table
+from table.columns import Column, LinkColumn
 
 from chemical.models import Atom, Substance, Reaction, SubstanceConsist, Reaction_scheme,Experiment
 from chemical.models import Scheme_step, Step_subst
@@ -69,7 +71,7 @@ class MechanizmTable(tables.Table):
 
 	def render_detail_link(self,record):
 		#return mark_safe( ''' <a href="/chemical/reaction/%d/scheme/%d/detail">Детали</a>'''% (record.reaction.id_reaction, record.pk))
-		return mark_safe( ''' <a href="/chemical/scheme/%d/detail">Детали</a>'''% (record.pk))
+		return mark_safe( ''' <a href="/chemical/reaction/%d/scheme/%d/detail">Детали</a>'''% (record.reaction.id_reaction, record.pk))
 
 	def render_name(self,record):
 		return mark_safe( ''' <a href="/chemical/reaction/%d/scheme/%d/edit">%s</a>'''% (record.reaction.id_reaction, record.pk, record.name))
@@ -88,6 +90,7 @@ class MechanizmTable(tables.Table):
 		sequence = ("name", "description", "steps_count", "is_possible", "updated_date")
 
 #Стадии механизма
+#tables.Table
 class StepsTable(tables.Table):
 	detail_link = tables.LinkColumn('step_detail', orderable=False,  verbose_name='', empty_values=())
 	step = tables.Column(verbose_name='Стадия', orderable=False, empty_values=())
@@ -98,7 +101,7 @@ class StepsTable(tables.Table):
 		return mark_safe( ''' <a href="/chemical/step/%d/detail">Детали</a> '''% (record.pk))
 
 	def render_order_arrows(self,record):
-		return mark_safe( ''' <button id="up" class="btn btn-defualt" type="button">&#9650 %d</button></br><button id="up" class="btn btn-defualt" type="button">&#9660 %d</button>'''% (record.pk, record.pk+1))
+		return mark_safe( ''' <button id="change_order" data-stepid="%d" data-curorder="%d" data-direction="up" class="btn btn-defualt" type="button">&#9650</button></br><button id="change_order" data-stepid="%d" data-curorder="%d" data-direction="down" class="btn btn-defualt" type="button">&#9660</button>'''% (record.pk, record.order, record.pk, record.order))
 
 	def render_step(self,record):
 		#TODO число стадий подсчитать и вывести
@@ -110,6 +113,7 @@ class StepsTable(tables.Table):
 
 	class Meta:
 		model = Scheme_step
+		ajax  = True
 		# add class="paleblue" to <table> tag
 		attrs = {"class": "paleblue"}
 		fields =("name", "order", "step", "order_arrows", "detail_link")

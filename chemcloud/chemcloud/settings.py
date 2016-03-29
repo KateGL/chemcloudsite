@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -40,6 +39,8 @@ INSTALLED_APPS = [
     'registration', # add in the registration package  django-registration-redux
     'django_tables2',
     'crispy_forms',
+    'djangojs',
+    'table',
     'chemmain', # main pages of site
     'chemical', #models and views of main chemical entyties: atom, substance, reaction, mechanism, etc
 ]

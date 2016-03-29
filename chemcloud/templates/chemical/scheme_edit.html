@@ -4,6 +4,7 @@
 {% load render_table from django_tables2 %}
 
 
+
 {% block body_block %}
 	<div class="page-header">
 		{% if scheme_name %}
@@ -14,6 +15,32 @@
 	</div>
 	
 	<div class="page-content">
-				{% render_table steps %}
+		{% if steps %}	
+			<div id="all-steps" class="table-container">
+				<table class="paleblue">
+					<thead>
+						<tr>
+							<th class="order_arrows">Переместить</th>
+							<th class="order orderable"><a href="?sort=order">№ п/п</a></th>
+							<th class="name orderable"><a href="?sort=name">Обозначение</a></th>
+							<th class="step">Стадия</th>
+							<th class="detail_link"></th>
+						</tr>
+					</thead>
+	    			<tbody>
+						{% for step in steps %}
+						<tr class="even">
+							<td><button id="change_order" class="changeorder" data-stepid="{{step.id_step}}" data-curorder="{{step.order}}" data-direction="up"  type="button" data-reacid="{{id_reaction}}" data-schemeid="{{step.scheme.id_scheme}}">&#9650</button></br>
+<button id="change_order" class="changeorder" data-stepid="{{step.id_step}}" data-curorder="{{step.order}}" data-direction="down"  type="button"  data-reacid="{{id_reaction}}" data-schemeid="{{step.scheme.id_scheme}}">&#9660</button></td>
+							<td> {{ step.order }} </td>
+							<td>{{ step.name }}</td>
+							<td> {% if step.is_revers %} &#8596 {% else %} &#8594 {% endif %} </td>
+							<td><a href="{% url 'step_detail' step.id_step %}"> Детали</a> </td> 
+						</tr>
+						{% endfor %}
+					</tbody>
+				</table>
+			</div>
+		{% endif %}
 	</div>
 {% endblock %}
