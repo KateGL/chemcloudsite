@@ -114,7 +114,7 @@ class Reaction(models.Model):
 #Схема механизма/маршрута реакции
 class Reaction_scheme (models.Model):
 	id_scheme    = models.AutoField (primary_key = True, verbose_name='ИД')
-	reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='+' )
+	reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='schemes' )
 	name         = models.CharField (max_length = 250, verbose_name='Название')
 	description  = models.TextField (blank = True, verbose_name='Описание')
 	is_possible  = models.BooleanField (verbose_name='Вероятный')
@@ -127,13 +127,14 @@ class Reaction_scheme (models.Model):
 		return self.name
 
 	class Meta:
+		ordering            = ["updated_date"]		
 		verbose_name        = ('Механизм')
 		verbose_name_plural = ('Механизмы')
 
 #Стадия схемы реакции
 class Scheme_step(models.Model):
 	id_step       = models.AutoField (primary_key = True, verbose_name='ИД')
-	scheme        = models.ForeignKey(Reaction_scheme, null = False, on_delete=models.CASCADE, related_name='+')
+	scheme        = models.ForeignKey(Reaction_scheme, null = False, on_delete=models.CASCADE, related_name='steps')
 	name          = models.CharField (max_length = 250, verbose_name='Обозначение')
 	order         = models.IntegerField (verbose_name='№ п/п')
 	is_revers     = models.BooleanField (verbose_name='Обратимая')
@@ -141,7 +142,9 @@ class Scheme_step(models.Model):
 	rate_equation = models.TextField (blank= True, verbose_name='Выражение для скорости')#todo data type
 	def __unicode__ (self):
 		return self.name
+
 	class Meta:
+		ordering            = ["order"]		
 		verbose_name        = ('Стадия схемы')
 		verbose_name_plural = ('Стадии схемы')
 
@@ -149,7 +152,7 @@ class Scheme_step(models.Model):
 class Step_subst(models.Model):
 	#первичный ключ, только для возможности django создать ключ
 	id_stepsubst = models.AutoField (primary_key = True, verbose_name='ИД')
-	step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE, related_name='+')
+	step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE)
 	#subst       = models.ForeignKey(Reaction_subst, null = False, on_delete=models.CASCADE, related_name='+')
 	substance    = models.IntegerField()
 	position     =	models.IntegerField(verbose_name='Позиция вещества в стадии')
@@ -179,16 +182,17 @@ class ReactionSubst(models.Model):
 #Эксперименты
 class Experiment (models.Model):
     id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction      = models.ForeignKey(Reaction)
+    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='experiments' )
     name         = models.CharField (max_length = 250, verbose_name='Название')
-    description  = models.TextField (null = True, verbose_name='Описание')
+    description  = models.TextField (blank = True, verbose_name='Описание')
     exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
     is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
     created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
     created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
-	#updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
-	#updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+    updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
+    updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
     class Meta:
+      ordering            = ["updated_date"]
       verbose_name = ('Эксперимент')
       verbose_name_plural = ('Эксперименты')
 

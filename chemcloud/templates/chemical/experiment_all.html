@@ -1,37 +1,22 @@
 {% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
+{% load render_table from django_tables2 %}
 
 {% block body_block %}
 	<div class="page-header">
 		<h1>Эксперименты</h1>
 	</div>
 	
-<div class="page-content">
-    {% if id_reaction %}
-        <a class="btn btn-new" href="{% url 'experiment_new' id_reaction %}">Создать эксперимент</a> <br>
-    {% endif %}
-    {% if experiments %}
-        <table>
-            <tr>
-                <td>Название</td>
-                <td>Избранное</td>
-                <td>Дата проведения</td>
-                <td>Дата последних изменений</td>
-                <td></td>
-            </tr>
-            {% for experiment in experiments %}
-                <tr>
-                    <td>{{ experiment.name }}</td>
-                    <td><input type="checkbox" {% if experiment.is_favorite %}checked {% endif %} readonly></td>
-                    <td>{{ experiment.exper_date }}<!--strftime("%Y-%m-%d %H:%M:%S") --></td>
-                    <td>{{experiment.updated_date}}<!--strftime("%Y-%m-%d %H:%M:%S") --></td>
-                    <td><a href="{% url 'experiment_detail' id_reaction experiment.id_experiment %}"> Детали</a> </td>
-                </tr>
-            {% endfor%}
-        </table>
-    {% else %}
-        <strong> Пока не создано ни одного эксперимента </strong>
-    {% endif %}
-</div>
+            <div class="page-content">
+		{% if id_reaction %}
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<a class = "btn btn-new" href = "{% url 'experiment_new' id_reaction %}" role = "button">Создать эксперимент</a> <!-- TODO: убрала из кнопки pull-left. Без него кнопка становится нормальной ссылкой, хоть и сбивается выравнивание -->
+				</div>
+			</div>
+
+				{% render_table experiments %}
+		{% endif %}
+	</div>
 {% endblock %}
