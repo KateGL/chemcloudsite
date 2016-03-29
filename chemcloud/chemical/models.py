@@ -30,6 +30,9 @@ class Substance(models.Model):
     #formula_mol = models.FileField()
     #formula_picture = models.ImageField()
 
+    def __unicode__ (self):
+        return self.name
+
     def consist_create(self):#создает состав вещества на основе брутто-формулы
         self.consist.all().delete()#clear consist
         atoms_dict = self.get_atom_dict()# ахтунг! говнокод
@@ -163,6 +166,11 @@ class ReactionSubst(models.Model):
     alias = models.CharField (max_length = 250, verbose_name='Псевдоним', null = False)
     brutto_formula_short = models.CharField (max_length = 250, verbose_name='Краткая брутто-формула')
     note = models.TextField(blank = True,  verbose_name='Примечание')
+
+
+    def __unicode__ (self):
+        return self.alias
+
     class Meta:
       verbose_name = ('Вещество реакции')
       verbose_name_plural = ('Вещества реакции')

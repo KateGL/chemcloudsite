@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from .models import Reaction_scheme, Substance, Reaction, Experiment
+from .models import Reaction_scheme, Substance, Reaction, Experiment, ReactionSubst
 import re
 from .utils import check_blocks
 
@@ -38,6 +38,10 @@ class SubstanceForm(forms.ModelForm):
        fields = ('name', 'charge', 'is_radical', 'formula_brutto', 'note')
 
 #Вещества реакции
+class ReactionSubstForm(forms.ModelForm):
+    class Meta:
+       model = ReactionSubst
+       fields = ('substance', 'alias', 'brutto_formula_short', 'note')
 
 #Эксперименты
 class ExperimentForm(forms.ModelForm):

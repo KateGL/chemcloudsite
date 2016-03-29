@@ -19,7 +19,7 @@ from chemical.tables import ConsistTable, MechanizmTable, ReactionSubstTable
 
 
 from django.shortcuts import redirect
-from chemical.forms import SubstanceForm, ReactionForm
+from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm
 #import the Reaction_scheme model
 from chemical.models import Reaction
 from chemical.models import Reaction_scheme
@@ -212,8 +212,21 @@ def react_substance_all(request, id_reaction):
 
 @login_required
 def react_substance_new(request, id_reaction):
-    context_dict = {'id_reaction': id_reaction}
-    return render(request, 'chemical/react_substance_new.html', context_dict)
+    try:
+        react = Reaction.objects.get(pk=id_reaction)
+    except Reaction.DoesNotExist:
+        raise Http404("Reaction does not exist")
+
+    form = ReactionSubstForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            react_substance = form.save(commit=False)
+            react_substance.reaction = react
+            form.save()
+            return redirect('react_substance_detail', id_reaction, react_substance.pk)
+
+    context = {'id_reaction': id_reaction, 'form': form}
+    return render(request, 'chemical/react_substance_new.html', context)
 
 
 @login_required
@@ -256,28 +269,31 @@ def experiment_detail(request, reaction_id, experiment_id):
 
 @login_required
 def experiment_new(request, reaction_id):
-    if request.method == "POST":
-        form = ExperimentForm(request.POST)
-        if form.is_valid():
-            try:
-                reaction = Reaction.objects.get(pk=reaction_id)
-            except Reaction.DoesNotExist:
-                raise Http404("Reaction does not exist")
+	if request.method == "POST":
+ 		form = ExperimentForm(request.POST)
+		if form.is_valid():
+			try:
+				reaction = Reaction.objects.get(pk=reaction_id)
+			except Reaction.DoesNotExist:
+				raise Http404("Reaction does not exist")			
+			experiment = form.save(commit=False)			
+			experiment.reaction = reaction		
+			experiment.name = form.cleaned_data['name']
+			experiment.description = form.cleaned_data['description']
+			experiment.is_favorite = form.cleaned_data['is_favorite']		
+			experiment.updated_by = request.user
+			experiment.created_by = request.user
+			experiment.save()
+			
+			return redirect('experiment_detail', reaction_id, experiment.pk)
+		context_dict = {'form': form, 'id_reaction' : reaction_id}
+		return render(request,'chemical/experiment_new.html', context_dict)
 
-                experiment = form.save(commit=False)
-                experiment.reaction = reaction
-                experiment.name = form.cleaned_data['name']
-                experiment.description = form.cleaned_data['description']
-                experiment.is_favorite = form.cleaned_data['is_favorite']
-                experiment.updated_by = request.user
-                experiment.created_by = request.user
-                experiment.save()
-
-        return redirect('chemical.views.experiment_detail', reaction_id, experiment.pk)
-    else:
-        form = ExperimentForm()
-        context_dict = {'form': form, 'id_reaction' : reaction_id}
-        return render(request, 'chemical/experiment_new.html', context_dict)
+			#return redirect('chemical/experiment_all.html', reaction_id, experiment.pk)
+	else:
+		form = ExperimentForm()
+	context_dict = {'form': form, 'id_reaction' : reaction_id}
+	return render(request, 'chemical/experiment_new.html', context_dict)
 
 @login_required
 def experiment_edit(request, reaction_id, id_experiment):
