@@ -170,7 +170,6 @@ def change_step_order(request, id_reaction, id_scheme):
 	#todo проверки на соответствие шага схемы схеме и реакции
 	new_order = -1
 	cur_order = int(current_order)
-	res = ';' + str(steps_count)
 	if step_id:
 		step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
 		step = step_dict['step']
@@ -183,7 +182,6 @@ def change_step_order(request, id_reaction, id_scheme):
 				step_up.order = cur_order
 				step.save()
 				step_up.save()
-				res = res + ';' + step.name +'=' + str(step.order)+';' + step_up.name +'='+str(step_up.order)
 			if direction == 'down' and cur_order<steps_count:            
 				new_order = cur_order + 1
 				step_down_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
@@ -192,13 +190,12 @@ def change_step_order(request, id_reaction, id_scheme):
 				step_down.order = cur_order
 				step.save()	
 				step_down.save()
-				res = res + ';' + step.name+ '=' + str(step.order)+';' +step_down.name + '='+str(step_down.order)
 	#получаем список стадий схемы		
 	scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
 	steps = scheme_dict['scheme'].steps.all()
 
 #    steps_table = StepsTable(steps)
-	context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name+res, 'is_owner': scheme_dict['is_owner']}
+	context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
 	return render(request, 'chemical/scheme_edit.html', context)
 
 #Вещества реакции

@@ -1,6 +1,6 @@
 $(document).ready(function(){
 $('.changeorder').click(function(){
-	console.log('click');	
+/*	console.log('click');	*/
 	var stepid   = $(this).attr("data-stepid");
 	var curorder = $(this).attr("data-curorder");
 	var direct   = $(this).attr("data-direction");
