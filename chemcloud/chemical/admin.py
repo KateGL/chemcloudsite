@@ -3,9 +3,11 @@ from django.contrib import admin
 
 # Register your models here.
 
-from chemical.models import Atom, Substance, Reaction, Reaction_scheme, Experiment
-from chemical.models import Scheme_step, Step_subst
-from chemical.forms import BruttoFormulaField
+from chemical.chemical_models import Atom, Substance, Reaction, Reaction_scheme, Experiment
+from chemical.chemical_models import Scheme_step, Step_subst
+from chemical.chemical_models import ReactionSubst
+from chemical.chemical_models import UserReaction
+
 
 class AtomAdmin(admin.ModelAdmin):
   fields = ['atom_number', 'symbol','atom_mass',  'name', 'name_latin']
@@ -22,10 +24,10 @@ class SubstanceAdmin(admin.ModelAdmin):
 admin.site.register(Substance, SubstanceAdmin)
 
 class ReactionAdmin(admin.ModelAdmin):
-  fields = ['name',  'is_favorite', #'is_notstationary',
- 'is_isothermal','description' ]
-  list_display = ('id_reaction',  'name', 'is_favorite', #'is_notstationary',
- 'is_isothermal','description' )
+  fields = ['name',  'is_favorite', 'is_notstationary',
+ 'is_isothermal','description', 'created_by' ]
+  list_display = ('id_reaction',  'name', 'is_favorite', 'is_notstationary',
+ 'is_isothermal','description', 'created_by' )
 
 admin.site.register(Reaction, ReactionAdmin)
 
@@ -42,6 +44,12 @@ admin.site.register( Scheme_step)
 
 admin.site.register( Step_subst)
 
+#Вещества реакции
+admin.site.register( ReactionSubst)
+
 #  Эксперименты
 admin.site.register(Experiment)#, ReactionSchemeAdmin)
 
+
+#Права пользователя
+admin.site.register(UserReaction)

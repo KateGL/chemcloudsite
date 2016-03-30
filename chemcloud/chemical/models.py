@@ -1,177 +1,146 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from django.utils import timezone
-
 from django.db import models
+from django.http import HttpResponseRedirect, HttpResponse, Http404
+from django.http import HttpResponseForbidden
+from django.core.exceptions import PermissionDenied
 
-# Create your models here.
+from annoying.fields import AutoOneToOneField
+from django.contrib.auth.models import User
+
+from chemical.chemical_models import Atom, Substance, Reaction, UserReaction
+from chemical.chemical_models import ReactionSubst, Experiment, Reaction_scheme
+from chemical.chemical_models import Scheme_step
 
 
-# Атом
-class Atom(models.Model):
-    atom_number = models.IntegerField(primary_key = True, verbose_name='Атомный номер')
-    symbol = models.CharField(max_length=3, unique=True, verbose_name='Обозначение')
-    atom_mass = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Атомная масса')
-    name = models.CharField(max_length=100, unique=True, verbose_name='Название (рус)')
-    name_latin = models.CharField(max_length=100, unique=True, verbose_name='Название (лат)')
+
+
+#Объект для доступа к химии
+class Chemistry(models.Model):
+    user = AutoOneToOneField(User, primary_key=True, null = False,on_delete=models.CASCADE)
+
+    def substance_all(self):
+        return Substance.objects.all()
+
+    def substance_get(self, id_substance):
+        try:
+            subst = Substance.objects.get(pk=id_substance)
+        except Substance.DoesNotExist:
+            raise Http404("Substance does not exist")
+        return subst
+
+    def atom_all(self):
+        return Atom.objects.all()
+
+
+    def atom_get(self, atom_number):
+        try:
+            atom = Atom.objects.get(pk=atom_number)
+        except Atom.DoesNotExist:
+            raise Http404("Atom does not exist")
+        return atom
+
+    def reaction_all(self):
+        return self.user.reactions.all()
+
+    def is_owner(self, id_reaction):
+        try:
+            react = UserReaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
+        except UserReaction.DoesNotExist:
+            raise Http404("Reaction does not exist or access denied")
+        return react.is_owner
+
+#на самом деле возвращает объект UserReaction
+    def reaction_get(self, id_reaction):
+        try:
+            react = UserReaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
+        except UserReaction.DoesNotExist:
+            raise Http404("Reaction does not exist or access denied")
+        return react
+        #try:
+            ##выборка с учетом видимости пользователю
+            #react = Reaction.objects.get(pk=id_reaction, users__pk = self.user.pk)
+        #except Reaction.DoesNotExist:
+            #raise Http404("Reaction does not exist")
+        #try:
+            #tmp_react = UserReaction.objects.filter(reaction = react, user = self.user)
+        #except UserReaction.DoesNotExist:
+            #raise PermissionDenied
+        #return react
+    def react_subst_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.substances.all()
+
+    def react_subst_get(self, id_reaction, id_react_subst):
+        react = self.reaction_get(id_reaction)
+        try:
+            subst = react.reaction.substances.get(pk=id_react_subst)
+        except ReactionSubst.DoesNotExist:
+            raise Http404("Substance does not exist")
+        subst_dict = {}
+        subst_dict['substance'] = subst
+        subst_dict['is_owner'] = react.is_owner
+        return subst_dict
+
+    def react_scheme_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.schemes.all()
+
+    def react_scheme_get(self, id_reaction, id_scheme):
+        react = self.reaction_get(id_reaction)
+        try:
+            scheme = react.reaction.schemes.get(pk=id_scheme)
+        except Reaction_scheme.DoesNotExist:
+            raise Http404("Reaction_scheme does not exist")
+        scheme_dict = {}
+        scheme_dict['scheme'] = scheme
+        scheme_dict['is_owner'] = react.is_owner
+        return scheme_dict
+
+    def rscheme_step_all(self, id_reaction, id_scheme):
+        scheme_dict = self.react_scheme_get(id_reaction, id_scheme)
+        steps_dict = {}
+        steps_dict['steps'] = scheme_dict['scheme'].steps.all()
+        steps_dict['is_owner'] = scheme_dict['is_owner']
+        return steps_dict
+
+    def rscheme_step_get(self, id_reaction, id_scheme, id_step):
+        scheme_dict = self.react_scheme_get(id_reaction, id_scheme)
+        try:
+            sch_step = scheme_dict['scheme'].steps.get(pk=id_step)
+        except Scheme_step.DoesNotExist:
+            raise Http404("Step does not exist")
+        step_dict = {}
+        step_dict['step'] = sch_step
+        step_dict['is_owner'] = scheme_dict['is_owner']
+        return step_dict
+
+    def rscheme_step_get_byorder(self, id_reaction, id_scheme, _order):
+        scheme_dict = self.react_scheme_get(id_reaction, id_scheme)
+        try:
+            sch_step = scheme_dict['scheme'].steps.get(order=_order)
+        except Scheme_step.DoesNotExist:
+            raise Http404("Step does not exist")
+        step_dict = {}
+        step_dict['step'] = sch_step
+        step_dict['is_owner'] = scheme_dict['is_owner']
+        return step_dict
+
+    def experiment_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.experiments.all()
+
+    def experiment_get(self, id_reaction, id_experiment):
+        react = self.reaction_get(id_reaction)
+        try:
+            exp = react.reaction.experiments.get(pk=id_experiment)
+        except Experiment.DoesNotExist:
+            raise Http404("Experiment does not exist")
+        exp_dict = {}
+        exp_dict['experiment'] = exp
+        exp_dict['is_owner'] = react.is_owner
+        return exp_dict
+
+
     class Meta:
-        verbose_name = ('Атом')
-        verbose_name_plural = ('Атомы')
-
-# Вещество
-class Substance(models.Model):
-    id_substance = models.AutoField(primary_key = True, verbose_name='ИД')
-    name = models.CharField(max_length=255, verbose_name='Название', unique=True)
-    charge = models.SmallIntegerField (default = 0, verbose_name='Заряд')
-    is_radical = models.BooleanField(default = False, verbose_name='Радикал')
-    formula_brutto = models.CharField(max_length=255, default = '',verbose_name='Брутто-формула')
-    formula_brutto_formatted = models.CharField(max_length=255, default = '', verbose_name='Брутто-формула')
-    note = models.TextField( verbose_name='Примечание')
-    #formula_mol = models.FileField()
-    #formula_picture = models.ImageField()
-
-    def consist_create(self):#создает состав вещества на основе брутто-формулы
-        self.consist.all().delete()#clear consist
-        atoms_dict = self.get_atom_dict()# ахтунг! говнокод
-        #atoms_dict = {'H':2, 'Oh':3}
-        for key, val in atoms_dict.items():
-            try:
-              atom = Atom.objects.get(symbol=key)
-              if atom:
-                co = SubstanceConsist.objects.get_or_create(atom =atom, substance = self, atom_count = val)[0]
-                co.save()
-                self.consist.add(co)
-            except:
-                return -1
-            #
-
-
-    def get_atom_dict(self,):# получение словаря с типа атомами
-        formula_s = self.formula_brutto+' '
-        atom_name =''
-        atom_count = ''
-        atoms_dict = {}
-        for s in formula_s:
-            if('A'<=s<='Z') or (s==' '):#начало названия элемента
-               if atom_name !='':
-                   atoms_dict.setdefault(atom_name,0)
-                   if atom_count !='':
-                     atoms_dict[atom_name]+= int(atom_count)
-                   else:
-                     atoms_dict[atom_name]+=1
-               atom_name = s
-               atom_count = ''
-            if('a'<=s<='z'):# продолжение имени
-               atom_name +=s
-               atom_count = ''
-            #кол-во
-            if(s in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']):
-                atom_count += s
-        return atoms_dict
-
-    class Meta:
-        verbose_name = ('Вещество')
-        verbose_name_plural = ('Вещества')
-
-# Состав вещества
-class SubstanceConsist(models.Model):
-    substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
-    atom = models.ForeignKey(Atom, null = False, on_delete=models.CASCADE, related_name='+')
-    atom_count = models.DecimalField(max_digits=11, decimal_places=7,default = 0, verbose_name = 'Количество атомов')
-    class Meta:
-        verbose_name = ('Состав Вещества')
-        verbose_name_plural = ('Составы Вещества')
-
-# Реакция
-class Reaction(models.Model):
-	id_reaction      = models.AutoField(primary_key=True, verbose_name='ИД')
-	name             = models.CharField(max_length=300, verbose_name='Название')
-	description      = models.TextField(blank = True,  verbose_name='Описание')
-	is_favorite      = models.BooleanField(default = False, verbose_name='Избранное')
-	is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
-	is_isothermal    = models.BooleanField(default = True, verbose_name='Изотермическая')
-	created_by       = models.TextField (verbose_name='Создал(ла)')#todo data type
-	created_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
-	updated_by       = models.TextField (verbose_name='Обновил(а)')#todo data type
-	updated_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата последних изменений')
-
-	def __unicode__ (self):
-		return self.name
-
-	class Meta:
-		verbose_name        = ('Реакция')
-		verbose_name_plural = ('Реакции')
-
-#Схема механизма/маршрута реакции
-class Reaction_scheme (models.Model):
-	id_scheme    = models.AutoField (primary_key = True, verbose_name='ИД')
-	reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='schemes' )
-	name         = models.CharField (max_length = 250, verbose_name='Название')
-	description  = models.TextField (blank = True, verbose_name='Описание')
-	is_possible  = models.BooleanField (verbose_name='Вероятный')
-	created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
-	created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
-	updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
-	updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
-
-	def __unicode__ (self):
-		return self.name
-
-	class Meta:
-		ordering            = ["updated_date"]		
-		verbose_name        = ('Механизм')
-		verbose_name_plural = ('Механизмы')
-
-#Стадия схемы реакции
-class Scheme_step(models.Model):
-	id_step       = models.AutoField (primary_key = True, verbose_name='ИД')
-	scheme        = models.ForeignKey(Reaction_scheme, null = False, on_delete=models.CASCADE, related_name='steps')
-	name          = models.CharField (max_length = 250, verbose_name='Обозначение')
-	order         = models.IntegerField (verbose_name='№ п/п')
-	is_revers     = models.BooleanField (verbose_name='Обратимая')
-	note	        = models.CharField (max_length = 250, blank = True, verbose_name='Примечание')
-	rate_equation = models.TextField (blank= True, verbose_name='Выражение для скорости')#todo data type
-	def __unicode__ (self):
-		return self.name
-
-	class Meta:
-		ordering            = ["order"]		
-		verbose_name        = ('Стадия схемы')
-		verbose_name_plural = ('Стадии схемы')
-
-#Вещество в стадии схемы реакции
-class Step_subst(models.Model):
-	#первичный ключ, только для возможности django создать ключ
-	id_stepsubst = models.AutoField (primary_key = True, verbose_name='ИД')
-	step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE)
-	#subst       = models.ForeignKey(Reaction_subst, null = False, on_delete=models.CASCADE, related_name='+')
-	substance    = models.IntegerField()
-	position     =	models.IntegerField(verbose_name='Позиция вещества в стадии')
-	stoich_koef  =	models.DecimalField(max_digits=6, decimal_places=3,default = 0, verbose_name='Стехиометрический коэффициент')
-	class Meta:
-		unique_together     = ('step', 'substance')		
-		verbose_name        = ('Вещество стадии')
-		verbose_name_plural = ('Вещества стадии')
-
-#Эксперименты
-class Experiment (models.Model):
-    id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='experiments' )
-    name         = models.CharField (max_length = 250, verbose_name='Название')
-    description  = models.TextField (blank = True, verbose_name='Описание')
-    exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
-    is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
-    created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
-    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
-    updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
-    updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
-    class Meta:
-      ordering            = ["updated_date"]
-      verbose_name = ('Эксперимент')
-      verbose_name_plural = ('Эксперименты')
-
-
-
-
-
-
+      verbose_name = ('Доступ к Химии')
+      verbose_name_plural = ('Доступ к Химии')

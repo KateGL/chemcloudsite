@@ -5,16 +5,22 @@
 
 {% block body_block %}
 	<div class="page-header">
-		<h1>Добавление нового механизма</h1>
+		<h1>Добавление вещества реакции</h1>
 	</div>
 	<div class="page-content">
-        
-         <form method="POST" class="form" action="{% url 'scheme_new' id_reaction %}">  
+		
+		<div class="page-content">
+            
+           
+ <form method="POST" class="form" action="{% url 'react_substance_new' id_reaction %}">  
             
             {% include "chemical/form_body_new.html" %} 
             
             
 </form >
-        
+
+            </div>
+		
+		
    </div>
 {% endblock %}

@@ -5,7 +5,7 @@
 
 {% block body_block %}
 	<div class="page-header">
-		<h1>Детали эксперимента</h1>
+		<h1>Детали эксперимента {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %}</h1>
 	</div>
 		<div class="page-content">
 			{% if experiment %}
