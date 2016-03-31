@@ -4,9 +4,6 @@ import django_tables2 as tables
 from django_tables2.utils import A  # alias for Accessor
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
-from table import Table
-from table.columns import Column, LinkColumn
-
 
 from chemical.chemical_models import Atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst

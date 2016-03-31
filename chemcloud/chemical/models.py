@@ -12,6 +12,15 @@ from chemical.chemical_models import ReactionSubst, Experiment, Reaction_scheme
 from chemical.chemical_models import Scheme_step
 
 
+def owner_required(f):
+    def decorator(request, *args, **kwargs):
+        id_reaction = kwargs['id_reaction']
+        is_owner = request.user.chemistry.is_owner(id_reaction)
+        if not is_owner:
+            raise PermissionDenied
+        return f(request, *args, **kwargs)
+
+    return decorator
 
 
 #Объект для доступа к химии
@@ -56,16 +65,8 @@ class Chemistry(models.Model):
         except UserReaction.DoesNotExist:
             raise Http404("Reaction does not exist or access denied")
         return react
-        #try:
-            ##выборка с учетом видимости пользователю
-            #react = Reaction.objects.get(pk=id_reaction, users__pk = self.user.pk)
-        #except Reaction.DoesNotExist:
-            #raise Http404("Reaction does not exist")
-        #try:
-            #tmp_react = UserReaction.objects.filter(reaction = react, user = self.user)
-        #except UserReaction.DoesNotExist:
-            #raise PermissionDenied
-        #return react
+
+
     def react_subst_all(self, id_reaction):
         react = self.reaction_get(id_reaction)
         return react.reaction.substances.all()

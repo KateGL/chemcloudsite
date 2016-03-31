@@ -20,6 +20,8 @@ from .forms import ReacSchemeForm, ExperimentForm
 
 from .utils import decorate_formula
 
+from .models import owner_required
+
 # Вещество
 
 @login_required
@@ -101,9 +103,7 @@ def reaction_new(request):
 @login_required
 def scheme_all(request, id_reaction):
     mech_table = MechanizmTable(request.user.chemistry.react_scheme_all(id_reaction))
-    #помещаем таблицу со списком механизмов, а также id_reaction в словарь контекста, который будет передан шаблону
     context_dict = {'schemes': mech_table, 'id_reaction' : id_reaction}
-    #формируем ответ для клиента по шаблону и отправляем обратно
     return render(request, 'chemical/scheme_all.html', context_dict)
 
 @login_required
@@ -123,14 +123,12 @@ def scheme_edit(request, id_reaction, id_scheme):
 
 @login_required
 def step_detail(request, id_reaction, id_scheme, id_step):
-    #получаем объект схемы по id_scheme
-#    scheme_tmp = Reaction_scheme.objects.get(pk=id_scheme)
-#    context = {'scheme': scheme_tmp, 'id_reaction' : id_reaction}
     step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, id_step)
     context = {'step': step_dict['step'], 'id_reaction' : id_reaction, 'is_owner': step_dict['is_owner']}
     return render(request, 'chemical/step_detail.html', context)
 
 @login_required
+@owner_required
 def scheme_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
 
@@ -158,7 +156,6 @@ def scheme_new(request, id_reaction):
 def change_step_order(request, id_reaction, id_scheme):
 #    if not request.is_ajax():
 #        return HttpResponse(status=400)
-
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     #получаем список стадий схемы
     steps_count = scheme_dict['scheme'].steps.count()
@@ -170,8 +167,6 @@ def change_step_order(request, id_reaction, id_scheme):
     if request.method == 'GET':
         direction = request.GET['direction']
 
- #   global step_neighbor =  request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
-#    global step = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
     #todo проверки на соответствие шага схемы схеме и реакции
     new_order = -1
     cur_order = -1
@@ -221,6 +216,7 @@ def react_substance_all(request, id_reaction):
 
 
 @login_required
+@owner_required
 def react_substance_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
 
@@ -265,6 +261,7 @@ def experiment_edit(request, id_reaction, id_experiment):
 
 
 @login_required
+@owner_required
 def experiment_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
 
