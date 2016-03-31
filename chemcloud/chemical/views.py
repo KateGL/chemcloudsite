@@ -100,9 +100,7 @@ def reaction_new(request):
 @login_required
 def scheme_all(request, id_reaction):
     mech_table = MechanizmTable(request.user.chemistry.react_scheme_all(id_reaction))
-    #помещаем таблицу со списком механизмов, а также id_reaction в словарь контекста, который будет передан шаблону
     context_dict = {'schemes': mech_table, 'id_reaction' : id_reaction}
-    #формируем ответ для клиента по шаблону и отправляем обратно
     return render(request, 'chemical/scheme_all.html', context_dict)
 
 @login_required
@@ -122,9 +120,6 @@ def scheme_edit(request, id_reaction, id_scheme):
 
 @login_required
 def step_detail(request, id_reaction, id_scheme, id_step):
-    #получаем объект схемы по id_scheme
-#	scheme_tmp = Reaction_scheme.objects.get(pk=id_scheme)
-#	context = {'scheme': scheme_tmp, 'id_reaction' : id_reaction}
     step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, id_step)
     context = {'step': step_dict['step'], 'id_reaction' : id_reaction, 'is_owner': step_dict['is_owner']}
     return render(request, 'chemical/step_detail.html', context)
@@ -139,14 +134,6 @@ def scheme_new(request, id_reaction):
         if form.is_valid():
             scheme = form.save(commit=False)
             scheme.reaction = react.reaction
-#			scheme.name = form.cleaned_data['name']
-#			scheme.description = form.cleaned_data['description']
-#			scheme.is_possible = form.cleaned_data['is_possible']
-		#  scheme.fcreated_date = timezone.now
-		#	scheme.fupdated_date = timezone.now
-#			scheme.updated_by = request.user
-#			scheme.created_by = request.user
-#			scheme.save()
             form.save()
             return redirect('scheme_detail', id_reaction, scheme.pk)
 
@@ -178,7 +165,7 @@ def change_step_order(request, id_reaction, id_scheme):
 		step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
 		step = step_dict['step']
 		if step:
-			if direction == 'up' and cur_order>1:            
+			if direction == 'up' and cur_order>1:
 				new_order = cur_order - 1
 				step_up_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
 				step_up = step_up_dict['step']				
@@ -187,7 +174,7 @@ def change_step_order(request, id_reaction, id_scheme):
 				step.save()
 				step_up.save()
 				res = res + ';' + step.name +'=' + str(step.order)+';' + step_up.name +'='+str(step_up.order)
-			if direction == 'down' and cur_order<steps_count:            
+			if direction == 'down' and cur_order<steps_count:
 				new_order = cur_order + 1
 				step_down_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
 				step_down = step_down_dict['step']				
