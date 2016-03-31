@@ -12,6 +12,15 @@ from chemical.chemical_models import ReactionSubst, Experiment, Reaction_scheme
 from chemical.chemical_models import Scheme_step
 
 
+def owner_required(f):
+    def decorator(request, *args, **kwargs):
+        id_reaction = kwargs['id_reaction']
+        is_owner = request.user.chemistry.is_owner(id_reaction)
+        if not is_owner:
+            raise PermissionDenied
+        return f(request, *args, **kwargs)
+
+    return decorator
 
 
 #Объект для доступа к химии

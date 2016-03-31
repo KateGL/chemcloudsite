@@ -211,3 +211,4 @@ class UserReaction(models.Model):
     class Meta:
       verbose_name = ('Доступ к Реакции')
       verbose_name_plural = ('Права на Реакции ')
+      unique_together = ('reaction', 'user')

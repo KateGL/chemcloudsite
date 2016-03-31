@@ -17,6 +17,8 @@ from .forms import ReacSchemeForm, ExperimentForm
 
 from .utils import decorate_formula
 
+from .models import owner_required
+
 # Вещество
 
 @login_required
@@ -129,6 +131,7 @@ def step_detail(request, id_reaction, id_scheme, id_step):
 
 
 @login_required
+@owner_required
 def scheme_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
 
@@ -156,6 +159,7 @@ def react_substance_all(request, id_reaction):
 
 
 @login_required
+@owner_required
 def react_substance_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
 
@@ -200,6 +204,7 @@ def experiment_edit(request, id_reaction, id_experiment):
 
 
 @login_required
+@owner_required
 def experiment_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
 
