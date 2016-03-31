@@ -24,10 +24,10 @@ class SubstanceAdmin(admin.ModelAdmin):
 admin.site.register(Substance, SubstanceAdmin)
 
 class ReactionAdmin(admin.ModelAdmin):
-  fields = ['name',  'is_favorite', #'is_notstationary',
- 'is_isothermal','description' ]
-  list_display = ('id_reaction',  'name', 'is_favorite', #'is_notstationary',
- 'is_isothermal','description' )
+  fields = ['name',  'is_favorite', 'is_notstationary',
+ 'is_isothermal','description', 'created_by' ]
+  list_display = ('id_reaction',  'name', 'is_favorite', 'is_notstationary',
+ 'is_isothermal','description', 'created_by' )
 
 admin.site.register(Reaction, ReactionAdmin)
 

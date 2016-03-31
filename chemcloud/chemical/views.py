@@ -105,30 +105,29 @@ def scheme_all(request, id_reaction):
     #формируем ответ для клиента по шаблону и отправляем обратно
     return render(request, 'chemical/scheme_all.html', context_dict)
 
-
 @login_required
 def scheme_detail(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     context = {'scheme': scheme_dict['scheme'], 'id_reaction' : id_reaction, 'is_owner': scheme_dict['is_owner']}
     return render(request, 'chemical/scheme_detail.html', context )
 
-
 @login_required
 def scheme_edit(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     #получаем список стадий схемы
     steps = scheme_dict['scheme'].steps.all()
-    steps_table = StepsTable(steps)
-    context = {'steps': steps_table, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
+#    steps_table = StepsTable(steps)
+    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
     return render(request, 'chemical/scheme_edit.html', context)
 
 @login_required
 def step_detail(request, id_reaction, id_scheme, id_step):
     #получаем объект схемы по id_scheme
+#	scheme_tmp = Reaction_scheme.objects.get(pk=id_scheme)
+#	context = {'scheme': scheme_tmp, 'id_reaction' : id_reaction}
     step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, id_step)
     context = {'step': step_dict['step'], 'id_reaction' : id_reaction, 'is_owner': step_dict['is_owner']}
     return render(request, 'chemical/step_detail.html', context)
-
 
 @login_required
 @owner_required
@@ -140,12 +139,70 @@ def scheme_new(request, id_reaction):
         if form.is_valid():
             scheme = form.save(commit=False)
             scheme.reaction = react.reaction
+#			scheme.name = form.cleaned_data['name']
+#			scheme.description = form.cleaned_data['description']
+#			scheme.is_possible = form.cleaned_data['is_possible']
+		#  scheme.fcreated_date = timezone.now
+		#	scheme.fupdated_date = timezone.now
+#			scheme.updated_by = request.user
+#			scheme.created_by = request.user
+#			scheme.save()
             form.save()
             return redirect('scheme_detail', id_reaction, scheme.pk)
 
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/scheme_new.html', context)
 
+#изменение порядка стадии
+@login_required
+def change_step_order(request, id_reaction, id_scheme):
+	scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+	#получаем список стадий схемы
+	steps_count = scheme_dict['scheme'].steps.count()
+
+	step_id = None
+	if request.method == 'GET':
+		step_id = request.GET['step_id']
+	current_order = None
+	if request.method == 'GET':
+		current_order = request.GET['cur_order']
+	direction = None
+	if request.method == 'GET':
+		direction = request.GET['direction']
+
+	#todo проверки на соответствие шага схемы схеме и реакции
+	new_order = -1
+	cur_order = int(current_order)
+	res = ';' + str(steps_count)
+	if step_id:
+		step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+		step = step_dict['step']
+		if step:
+			if direction == 'up' and cur_order>1:            
+				new_order = cur_order - 1
+				step_up_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
+				step_up = step_up_dict['step']				
+				step.order = new_order
+				step_up.order = cur_order
+				step.save()
+				step_up.save()
+				res = res + ';' + step.name +'=' + str(step.order)+';' + step_up.name +'='+str(step_up.order)
+			if direction == 'down' and cur_order<steps_count:            
+				new_order = cur_order + 1
+				step_down_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
+				step_down = step_down_dict['step']				
+				step.order = new_order
+				step_down.order = cur_order
+				step.save()	
+				step_down.save()
+				res = res + ';' + step.name+ '=' + str(step.order)+';' +step_down.name + '='+str(step_down.order)
+	#получаем список стадий схемы		
+	scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+	steps = scheme_dict['scheme'].steps.all()
+
+#    steps_table = StepsTable(steps)
+	context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name+res, 'is_owner': scheme_dict['is_owner']}
+	return render(request, 'chemical/scheme_edit.html', context)
 
 #Вещества реакции
 @login_required
@@ -218,7 +275,6 @@ def experiment_new(request, id_reaction):
 
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/experiment_new.html', context)
-
 
 #Задачи
 @login_required

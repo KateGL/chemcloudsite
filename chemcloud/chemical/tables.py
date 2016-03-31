@@ -5,7 +5,6 @@ from django_tables2.utils import A  # alias for Accessor
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
-
 from chemical.chemical_models import Atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst
 from chemical.chemical_models import ReactionSubst
@@ -116,10 +115,12 @@ class ReactionSubstTable(tables.Table):
         sequence = ("alias", "brutto_formula_short", "name", "detail_link")
 
 #Стадии механизма
+#tables.Table
 class StepsTable(tables.Table):
     detail_link = tables.LinkColumn('step_detail', orderable=False,  verbose_name='', empty_values=())
     step = tables.Column(verbose_name='Стадия', orderable=False, empty_values=())
-    order_arrows = tables.Column(verbose_name='', orderable=False, empty_values=())
+    order_arrows = tables.LinkColumn('change_step_order', orderable=False,  verbose_name='Переместить', empty_values=())
+
     def render_detail_link(self,record):
         return mark_safe( ''' <a href="/chemical/reaction/%d/scheme/%d/step/%d/detail">Детали</a>'''% (record.scheme.reaction.pk, record.scheme.pk ,record.pk))
 
@@ -131,13 +132,16 @@ class StepsTable(tables.Table):
         else:
             return mark_safe('left &rarr right')
 
+    def render_order_arrows(self,record):
+        return mark_safe( ''' <button id="change_order" data-stepid="%d" data-curorder="%d" data-direction="up" class="btn btn-defualt" type="button">&#9650</button></br><button id="change_order" data-stepid="%d" data-curorder="%d" data-direction="down" class="btn btn-defualt" type="button">&#9660</button>'''% (record.pk, record.order, record.pk, record.order))
+
     class Meta:
         model = Scheme_step
+        ajax  = True
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
         fields =("name", "order", "step", "order_arrows", "detail_link")
         sequence = ("order_arrows", "order","name", "step", "detail_link")
-
 
 #Эксперименты
 class ExperimentTable(tables.Table):

@@ -65,16 +65,8 @@ class Chemistry(models.Model):
         except UserReaction.DoesNotExist:
             raise Http404("Reaction does not exist or access denied")
         return react
-        #try:
-            ##выборка с учетом видимости пользователю
-            #react = Reaction.objects.get(pk=id_reaction, users__pk = self.user.pk)
-        #except Reaction.DoesNotExist:
-            #raise Http404("Reaction does not exist")
-        #try:
-            #tmp_react = UserReaction.objects.filter(reaction = react, user = self.user)
-        #except UserReaction.DoesNotExist:
-            #raise PermissionDenied
-        #return react
+
+
     def react_subst_all(self, id_reaction):
         react = self.reaction_get(id_reaction)
         return react.reaction.substances.all()
@@ -123,7 +115,16 @@ class Chemistry(models.Model):
         step_dict['is_owner'] = scheme_dict['is_owner']
         return step_dict
 
-
+    def rscheme_step_get_byorder(self, id_reaction, id_scheme, _order):
+        scheme_dict = self.react_scheme_get(id_reaction, id_scheme)
+        try:
+            sch_step = scheme_dict['scheme'].steps.get(order=_order)
+        except Scheme_step.DoesNotExist:
+            raise Http404("Step does not exist")
+        step_dict = {}
+        step_dict['step'] = sch_step
+        step_dict['is_owner'] = scheme_dict['is_owner']
+        return step_dict
 
     def experiment_all(self, id_reaction):
         react = self.reaction_get(id_reaction)

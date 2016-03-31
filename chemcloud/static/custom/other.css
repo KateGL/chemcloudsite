@@ -7,3 +7,26 @@
 	color          : #000000;
 	border-color:    #000000;
 }
+
+/*
+убрать подчеркивание, например для ссылок <A
+селектор по идентификатору
+*/
+#arrow {
+text-decoration: none;
+}
+
+.changeorder {
+	outline : none;
+	background-color: #FEC63D; 
+	color          : #000000;
+	border-color:    #000000;
+}
+/*
+при наведении курсора становится оранжевым*/
+#arrow:hover {
+/*
+text-decoration: underline; /*подчеркивание при наведении*/
+*/
+color: #FEC63D;
+}
