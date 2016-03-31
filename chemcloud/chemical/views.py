@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import json
 from django.shortcuts import render
+from django.http import HttpResponse
+from django.core import serializers
 
 # Create your views here.
 from django.contrib.auth.decorators import login_required
@@ -121,8 +124,8 @@ def scheme_edit(request, id_reaction, id_scheme):
 @login_required
 def step_detail(request, id_reaction, id_scheme, id_step):
     #получаем объект схемы по id_scheme
-#	scheme_tmp = Reaction_scheme.objects.get(pk=id_scheme)
-#	context = {'scheme': scheme_tmp, 'id_reaction' : id_reaction}
+#    scheme_tmp = Reaction_scheme.objects.get(pk=id_scheme)
+#    context = {'scheme': scheme_tmp, 'id_reaction' : id_reaction}
     step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, id_step)
     context = {'step': step_dict['step'], 'id_reaction' : id_reaction, 'is_owner': step_dict['is_owner']}
     return render(request, 'chemical/step_detail.html', context)
@@ -136,14 +139,14 @@ def scheme_new(request, id_reaction):
         if form.is_valid():
             scheme = form.save(commit=False)
             scheme.reaction = react.reaction
-#			scheme.name = form.cleaned_data['name']
-#			scheme.description = form.cleaned_data['description']
-#			scheme.is_possible = form.cleaned_data['is_possible']
-		#  scheme.fcreated_date = timezone.now
-		#	scheme.fupdated_date = timezone.now
-#			scheme.updated_by = request.user
-#			scheme.created_by = request.user
-#			scheme.save()
+#            scheme.name = form.cleaned_data['name']
+#            scheme.description = form.cleaned_data['description']
+#            scheme.is_possible = form.cleaned_data['is_possible']
+        #  scheme.fcreated_date = timezone.now
+        #    scheme.fupdated_date = timezone.now
+#            scheme.updated_by = request.user
+#            scheme.created_by = request.user
+#            scheme.save()
             form.save()
             return redirect('scheme_detail', id_reaction, scheme.pk)
 
@@ -153,50 +156,58 @@ def scheme_new(request, id_reaction):
 #изменение порядка стадии
 @login_required
 def change_step_order(request, id_reaction, id_scheme):
-	scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
-	#получаем список стадий схемы
-	steps_count = scheme_dict['scheme'].steps.count()
+#    if not request.is_ajax():
+#        return HttpResponse(status=400)
 
-	step_id = None
-	if request.method == 'GET':
-		step_id = request.GET['step_id']
-	current_order = None
-	if request.method == 'GET':
-		current_order = request.GET['cur_order']
-	direction = None
-	if request.method == 'GET':
-		direction = request.GET['direction']
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    #получаем список стадий схемы
+    steps_count = scheme_dict['scheme'].steps.count()
 
-	#todo проверки на соответствие шага схемы схеме и реакции
-	new_order = -1
-	cur_order = int(current_order)
-	if step_id:
-		step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
-		step = step_dict['step']
-		if step:
-			if direction == 'up' and cur_order>1:            
-				new_order = cur_order - 1
-				step_up_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
-				step_up = step_up_dict['step']				
-				step.order = new_order
-				step_up.order = cur_order
-				step.save()
-				step_up.save()
-			if direction == 'down' and cur_order<steps_count:            
-				new_order = cur_order + 1
-				step_down_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
-				step_down = step_down_dict['step']				
-				step.order = new_order
-				step_down.order = cur_order
-				step.save()	
-				step_down.save()
-	#получаем список стадий схемы		
-	scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
-	steps = scheme_dict['scheme'].steps.all()
+    step_id = None
+    if request.method == 'GET':
+        step_id = request.GET['step_id']
+    direction = None
+    if request.method == 'GET':
+        direction = request.GET['direction']
 
-#    steps_table = StepsTable(steps)
-	context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
-	return render(request, 'chemical/scheme_edit.html', context)
+ #   global step_neighbor =  request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+#    global step = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+    #todo проверки на соответствие шага схемы схеме и реакции
+    new_order = -1
+    cur_order = -1
+    cur_id = -1
+    neighbor_id = -1
+    if step_id:
+        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+        step = step_dict['step']
+        cur_order = step.order
+        cur_id = step.id_step
+        if step:
+            if direction == 'up' and cur_order>1:            
+                new_order = cur_order - 1
+                step_neighbor_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
+                step_neighbor = step_neighbor_dict['step']                
+                neighbor_id = step_neighbor.id_step
+                step.order = new_order
+                step_neighbor.order = cur_order
+                step.save()
+                step_neighbor.save()
+            if direction == 'down' and cur_order<steps_count:            
+                new_order = cur_order + 1
+                step_neighbor_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
+                step_neighbor = step_neighbor_dict['step']                
+                step.order = new_order
+                step_neighbor.order = cur_order
+                neighbor_id = step_neighbor.id_step
+                step.save()    
+                step_neighbor.save()
+
+    format = 'json'    
+    mimetype = 'application/json'
+    data = '{"cur_step_order": ' + str(new_order) +', "neighbor_step_order":'+str( cur_order) + ', "cur_step_id": '+str(cur_id)+', "neighbor_step_id": '+str(neighbor_id)+' }'
+    xml_bytes = json.dumps(data)
+   # data = serializers.serialize(format, data)
+    return HttpResponse(xml_bytes,mimetype)
 
 #Вещества реакции
 @login_required
