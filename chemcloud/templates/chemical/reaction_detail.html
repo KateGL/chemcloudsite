@@ -1,6 +1,7 @@
 {% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
+{% load render_table from django_tables2 %}
 
 
 
@@ -10,23 +11,115 @@
 
     <h1> <a href="{% url 'reaction_all' %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span>
           </a>   Детали реакции {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>
+      
+    </div>         
            
-            
-    </div> 
-        
-            
- <div class="table">
-  <table class="table">
+
+  <div class="page-content"> 
+  <div class="row">          
+ <div class="col-xs-7">
+ <div>
+  <table class="table ">
     <tbody>
      <tr>
-        <td class="text-right">Название</td>
-        <td class="text-left">{{  reaction.name }}</td>
+        <td class="text-right col-xs-2">Название</td>
+        <td class="text-left col-xs-5">{{  reaction.name }}</td>
       </tr>
-  
+  <tr>
+        <td class="text-right">Описание</td>
+        <td class="text-left">{{  reaction.description }}</td>
+      </tr>
+      
+      <tr>
+        <td class="text-right">Тип реакции</td>
+        <td class="text-left">
+         <div class="well well-sm">
+      
+            <div >
+  <label>Нестационарная</label>: {{  reaction.is_notstationary }}
+</div>
+                   <div >
+  <label>Изотермическая</label>: {{  reaction.is_isothermal }}
+</div>
+
+         </div>
+         
+      
+        </td>
+      </tr>
+      
+      <tr>
+        <td class="text-right">Дата создания</td>
+        <td class="text-left">{{  reaction.created_date }}</td>
+      </tr>
+      
+      <tr>
+        <td class="text-right">Создал(ла)</td>
+        <td class="text-left">{{  reaction.created_by }}</td>
+      </tr>
+      
+       
       
     </tbody>
-  </table>
+  </table> </div>
   
-  
+   <div><h4>Права на Реакцию</h4>
+      
+      {% render_table user_reacts %}
+    
+     
+     
+      
+      </div>
+       
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModalNorm">Поделиться Реакцией</button>   
+        
+      </div>
+        <div class=" col-xs-3">
+    
+    
+     <ul class="list-group">
+  <li class="list-group-item">Перейти к реакции</li>
+  <li class="list-group-item">Сформировать отчет</li>
+  <li class="list-group-item">Доступ и права</li>
+  <li class="list-group-item">Дублировать</li>
+  <li class="list-group-item">Удалить реакцию</li>
+</ul>
+    
+    
+     
+      </div>
+        
+        <!-- Modal -->
+<!-- Modal -->
+<div class="modal fade" id="myModalNorm" tabindex="-1" role="dialog" 
+     aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close" 
+                   data-dismiss="modal">
+                       <span aria-hidden="true">&times;</span>
+                       <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    Поделиться реакцией с пользователем
+                </h4>
+            </div>            
+            <!-- Modal Body -->
+            <div class="modal-body">  
+             
+                                         
+               <form method="POST" class="form" >  
+            
+            {% include "chemical/form_body_new.html" %}    </form >                       
+            </div>     
+    </div>
+    </div>
+
+      
+    
+
 </div>
 {% endblock %}

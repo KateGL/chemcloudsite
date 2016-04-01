@@ -16,6 +16,7 @@ class Atom(models.Model):
     class Meta:
         verbose_name = ('Атом')
         verbose_name_plural = ('Атомы')
+        ordering = ["atom_number"]
 
 # Вещество
 class Substance(models.Model):
@@ -100,11 +101,15 @@ class Reaction(models.Model):
     def __unicode__ (self):
         return self.name
 
-    def add_owner(self,user_owner):
+    def add_owner(self, user_owner):
         user_reaction = UserReaction.objects.get_or_create(user =user_owner, reaction = self, is_owner = True)[0]
         user_reaction.save()
         self.users.add(user_reaction)
-        user_owner.reactions.add(user_reaction)
+
+    def share_to_user(self, user_new, is_owner_new):
+        user_reaction = UserReaction.objects.get_or_create(user=user_new, reaction=self, is_owner=is_owner_new)[0]
+        user_reaction.save()
+        self.users.add(user_reaction)
 
     class Meta:
         verbose_name        = ('Реакция')

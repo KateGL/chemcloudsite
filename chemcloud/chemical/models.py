@@ -66,6 +66,12 @@ class Chemistry(models.Model):
             raise Http404("Reaction does not exist or access denied")
         return react
 
+    def get_user_by_email(self, user_email):
+        try:
+            user = User.objects.get(email=user_email)
+        except User.DoesNotExist:
+            raise Http404("User with email %s does not exist" % user_email)
+        return user
 
     def react_subst_all(self, id_reaction):
         react = self.reaction_get(id_reaction)

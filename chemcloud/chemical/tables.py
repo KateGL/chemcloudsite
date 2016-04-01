@@ -2,18 +2,23 @@
 from __future__ import unicode_literals
 import django_tables2 as tables
 from django_tables2.utils import A  # alias for Accessor
+
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
 from chemical.chemical_models import Atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst
-from chemical.chemical_models import ReactionSubst
+from chemical.chemical_models import ReactionSubst, UserReaction
+
+from .urls_utils import make_detail_link, make_name_link
 
 class AtomTable(tables.Table):
     detail_link = tables.LinkColumn('atom_detail', orderable=False,  verbose_name='Ссылка', empty_values=())
 
     def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/chemical/atom/%d/detail">Детали</a>'''%record.pk)
+        link = reverse('chemical.views.atom_detail', args=[record.pk])
+        return make_detail_link(link)
 
     class Meta:
         model = Atom
@@ -21,28 +26,32 @@ class AtomTable(tables.Table):
         attrs = {"class": "paleblue"}
         sequence = ("atom_number", "symbol", "name", "name_latin", "atom_mass")
 
+
 class SubstanceTable(tables.Table):
     detail_link = tables.LinkColumn('substance_detail', orderable=False,  verbose_name='Ссылка', empty_values=())
 
-    def render_formula_brutto_formatted(self,record):
+    def render_formula_brutto_formatted(self, record):
         return mark_safe(record.formula_brutto_formatted)
 
-    def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/chemical/substance/%d/detail">Детали</a>'''%record.pk)
+    def render_detail_link(self, record):
+        link = reverse('chemical.views.substance_detail', args=[record.pk])
+        return make_detail_link(link)
 
     class Meta:
         model = Substance
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
-        fields =("name", "formula_brutto_formatted", "charge", "is_radical")
+        fields = ("name", "formula_brutto_formatted", "charge", "is_radical")
         sequence = ("name", "formula_brutto_formatted", "charge", "is_radical")
+
 
 class ConsistTable(tables.Table):
     atom_symbol = tables.Column(accessor='atom.symbol')
+
     class Meta:
         model = SubstanceConsist
         attrs = {"class": "paleblue"}
-        fields =("atom_symbol", "atom_count")
+        fields = ("atom_symbol", "atom_count")
         sequence = ("atom_symbol", "atom_count")
 
 
@@ -55,10 +64,11 @@ class ReactionTable(tables.Table):
     updated_date = tables.Column(accessor='reaction.updated_date')
     user_rule = tables.Column(verbose_name='Права', orderable=False, empty_values=())
 
-    def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/detail">Детали</a>'''%record.reaction.pk)
+    def render_detail_link(self, record):
+        link = reverse('chemical.views.reaction_detail', args=[record.reaction.pk])
+        return make_detail_link(link)
 
-    def render_user_rule(self,record):
+    def render_user_rule(self, record):
         if record.is_owner:
             return 'Чтение, Редактирование, Поделиться'
         else:
@@ -68,8 +78,30 @@ class ReactionTable(tables.Table):
         model = UserReaction
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
-        fields =("name", "is_favorite", "description", "updated_date", "user_rule", "detail_link")
+        fields = ("name", "is_favorite", "description", "updated_date", "user_rule", "detail_link")
         sequence = ("is_favorite", "name",  "description", "updated_date","detail_link", "user_rule")
+
+
+#Права на Реакции
+class UserOfReactionTable(tables.Table):
+    user_name = tables.Column(verbose_name='Пользователь', accessor='user.username')
+    user_email = tables.Column(verbose_name='E-mail', accessor='user.email')
+    user_rule = tables.Column(verbose_name='Права', orderable=False, empty_values=())
+
+    def render_user_rule(self, record):
+        if record.is_owner:
+            return 'Чтение, Редактирование, Поделиться'
+        else:
+            return 'Чтение'
+
+    class Meta:
+        model = UserReaction
+        attrs = {"class": "paleblue"}
+        fields = ("user_name", "user_rule", "user_email")
+        sequence = ("user_name", "user_email", "user_rule")
+
+
+
 
 #Механизмы
 class MechanizmTable(tables.Table):
@@ -79,22 +111,25 @@ class MechanizmTable(tables.Table):
     #для колонки с пустым значением render вызывается, если стоит empty_values=())
     steps_count = tables.Column(verbose_name='Число стадий', orderable=False, empty_values=())
 
-    def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/scheme/%d/detail">Детали</a>'''% (record.reaction.id_reaction, record.pk))
+    def render_detail_link(self, record):
+        link = reverse('chemical.views.scheme_detail', args=[record.reaction.id_reaction, record.pk])
+        return make_detail_link(link)
 
-    def render_name(self,record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/scheme/%d/edit">%s</a>'''% (record.reaction.id_reaction, record.pk, record.name))
+    def render_name(self, record):
+        link = reverse('chemical.views.scheme_edit', args=[record.reaction.id_reaction, record.pk])
+        return make_name_link(link, record.name)
 
-    def render_steps_count(self,record):
-        #TODO число стадий подсчитать и вывести
-        #получаем число стадий схемы по scheme
+
+    def render_steps_count(self, record):
+        ##TODO число стадий подсчитать и вывести
+        ##получаем число стадий схемы по scheme
         steps_count = Scheme_step.objects.filter(scheme = record).count()
         return mark_safe('%d' %steps_count)
 
     class Meta:
         model = Reaction_scheme
         # add class="paleblue" to <table> tag
-        attrs = {"class": "paleblue"}
+        attrs = {"classteps_counts": "paleblue"}
         fields =("name", "description", "updated_date", "is_possible")
         sequence = ("name", "description", "steps_count", "is_possible", "updated_date")
 
@@ -106,7 +141,8 @@ class ReactionSubstTable(tables.Table):
     name = tables.Column(accessor='substance.name')
 
     def render_detail_link(self, record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/substance/%d/detail">Детали</a>'''% (record.reaction.id_reaction, record.pk))
+        link = reverse('chemical.views.react_substance_detail', args=[record.reaction.id_reaction, record.pk])
+        return make_detail_link(link)
 
     class Meta:
         model = ReactionSubst
@@ -122,7 +158,8 @@ class StepsTable(tables.Table):
     order_arrows = tables.LinkColumn('change_step_order', orderable=False,  verbose_name='Переместить', empty_values=())
 
     def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/scheme/%d/step/%d/detail">Детали</a>'''% (record.scheme.reaction.pk, record.scheme.pk ,record.pk))
+        link = reverse('chemical.views.step_detail', args=[record.scheme.reaction.pk, record.scheme.pk ,record.pk])
+        return make_detail_link(link)
 
     def render_step(self,record):
         #TODO число стадий подсчитать и вывести
@@ -148,14 +185,16 @@ class ExperimentTable(tables.Table):
     detail_link = tables.LinkColumn('experiment_detail', orderable=False,  verbose_name='', empty_values=())
     name = tables.LinkColumn('experiment_edit', orderable=True)
 
-    def render_detail_link(self,record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/experiment/%d/detail">Детали</a>'''% (record.reaction.id_reaction,record.pk))
+    def render_detail_link(self, record):
+        link = reverse('chemical.views.experiment_detail', args=[record.reaction.id_reaction,record.pk])
+        return make_detail_link(link)
 
-    def render_name(self,record):
-        return mark_safe( ''' <a href="/chemical/reaction/%d/experiment/%d/edit">%s</a>'''% (record.reaction.id_reaction, record.pk, record.name))
+    def render_name(self, record):
+        link = reverse('chemical.views.experiment_edit', args=[record.reaction.id_reaction, record.pk])
+        return make_name_link(link, record.name)
 
     class Meta:
         model = Experiment
         attrs = {"class": "paleblue"}
-        fields =("name", "description", "updated_date", "is_favorite")
-        sequence = ("name", "description",  "is_favorite", "updated_date")
+        fields = ("name", "description", "updated_date", "is_favorite")
+        sequence = ("name", "description", "is_favorite", "updated_date")

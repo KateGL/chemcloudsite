@@ -8,8 +8,17 @@ from .utils import check_blocks
 #Реакции
 class ReactionForm(forms.ModelForm):
     class Meta:
-       model = Reaction
-       fields = '__all__'
+        model = Reaction
+        fields = ('name', 'description', 'is_favorite', 'is_notstationary', 'is_isothermal')
+
+
+#Поделиться реакцией
+class ReactionShareForm(forms.Form):
+    user_email = forms.EmailField(label='Email пользователя')
+    CHOICES = (('0', "Только чтение"), ('1', "Разрешить чтение, редактирование, делиться"))
+    rights = forms.ChoiceField(label='Права', widget=forms.RadioSelect, choices=CHOICES, initial='0')
+    message = forms.CharField(widget=forms.Textarea, required=False, label="Сообщение")
+
 
 #Механизмы реакции
 class ReacSchemeForm(forms.ModelForm):
@@ -21,17 +30,17 @@ class ReacSchemeForm(forms.ModelForm):
 class BruttoFormulaField(forms.CharField):
     def validate(self, value):
         super(BruttoFormulaField, self).validate(value)
-        if re.sub(r'[A-Za-z0-9\(\)\[\]]','', value)!= '':
+        if re.sub(r'[A-Za-z0-9\(\)\[\]]', '', value) != '':
             raise forms.ValidationError("Брутто-формула может содержать только числа, латиницу и скобки")
-        if not check_blocks(value,'(',')'):
+        if not check_blocks(value, '(', ')'):
             raise forms.ValidationError("Проверьте правильность расположения круглых скобок!")
-        if not check_blocks(value,'[',']'):
+        if not check_blocks(value, '[', ']'):
             raise forms.ValidationError("Проверьте правильность расположения квадратных скобок!")
 #не совсем правильно, тк допустива конструкция [(])
 #проверка на то, что в
 
 class SubstanceForm(forms.ModelForm):
-    formula_brutto = BruttoFormulaField( label="Брутто-формула")
+    formula_brutto = BruttoFormulaField(label="Брутто-формула")
     note = forms.CharField(widget=forms.Textarea, required = False, label="Примечание")
     class Meta:
        model = Substance
