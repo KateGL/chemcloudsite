@@ -36,7 +36,7 @@
 							<td id="order_{{step.id_step}}"> {{ step.order }} </td>
 							<td>{{ step.name }}</td>
 							<td> {% if step.is_revers %} &#8596 {% else %} &#8594 {% endif %} </td>
-							<td><a href="{% url 'step_detail' id_reaction step.scheme.id_scheme step.id_step %}"> Детали</a> </td> 
+							<td><a href="{% url 'step_detail' id_reaction step.scheme.id_scheme step.id_step %}"> Детали</a> </td>
 						</tr>
 						{% endfor %}
 					</tbody>

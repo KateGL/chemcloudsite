@@ -209,13 +209,14 @@ def change_step_order(request, id_reaction, id_scheme):
                 neighbor_id = step_neighbor.id_step
                 step.save()
                 step_neighbor.save()
+    if cur_id != -1 and neighbor_id != -1:
+      #  format_str = 'json'
+        mimetype = 'application/json'
+        data = '{"cur_step_order": ' + str(new_order) +', "neighbor_step_order":'+str( cur_order) + ', "cur_step_id": '+str(cur_id)+', "neighbor_step_id": '+str(neighbor_id)+', "steps_count": '+str(steps_count)+' }'
+        xml_bytes = json.dumps(data)
+       # data = serializers.serialize(format_str, data)
+        return HttpResponse(xml_bytes,mimetype)
 
-    format = 'json'
-    mimetype = 'application/json'
-    data = '{"cur_step_order": ' + str(new_order) +', "neighbor_step_order":'+str( cur_order) + ', "cur_step_id": '+str(cur_id)+', "neighbor_step_id": '+str(neighbor_id)+' }'
-    xml_bytes = json.dumps(data)
-   # data = serializers.serialize(format, data)
-    return HttpResponse(xml_bytes,mimetype)
 
 #Вещества реакции
 @login_required
