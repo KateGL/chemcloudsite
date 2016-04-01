@@ -178,31 +178,31 @@ def change_step_order(request, id_reaction, id_scheme):
         cur_order = step.order
         cur_id = step.id_step
         if step:
-            if direction == 'up' and cur_order>1:            
+            if direction == 'up' and cur_order>1:
                 new_order = cur_order - 1
                 step_neighbor_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
-                step_neighbor = step_neighbor_dict['step']                
+                step_neighbor = step_neighbor_dict['step']
                 neighbor_id = step_neighbor.id_step
                 step.order = new_order
                 step_neighbor.order = cur_order
                 step.save()
                 step_neighbor.save()
-            if direction == 'down' and cur_order<steps_count:            
+            if direction == 'down' and cur_order<steps_count:
                 new_order = cur_order + 1
                 step_neighbor_dict = request.user.chemistry.rscheme_step_get_byorder(id_reaction, id_scheme, new_order)
-                step_neighbor = step_neighbor_dict['step']                
+                step_neighbor = step_neighbor_dict['step']
                 step.order = new_order
                 step_neighbor.order = cur_order
                 neighbor_id = step_neighbor.id_step
-                step.save()    
+                step.save()
                 step_neighbor.save()
-
-    format = 'json'    
-    mimetype = 'application/json'
-    data = '{"cur_step_order": ' + str(new_order) +', "neighbor_step_order":'+str( cur_order) + ', "cur_step_id": '+str(cur_id)+', "neighbor_step_id": '+str(neighbor_id)+' }'
-    xml_bytes = json.dumps(data)
-   # data = serializers.serialize(format, data)
-    return HttpResponse(xml_bytes,mimetype)
+    if cur_id != -1 and neighbor_id != -1:
+      #  format_str = 'json'
+        mimetype = 'application/json'
+        data = '{"cur_step_order": ' + str(new_order) +', "neighbor_step_order":'+str( cur_order) + ', "cur_step_id": '+str(cur_id)+', "neighbor_step_id": '+str(neighbor_id)+', "steps_count": '+str(steps_count)+' }'
+        xml_bytes = json.dumps(data)
+       # data = serializers.serialize(format_str, data)
+        return HttpResponse(xml_bytes,mimetype)
 
 #Вещества реакции
 @login_required
