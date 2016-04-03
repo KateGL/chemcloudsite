@@ -50,6 +50,8 @@ def substance_new(request):
             return redirect('substance_detail', substance.pk)
     return render(request,'chemical/substance_new.html', {'form': form})
 
+
+
 # расчеты
 
 @login_required
@@ -258,9 +260,18 @@ def react_substance_new(request, id_reaction):
 
 @login_required
 def react_substance_detail(request, id_reaction, id_react_substance):
-    subst_dict = request.user.chemistry.react_subst_get(id_reaction,id_react_substance)
+    subst_dict = request.user.chemistry.react_subst_get(id_reaction, id_react_substance)
     context = {'id_reaction': id_reaction, "substance": subst_dict['substance'], "is_owner": subst_dict['is_owner']}
     return render(request, 'chemical/react_substance_detail.html', context)
+
+
+@login_required
+@owner_required
+def react_substance_delete(request, id_reaction, id_react_substance):
+    #тут нужно добавить обработчик ошибок...
+    subst_dict = request.user.chemistry.react_subst_get(id_reaction, id_react_substance)
+    subst_dict['substance'].delete()
+    return redirect('react_substance_all', id_reaction)#или лушче на сообщение - "?"
 
 # Эксперименты
 @login_required

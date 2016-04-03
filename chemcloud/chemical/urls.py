@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/all/$', views.react_substance_all, name='react_substance_all'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/new/$', views.react_substance_new, name='react_substance_new'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/detail/$', views.react_substance_detail, name='react_substance_detail'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/delete/$', views.react_substance_delete, name='react_substance_delete'),
 
 #Эксперименты
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),

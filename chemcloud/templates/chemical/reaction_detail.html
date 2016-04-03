@@ -74,61 +74,7 @@
        
         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalReactionShare">Поделиться Реакцией</button>  
         
-         <!-- Modal -->   
-    <div class="modal fade" id="ModalReactionDelete" tabindex="-1" role="dialog" 
-     aria-labelledby="ModalReactionDeleteLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <!-- Modal Header -->
-            <div class="modal-header">
-                <button type="button" class="close" 
-                   data-dismiss="modal">
-                       <span aria-hidden="true">&times;</span>
-                       <span class="sr-only">Close</span>
-                </button>
-                <h4 class="modal-title" id="ModalReactionDeleteLabel">
-                    Удаление реакции
-                </h4>
-            </div>            
-            <!-- Modal Body -->
-            <div class="modal-body">  
-             
-                        <div class="well well-lg">
-                          Вы действиельно хотите удалить реакцию?  
-                        </div>                 
-                  
-                <div>
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Нет, не удалять</button>             
-                                    <a class = "btn btn-danger" href = "{% url 'reaction_delete' id_reaction %}" role = "button">
-                                    Да, удалить! реакцию</a>
-                                     </div>                     
-            </div>     
-    </div>
-    </div>
-          
-     </div>
-             
-        
-      </div>
-        <div class=" col-xs-3">
-    
-    
-     <ul class="list-group">
-  <li class="list-group-item">Перейти к реакции</li>
-  <li class="list-group-item">Сформировать отчет</li>
-  <li class="list-group-item">Доступ и права</li>
-  <li class="list-group-item">Дублировать</li>
-  <li class="list-group-item">
-   <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalReactionDelete">Удалить реакцию</button>
-  </li>
-</ul>
-    
-    
-     
-      </div>
-        
-       
-<!-- Modal -->
+         <!-- Modal Share Reaction-->
 <div class="modal fade" id="ModalReactionShare" tabindex="-1" role="dialog" 
      aria-labelledby="ModalReactionShareLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -155,8 +101,21 @@
     </div>
     </div>
      </div>
+             
+        
+      </div>
+        <div class=" col-xs-3">
     
+    {% include "chemical/reaction_detail_menu.html" %} 
+    
+     
+    
+    
+     
+      </div>     
+       
     
 
+</div>
 </div>
 {% endblock %}
