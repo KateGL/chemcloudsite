@@ -5,13 +5,13 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chemcloud.settings')
 import django
 django.setup()
 
-from chemical.models import Atom
+from chemical.models import Dict_atom
 
 def drop_all():
-     Atom.objects.all().delete()
-     print "dropped all atoms" 
+     Dict_atom.objects.all().delete()
+     print "dropped all atoms"
 
-def populate():   
+def populate():
 
    add_atom(atom_num=1, symb="H",  atom_m=1.00800002,  n = "Водород",   nl = "Hydrogenium")
    add_atom(atom_num=2, symb="He",  atom_m=4.00299978,  n = "Гелий",   nl = "Helium")	
@@ -125,11 +125,11 @@ def populate():
 
 
     # Print out what we have added to the user.
-   for a in Atom.objects.all():
+   for a in Dict_atom.objects.all():
             print "{0}- {1} ".format(str(a), a.symbol)
 
 def add_atom(atom_num, symb, atom_m, n, nl):
-    a = Atom.objects.get_or_create(atom_number=atom_num, symbol=symb, atom_mass = atom_m, name = n, name_latin = nl)[0]
+    a = Dict_atom.objects.get_or_create(atom_number=atom_num, symbol=symb, atom_mass = atom_m, name = n, name_latin = nl)[0]
     a.save()
     return a
 

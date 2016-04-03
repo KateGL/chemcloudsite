@@ -3,17 +3,17 @@ from django.contrib import admin
 
 # Register your models here.
 
-from chemical.chemical_models import Atom, Substance, Reaction, Reaction_scheme, Experiment
+from chemical.chemical_models import Dict_atom, Substance, Reaction, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst
 from chemical.chemical_models import ReactionSubst
 from chemical.chemical_models import UserReaction
 
 
-class AtomAdmin(admin.ModelAdmin):
+class Dict_atomAdmin(admin.ModelAdmin):
   fields = ['atom_number', 'symbol','atom_mass',  'name', 'name_latin']
   list_display = ('atom_number', 'symbol', 'atom_mass', 'name', 'name_latin')
 
-admin.site.register(Atom, AtomAdmin)
+admin.site.register(Dict_atom, Dict_atomAdmin)
 
 
 class SubstanceAdmin(admin.ModelAdmin):

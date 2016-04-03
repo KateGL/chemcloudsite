@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
-from chemical.chemical_models import Atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme, Experiment
+from chemical.chemical_models import Dict_atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst
 from chemical.chemical_models import ReactionSubst, UserReaction
 
@@ -21,7 +21,7 @@ class AtomTable(tables.Table):
         return make_detail_link(link)
 
     class Meta:
-        model = Atom
+        model = Dict_atom
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
         sequence = ("atom_number", "symbol", "name", "name_latin", "atom_mass")

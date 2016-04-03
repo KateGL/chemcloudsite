@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 
 
 # Атом
-class Atom(models.Model):
+class Dict_atom(models.Model):
     atom_number = models.IntegerField(primary_key = True, verbose_name='Атомный номер')
     symbol = models.CharField(max_length=3, unique=True, verbose_name='Обозначение')
     atom_mass = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Атомная масса')
@@ -39,7 +39,7 @@ class Substance(models.Model):
         #atoms_dict = {'H':2, 'Oh':3}
         for key, val in atoms_dict.items():
             try:
-              atom = Atom.objects.get(symbol=key)
+              atom = Dict_atom.objects.get(symbol=key)
               if atom:
                 co = SubstanceConsist.objects.get_or_create(atom =atom, substance = self, atom_count = val)[0]
                 co.save()
@@ -79,7 +79,7 @@ class Substance(models.Model):
 # Состав вещества
 class SubstanceConsist(models.Model):
     substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
-    atom = models.ForeignKey(Atom, null = False, on_delete=models.CASCADE, related_name='+')
+    atom = models.ForeignKey(Dict_atom, null = False, on_delete=models.CASCADE, related_name='+')
     atom_count = models.DecimalField(max_digits=11, decimal_places=7,default = 0, verbose_name = 'Количество атомов')
     class Meta:
         verbose_name = ('Состав Вещества')

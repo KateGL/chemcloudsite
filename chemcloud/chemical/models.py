@@ -7,7 +7,7 @@ from django.core.exceptions import PermissionDenied
 from annoying.fields import AutoOneToOneField
 from django.contrib.auth.models import User
 
-from chemical.chemical_models import Atom, Substance, Reaction, UserReaction
+from chemical.chemical_models import Dict_atom, Substance, Reaction, UserReaction
 from chemical.chemical_models import ReactionSubst, Experiment, Reaction_scheme
 from chemical.chemical_models import Scheme_step
 
@@ -38,13 +38,13 @@ class Chemistry(models.Model):
         return subst
 
     def atom_all(self):
-        return Atom.objects.all()
+        return Dict_atom.objects.all()
 
 
     def atom_get(self, atom_number):
         try:
-            atom = Atom.objects.get(pk=atom_number)
-        except Atom.DoesNotExist:
+            atom = Dict_atom.objects.get(pk=atom_number)
+        except Dict_atom.DoesNotExist:
             raise Http404("Atom does not exist")
         return atom
 
