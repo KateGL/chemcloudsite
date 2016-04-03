@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^reaction/all/$', views.reaction_all, name='reaction_all'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/detail/$', views.reaction_detail, name='reaction_detail'),
     url(r'^reaction/new/$', views.reaction_new, name='reaction_new'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/delete/$', views.reaction_delete, name='reaction_delete'),
 
 #Механизмы реакции
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/all/$', views.scheme_all, name='scheme_all'),

@@ -101,6 +101,16 @@ def reaction_detail(request, id_reaction):
               'form': form, 'user_reacts': user_reacts})
 
 @login_required
+@owner_required
+def reaction_delete(request, id_reaction):
+    #тут нужно добавить обработчик ошибок... Для случаев, когда удаление реакции запрещено
+    #например, если по реакции есть расчеты
+    react = request.user.chemistry.reaction_get(id_reaction)
+    react.reaction.delete()
+    return redirect('reaction_all')#или лушче на сообщение - "Реакция удалена?"
+
+
+@login_required
 def reaction_new(request):
     form = ReactionForm(request.POST or None)
     if request.method == 'POST':
