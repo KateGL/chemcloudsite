@@ -7,8 +7,8 @@ from django.core.exceptions import PermissionDenied
 from annoying.fields import AutoOneToOneField
 from django.contrib.auth.models import User
 
-from chemical.chemical_models import Dict_atom, Substance, Reaction, UserReaction
-from chemical.chemical_models import ReactionSubst, Experiment, Reaction_scheme
+from chemical.chemical_models import Dict_atom, Substance, Reaction, User_reaction
+from chemical.chemical_models import Reaction_subst, Experiment, Reaction_scheme
 from chemical.chemical_models import Scheme_step
 
 
@@ -53,16 +53,16 @@ class Chemistry(models.Model):
 
     def is_owner(self, id_reaction):
         try:
-            react = UserReaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
-        except UserReaction.DoesNotExist:
+            react = User_reaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
+        except User_reaction.DoesNotExist:
             raise Http404("Reaction does not exist or access denied")
         return react.is_owner
 
 #на самом деле возвращает объект UserReaction
     def reaction_get(self, id_reaction):
         try:
-            react = UserReaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
-        except UserReaction.DoesNotExist:
+            react = User_reaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
+        except User_reaction.DoesNotExist:
             raise Http404("Reaction does not exist or access denied")
         return react
 
@@ -81,7 +81,7 @@ class Chemistry(models.Model):
         react = self.reaction_get(id_reaction)
         try:
             subst = react.reaction.substances.get(pk=id_react_subst)
-        except ReactionSubst.DoesNotExist:
+        except Reaction_subst.DoesNotExist:
             raise Http404("Substance does not exist")
         subst_dict = {}
         subst_dict['substance'] = subst

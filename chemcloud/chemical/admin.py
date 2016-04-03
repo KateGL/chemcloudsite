@@ -5,8 +5,8 @@ from django.contrib import admin
 
 from chemical.chemical_models import Dict_atom, Substance, Reaction, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst
-from chemical.chemical_models import ReactionSubst
-from chemical.chemical_models import UserReaction
+from chemical.chemical_models import Reaction_subst
+from chemical.chemical_models import User_reaction
 
 
 class Dict_atomAdmin(admin.ModelAdmin):
@@ -45,11 +45,11 @@ admin.site.register( Scheme_step)
 admin.site.register( Step_subst)
 
 #Вещества реакции
-admin.site.register( ReactionSubst)
+admin.site.register( Reaction_subst)
 
 #  Эксперименты
 admin.site.register(Experiment)#, ReactionSchemeAdmin)
 
 
 #Права пользователя
-admin.site.register(UserReaction)
+admin.site.register(User_reaction)

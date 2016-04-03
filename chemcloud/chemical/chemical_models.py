@@ -41,7 +41,7 @@ class Substance(models.Model):
             try:
               atom = Dict_atom.objects.get(symbol=key)
               if atom:
-                co = SubstanceConsist.objects.get_or_create(atom =atom, substance = self, atom_count = val)[0]
+                co = Substance_consist.objects.get_or_create(atom =atom, substance = self, atom_count = val)[0]
                 co.save()
                 self.consist.add(co)
             except:
@@ -77,7 +77,7 @@ class Substance(models.Model):
         verbose_name_plural = ('Вещества')
 
 # Состав вещества
-class SubstanceConsist(models.Model):
+class Substance_consist(models.Model):
     substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
     atom = models.ForeignKey(Dict_atom, null = False, on_delete=models.CASCADE, related_name='+')
     atom_count = models.DecimalField(max_digits=11, decimal_places=7,default = 0, verbose_name = 'Количество атомов')
@@ -102,12 +102,12 @@ class Reaction(models.Model):
         return self.name
 
     def add_owner(self, user_owner):
-        user_reaction = UserReaction.objects.get_or_create(user =user_owner, reaction = self, is_owner = True)[0]
+        user_reaction = User_reaction.objects.get_or_create(user =user_owner, reaction = self, is_owner = True)[0]
         user_reaction.save()
         self.users.add(user_reaction)
 
     def share_to_user(self, user_new, is_owner_new):
-        user_reaction = UserReaction.objects.get_or_create(user=user_new, reaction=self, is_owner=is_owner_new)[0]
+        user_reaction = User_reaction.objects.get_or_create(user=user_new, reaction=self, is_owner=is_owner_new)[0]
         user_reaction.save()
         self.users.add(user_reaction)
 
@@ -170,7 +170,7 @@ class Step_subst(models.Model):
 
 
 #Вещества реакции
-class ReactionSubst(models.Model):
+class Reaction_subst(models.Model):
     reaction = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='substances' )
     substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
     alias = models.CharField (max_length = 250, verbose_name='Псевдоним', null = False)
@@ -208,7 +208,7 @@ class Experiment (models.Model):
 #Права пользователя
 #Считаем, что если есть запист в этой таблице, то Пользователь имеет право на чтение Реакции
 #Если is_owner == True то пользователь может редактировать реакцию и расшаривать ее другим Пользователям
-class UserReaction(models.Model):
+class User_reaction(models.Model):
     reaction = models.ForeignKey(Reaction, related_name='users', verbose_name='Реакция', null = False,on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='reactions', verbose_name='Пользователь', null = False,on_delete=models.CASCADE)
     is_owner = models.BooleanField(default = False, verbose_name='Владелец')

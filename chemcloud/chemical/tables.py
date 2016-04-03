@@ -7,9 +7,9 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
-from chemical.chemical_models import Dict_atom, Substance, UserReaction, SubstanceConsist, Reaction_scheme, Experiment
+from chemical.chemical_models import Dict_atom, Substance, Substance_consist, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst
-from chemical.chemical_models import ReactionSubst, UserReaction
+from chemical.chemical_models import Reaction_subst, User_reaction
 
 from .urls_utils import make_detail_link, make_name_link
 
@@ -49,7 +49,7 @@ class ConsistTable(tables.Table):
     atom_symbol = tables.Column(accessor='atom.symbol')
 
     class Meta:
-        model = SubstanceConsist
+        model = Substance_consist
         attrs = {"class": "paleblue"}
         fields = ("atom_symbol", "atom_count")
         sequence = ("atom_symbol", "atom_count")
@@ -75,7 +75,7 @@ class ReactionTable(tables.Table):
             return 'Чтение'
 
     class Meta:
-        model = UserReaction
+        model = User_reaction
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
         fields = ("name", "is_favorite", "description", "updated_date", "user_rule", "detail_link")
@@ -95,7 +95,7 @@ class UserOfReactionTable(tables.Table):
             return 'Чтение'
 
     class Meta:
-        model = UserReaction
+        model = User_reaction
         attrs = {"class": "paleblue"}
         fields = ("user_name", "user_rule", "user_email")
         sequence = ("user_name", "user_email", "user_rule")
@@ -145,7 +145,7 @@ class ReactionSubstTable(tables.Table):
         return make_detail_link(link)
 
     class Meta:
-        model = ReactionSubst
+        model = Reaction_subst
         attrs = {"class": "paleblue"}
         fields = ("alias", "brutto_formula_short", "name", "detail_link")
         sequence = ("alias", "brutto_formula_short", "name", "detail_link")
@@ -162,7 +162,7 @@ class StepsTable(tables.Table):
         return make_detail_link(link)
 
     def render_step(self,record):
-        #TODO число стадий подсчитать и вывести
+        ##TODO число стадий подсчитать и вывести
         #получаем число стадий схемы по scheme
         if record.is_revers:
             return mark_safe('left &harr right')
