@@ -71,3 +71,6 @@ target/
 #Migrations folder
 migrations/
 
+#Temporary files
+*.txt~
+
