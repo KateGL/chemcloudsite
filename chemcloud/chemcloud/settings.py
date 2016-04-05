@@ -24,6 +24,7 @@ SECRET_KEY = ')@$9^k_)ur3u7+7g(i9a0m3h0!t)!&n%qb054t%)kx(ii!rsyn'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+USE_DEBUG_TOOL = True
 
 ALLOWED_HOSTS = []
 
@@ -44,7 +45,13 @@ INSTALLED_APPS = [
     'chemical', #models and views of main chemical entyties: atom, substance, reaction, mechanism, etc
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE_CLASSES = []
+
+if USE_DEBUG_TOOL:
+    INSTALLED_APPS += ['debug_toolbar',]
+    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware',]
+
+MIDDLEWARE_CLASSES += [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -151,3 +158,23 @@ REGISTRATION_AUTO_LOGIN = True  # If True, the user will be automatically logged
 LOGIN_REDIRECT_URL = '/'  # The page you want users to arrive at after they successful log in
 LOGIN_URL = '/accounts/login/'  # The page users are directed to if they are not logged in,
 
+#debug toolbar
+#set to False for hiding
+DEBUG_TOOLBAR_PATCH_SETTINGS = True & USE_DEBUG_TOOL
+
+DEBUG_TOOLBAR_PANELS = [
+#    'debug_toolbar.panels.versions.VersionsPanel',
+#    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+#    'debug_toolbar_htmltidy.panels.HTMLTidyDebugPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+]

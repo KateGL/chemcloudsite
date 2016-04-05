@@ -13,11 +13,11 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, patterns
 from django.contrib import admin
 
-from django.conf import settings 
-from django.conf.urls.static import static 
+from django.conf import settings
+from django.conf.urls.static import static
 
 import chemmain.views
 import chemical.views
@@ -44,5 +44,11 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.simple.urls')),
 
     url(r'^chemical/', include('chemical.urls')),
-  
 ]
+
+# Так и не смогла настроить чтоб отладка проходила по адресу. Но не суть
+#if settings.DEBUG:
+    #import debug_toolbar
+    #urlpatterns += patterns('',
+        #url(r'^__debug__/', include(debug_toolbar.urls)),
+    #)
