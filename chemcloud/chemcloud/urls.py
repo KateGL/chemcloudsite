@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """chemcloud URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
@@ -47,7 +48,7 @@ urlpatterns = [
 ]
 
 # Так и не смогла настроить чтоб отладка проходила по адресу. Но не суть
-#if settings.DEBUG:
+#if settings.DEBUG & settings.USE_DEBUG_TOOL:
     #import debug_toolbar
     #urlpatterns += patterns('',
         #url(r'^__debug__/', include(debug_toolbar.urls)),
