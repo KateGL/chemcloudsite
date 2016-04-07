@@ -5,7 +5,7 @@ from django.contrib import admin
 
 from chemical.chemical_models import Dict_atom, Substance, Reaction, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Step_subst
-from chemical.chemical_models import Reaction_subst
+from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_tag,Dict_feature,Reaction_feature, Dict_model_function, Dict_model_argument, Dict_measure_unit
 from chemical.chemical_models import User_reaction
 
 
@@ -24,10 +24,12 @@ class SubstanceAdmin(admin.ModelAdmin):
 admin.site.register(Substance, SubstanceAdmin)
 
 class ReactionAdmin(admin.ModelAdmin):
-  fields = ['name',  'is_favorite', 'is_notstationary',
- 'is_isothermal','description', 'created_by' ]
-  list_display = ('id_reaction',  'name', 'is_favorite', 'is_notstationary',
- 'is_isothermal','description', 'created_by' )
+  #fields = ['name',  'is_favorite', 'is_notstationary',
+ #'is_isothermal','description', 'created_by' ]
+ # list_display = ('id_reaction',  'name', 'is_favorite', 'is_notstationary',
+ #'is_isothermal','description', 'created_by' )
+  fields = ['name',  'is_favorite','description', 'created_by' ]
+  list_display = ('id_reaction',  'name', 'is_favorite', 'description', 'created_by' )
 
 admin.site.register(Reaction, ReactionAdmin)
 
@@ -53,3 +55,25 @@ admin.site.register(Experiment)#, ReactionSchemeAdmin)
 
 #Права пользователя
 admin.site.register(User_reaction)
+
+#Синонимы вещества
+admin.site.register(Substance_synonym)
+
+#Свойства (свойства реакции)
+admin.site.register(Dict_feature)
+
+#Свойства реакции
+admin.site.register(Reaction_feature)
+
+#Тэги реакции
+admin.site.register(Reaction_tag)
+
+#Функции модели
+admin.site.register(Dict_model_function)
+
+#Аргументы модели
+admin.site.register(Dict_model_argument)
+
+#Единицы
+admin.site.register(Dict_measure_unit)
+

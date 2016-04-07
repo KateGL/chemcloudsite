@@ -91,8 +91,8 @@ class Reaction(models.Model):
     name             = models.CharField(max_length=300, verbose_name='Название')
     description      = models.TextField(blank = True,  verbose_name='Описание')
     is_favorite      = models.BooleanField(default = False, verbose_name='Избранное')
-    is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
-    is_isothermal    = models.BooleanField(default = True, verbose_name='Изотермическая')
+    #is_notstationary = models.BooleanField(default = True, verbose_name='Нестационарная')
+    #is_isothermal    = models.BooleanField(default = True, verbose_name='Изотермическая')
     created_by       = models.TextField (verbose_name='Создал(ла)')#todo data type
     created_date     = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
     updated_by       = models.TextField (verbose_name='Обновил(а)')#todo data type
@@ -217,3 +217,98 @@ class User_reaction(models.Model):
       verbose_name = ('Доступ к Реакции')
       verbose_name_plural = ('Права на Реакции ')
       unique_together = ('reaction', 'user')
+
+#Синонимы вещества
+class Substance_synonym (models.Model):
+    substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
+    name = models.CharField (max_length = 250, verbose_name='Название')
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+        ordering            = ["name"]
+        verbose_name        = ('Синоним вещества')
+        verbose_name_plural = ('Синонимы вещества')
+
+
+#Тэги реакции
+class Reaction_tag(models.Model):
+    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
+    tag = models.CharField (max_length = 250, verbose_name='Тэг')
+
+    def __unicode__ (self):
+        return self.tag
+
+    class Meta:
+      ordering = ["tag"]
+      verbose_name = ('Тэг реакции')
+      verbose_name_plural = ('Тэги реакции')
+
+
+# Свойства
+class Dict_feature(models.Model):
+    id_feature = models.IntegerField(primary_key = True, verbose_name='Номер свойства')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Название свойства')
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+        verbose_name = ('Свойство')
+        verbose_name_plural = ('Свойства')
+        ordering = ["name"]
+
+
+#Свойства реакции
+class Reaction_feature(models.Model):
+    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
+    feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+' )
+
+    class Meta:
+      verbose_name = ('Свойство реакции')
+      verbose_name_plural = ('Свойства реакции')
+
+
+# Функции модели
+class Dict_model_function(models.Model):
+    id_func = models.IntegerField(primary_key = True, verbose_name='Номер функции модели')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Название функции модели')
+    symbol = models.CharField(max_length=10, unique=True, verbose_name='Символ')
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+        verbose_name = ('Функция модели')
+        verbose_name_plural = ('Функции модели')
+        ordering = ["name"]
+
+# Аргументы модели
+class Dict_model_argument(models.Model):
+    id_arg = models.IntegerField(primary_key = True, verbose_name='Номер аргумента модели')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Название аргумента модели')
+    symbol = models.CharField(max_length=10, unique=True, verbose_name='Символ')
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+        verbose_name = ('Аргумент модели')
+        verbose_name_plural = ('Аргументы модели')
+        ordering = ["name"]
+
+# Единицы измерения
+class Dict_measure_unit(models.Model):
+    id_unit = models.IntegerField(primary_key = True, verbose_name='Номер единицы измерения')
+    codee = models.CharField(max_length=250, unique=True, verbose_name='Обозначение')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Название единицы измерения')
+    #todo - добавить остальные поля!!!
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+        verbose_name = ('Единица измерения')
+        verbose_name_plural = ('Единицы измерения')
+        ordering = ["name"]

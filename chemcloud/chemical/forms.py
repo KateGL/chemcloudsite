@@ -9,7 +9,9 @@ from .utils import check_blocks
 class ReactionForm(forms.ModelForm):
     class Meta:
         model = Reaction
-        fields = ('name', 'description', 'is_favorite', 'is_notstationary', 'is_isothermal')
+        fields = ('name', 'description', 'is_favorite')
+#        fields = ('name', 'description', 'is_favorite', 'is_notstationary', 'is_isothermal')
+			
 
 
 #Поделиться реакцией
