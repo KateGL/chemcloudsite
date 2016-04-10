@@ -301,11 +301,11 @@ class Dict_model_argument(models.Model):
 # Единицы измерения
 class Dict_measure_unit(models.Model):
     id_unit = models.IntegerField(primary_key = True, verbose_name='Номер единицы измерения')
-    code = models.CharField(max_length=250, unique=True, verbose_name='Обозначение')
+    code = models.CharField(max_length=250, verbose_name='Обозначение')
     name = models.CharField(max_length=250, unique=True, verbose_name='Название единицы измерения')
     is_si = models.BooleanField(default = True, verbose_name='СИ')
     multiplier = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Множитель')
-    #id_unit_si = models.IntegerField(primary_key = True, verbose_name='Атомный номер')
+    id_unit_si = models.ForeignKey('self', null = True, blank=True, related_name='+' )
 
 
     def __unicode__ (self):

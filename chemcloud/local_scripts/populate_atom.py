@@ -5,11 +5,17 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chemcloud.settings')
 import django
 django.setup()
 
-from chemical.models import Dict_atom
+#from chemical.models import Dict_atom
+from chemical.chemical_models import Dict_atom,Dict_feature,Dict_model_function
+from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 
 def drop_all():
      Dict_atom.objects.all().delete()
-     print "dropped all atoms"
+     Dict_feature.objects.all().delete()
+     Dict_model_function.objects.all().delete()
+     Dict_model_argument.objects.all().delete()
+     Dict_measure_unit.objects.all().delete()
+     print "dropped all data"
 
 def populate():
 
@@ -122,20 +128,72 @@ def populate():
    add_atom(atom_num=107, symb="Bh",  atom_m=262,  n = "Борий",   nl =  "Bohrium")
    add_atom(atom_num=108, symb="Hn",  atom_m=265,  n = "Хассий ",   nl =  "Hassium")
    add_atom(atom_num=109, symb="Mt",  atom_m=268,  n = "Мейтнерий",   nl =  "Meitnerium")
+   add_dict_feature(1,'Нестационарная')
+   add_dict_feature(2,'Изотермическая')
+   add_dict_feature(3,'Закрытая')
+   add_dict_model_function(1,'Концентрация','x')
+   add_dict_model_argument(1,'Время','t')
+   add_dict_model_argument(2,'Длина реактора','l')
+   add_dict_measure_unit(1,'empty','Пусто',1,1,None)
+   b = Dict_measure_unit.objects.get(id_unit=1)
+   add_dict_measure_unit(2,'сек','Секунда',1,1,b)
+   b = Dict_measure_unit.objects.get(id_unit=2)
+   add_dict_measure_unit(3,'мин','Минута',0,60,b)
+   add_dict_measure_unit(4,'ч','Час',0,3600,b)
+   b = Dict_measure_unit.objects.get(id_unit=1)
+   add_dict_measure_unit(5,'М','Моль/л',1,1,b)
+   add_dict_measure_unit(6,'doli','Мольные доли',1,1,b)
+   add_dict_measure_unit(7,'%','Процентные соотношения наблюдаемых веществ',1,1,b)
+   add_dict_measure_unit(8,'м','Метр',1,1,b)
+   b = Dict_measure_unit.objects.get(id_unit=8)
+   add_dict_measure_unit(9,'см','Сантиметр',0,100,b)
+   b = Dict_measure_unit.objects.get(id_unit=1)
+   add_dict_measure_unit(10,'%','Проценты',1,1,b)
+   add_dict_measure_unit(11,'кг/(м2*сек)','Массовая скорость потока',1,1,b)
+
+#5 M Моль/л Да 1 1
+#6 doli Мольные доли Да 1 1
+#7 % Процентные соотношения наблюдаемых веществ Да 1 1
+#8 м Метр Да 1 1
+#9 см Сантиметр Нет 100 8
+#10 % Проценты Да 1 1
+#11 (Ед.изм.Скорости потока, Лениза, в твоих реакциях есть? Тогда укажи)
 
 
     # Print out what we have added to the user.
-   for a in Dict_atom.objects.all():
-            print "{0}- {1} ".format(str(a), a.symbol)
+   #for a in Dict_atom.objects.all():
+   #         print "{0}- {1} ".format(str(a), a.symbol)
+   #for a in Dict_feature.objects.all():
+   #         print "{0}- {1} ".format(str(a), a.name)
 
 def add_atom(atom_num, symb, atom_m, n, nl):
     a = Dict_atom.objects.get_or_create(atom_number=atom_num, symbol=symb, atom_mass = atom_m, name = n, name_latin = nl)[0]
     a.save()
     return a
 
+def add_dict_feature(id_feature_,name_):
+    a = Dict_feature.objects.get_or_create(id_feature=id_feature_, name=name_)[0]
+    a.save()
+    return a
+
+def add_dict_model_function(id_func_,name_,symbol_):
+    a = Dict_model_function.objects.get_or_create(id_func=id_func_, name=name_,symbol=symbol_)[0]
+    a.save()
+    return a
+
+def add_dict_model_argument(id_arg_,name_,symbol_):
+    a = Dict_model_argument.objects.get_or_create(id_arg=id_arg_, name=name_,symbol=symbol_)[0]
+    a.save()
+    return a
+
+def add_dict_measure_unit(id_unit_,code_,name_,is_si_,multiplier_,id_unit_si_):
+    a = Dict_measure_unit.objects.get_or_create(id_unit=id_unit_,code=code_, name=name_,is_si=is_si_,multiplier=multiplier_,id_unit_si=id_unit_si_)[0]
+    a.save()
+    return a
 
 # Start execution here!
 if __name__ == '__main__':
-    print "Starting Atom population script..."
+    print "Starting population script..."
     drop_all()
     populate()
+    print "Data successfully added!"
