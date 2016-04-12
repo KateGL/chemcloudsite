@@ -3,6 +3,7 @@ from django.conf.urls import url
 
 #import chemical.views
 from chemical import views
+from chemical.views import MyDataView
 
 urlpatterns = [
 #Вещества
@@ -27,7 +28,8 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/all/$', views.scheme_all, name='scheme_all'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/new/$', views.scheme_new, name='scheme_new'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/$', views.scheme_edit, name='scheme_edit'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/$', MyDataView.as_view(), name='scheme_edit'),
+#    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/$', views.scheme_edit_json, name='scheme_edit_ajax'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step/(?P<id_step>[0-9]+)/detail/$', views.step_detail, name='step_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/change_order/$', views.change_step_order, name='change_step_order'),
 

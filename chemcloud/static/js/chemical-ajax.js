@@ -1,4 +1,17 @@
 $(document).ready(function(){
+         $('#example').dataTable( {
+             "processing": true,
+             "ajax": {
+                 "processing": true,
+                 "url": "{% url 'scheme_edit_ajax' 1 1 %}",
+                 "dataSrc": ""
+             },
+
+             "columns": [
+                     { "data": "fields.name" },
+                     { "data": "pk" }
+                 ]
+         } );
 
 	$('.changeorder').click(function(){
 		var stepid   = $(this).attr("data-stepid");

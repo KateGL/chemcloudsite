@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'registration', # add in the registration package  django-registration-redux
     'django_tables2',
+    'table',
     'annoying',
     'crispy_forms',
     'chemmain', # main pages of site

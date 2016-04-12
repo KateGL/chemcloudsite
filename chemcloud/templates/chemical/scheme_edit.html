@@ -1,47 +1,29 @@
 {% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
-{% load render_table from django_tables2 %}
-
-
+{% load table_tags %}
 
 {% block body_block %}
 	<div class="page-header">
 		{% if scheme_name %}
 		<h1> {{ scheme_name }}</h1>
 		{% else %}
-		<h1> {if Неизвестный механизм</h1>
+		<h1> {if Неизвестный механизм}</h1>
 		{% endif %}
 	</div>
 	
 	<div class="page-content">
-		
-{% if steps %}	
-			<div class="table-container">
-				<table id="all-steps"  class="paleblue">
-					<thead>
-						<tr>
-							<th class="order_arrows">Переместить</th>
-							<th class="order orderable"><a href="?sort=order">№ п/п</a></th>
-							<th class="name orderable"><a href="?sort=name">Обозначение</a></th>
-							<th class="step">Стадия</th>
-							<th class="detail_link"></th>
-						</tr>
-					</thead>
-	    			<tbody>
-						{% for step in steps %}
-						<tr class="even">
-							<td><button id="btn_{{step.id_step}}up" class="changeorder" data-stepid="{{step.id_step}}" data-direction="up"  type="button" data-reacid="{{id_reaction}}" data-schemeid="{{step.scheme.id_scheme}}">&#9650</button></br>
-<button id="btn_{{step.id_step}}down" class="changeorder" data-stepid="{{step.id_step}}" data-direction="down"  type="button"  data-reacid="{{id_reaction}}" data-schemeid="{{step.scheme.id_scheme}}">&#9660</button></td>
-							<td id="order_{{step.id_step}}"> {{ step.order }} </td>
-							<td>{{ step.name }}</td>
-							<td> {% if step.is_revers %} &#8596 {% else %} &#8594 {% endif %} </td>
-							<td><a href="{% url 'step_detail' id_reaction step.scheme.id_scheme step.id_step %}"> Детали</a> </td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		{% endif %}
+	
+            {% render_table steps %}
+        </div>
+	
+<table cellpadding="0" cellspacing="0" border="0" id="example">
+     <thead>
+         <tr><th>Name</th></tr>
+     </thead>
+     <tbody></tbody>
+</table>
+
+
 	</div>
 {% endblock %}
