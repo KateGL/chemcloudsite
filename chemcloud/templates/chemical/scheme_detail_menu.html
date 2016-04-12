@@ -1,0 +1,46 @@
+<ul class="list-group">
+<li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'scheme_edit' id_reaction scheme.pk %}">Перейти к механизму</a></li>
+  <li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'scheme_report' id_reaction  scheme.pk%}">Сформировать отчет</a></li>
+  <li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'scheme_copy' id_reaction scheme.pk%}">Дублировать</a></li>
+  <li class="list-group-item">
+   <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalSchemeDelete"><span class="glyphicon glyphicon-remove"></span> Удалить механизм</a>
+  </li>
+  <li class="list-group-item">Сохранить как шаблон</li>
+  <li class="list-group-item">Сформировать из шаблона</li>
+</ul>
+
+<!-- Modal Delete Scheme-->   
+    <div class="modal fade" id="ModalSchemeDelete" tabindex="-1" role="dialog" 
+     aria-labelledby="ModalSchemeDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close" 
+                   data-dismiss="modal">
+                       <span aria-hidden="true">&times;</span>
+                       <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="ModalReactionDeleteLabel">
+                    Удаление механизма
+                </h4>
+            </div>            
+            <!-- Modal Body -->
+            <div class="modal-body">  
+             
+                        <div class="well well-lg">
+                          Вы действиельно хотите удалить механизм ?  
+                        </div>                 
+                  
+                <div>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Нет, не удалять</button>             
+                                    <a class = "btn btn-danger" href = "{% url 'scheme_delete' id_reaction scheme.pk %}" role = "button">
+                                    Да, удалить!</a>
+                                     </div>                     
+            </div>     
+    </div>
+    </div>
+          
+     </div>
+
+

@@ -22,12 +22,18 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/detail/$', views.reaction_detail, name='reaction_detail'),
     url(r'^reaction/new/$', views.reaction_new, name='reaction_new'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/delete/$', views.reaction_delete, name='reaction_delete'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/copy/$', views.reaction_copy, name='reaction_copy'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/report/$', views.reaction_report, name='reaction_report'),
 
 #Механизмы реакции
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/all/$', views.scheme_all, name='scheme_all'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/new/$', views.scheme_new, name='scheme_new'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/$', views.scheme_edit, name='scheme_edit'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/delete/$', views.scheme_delete, name='scheme_delete'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/copy/$', views.scheme_copy, name='scheme_copy'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/report/$', views.scheme_report, name='scheme_report'),
+
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step/(?P<id_step>[0-9]+)/detail/$', views.step_detail, name='step_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/change_order/$', views.change_step_order, name='change_step_order'),
 
@@ -42,6 +48,8 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail/$', views.experiment_detail, name='experiment_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/edit/$', views.experiment_edit, name='experiment_edit'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/copy/$', views.experiment_copy, name='experiment_copy'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/delete/$', views.experiment_delete, name='experiment_delete'),
 
 #Задачи
     url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/all/$', views.problem_all, name='problem_all'),

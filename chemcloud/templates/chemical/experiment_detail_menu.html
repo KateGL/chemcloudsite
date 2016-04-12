@@ -1,15 +1,17 @@
 <ul class="list-group">
-  <li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'reaction_report' id_reaction %}">Сформировать отчет</a></li>
-  <li class="list-group-item"><a href="#reaction_rights" type="button" class="btn btn-link">Доступ и права</a></li>
-  <li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'reaction_copy' id_reaction %}">Дублировать</a></li>
+<li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'experiment_edit' id_reaction experiment.pk %}">Перейти к эксперименту</a></li>
+ 
+  <li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'experiment_copy' id_reaction experiment.pk%}">Дублировать</a></li>
   <li class="list-group-item">
-   <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalReactionDelete"><span class="glyphicon glyphicon-remove"></span> Удалить реакцию</a>
+   <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalExperDelete"><span class="glyphicon glyphicon-remove"></span> Удалить   эксперимент</a>
   </li>
+  <li class="list-group-item">Дополнительные свойства</li>
+
 </ul>
 
-<!-- Modal Delete Reaction-->   
-    <div class="modal fade" id="ModalReactionDelete" tabindex="-1" role="dialog" 
-     aria-labelledby="ModalReactionDeleteLabel" aria-hidden="true">
+<!-- Modal Delete Scheme-->   
+    <div class="modal fade" id="ModalExperDelete" tabindex="-1" role="dialog" 
+     aria-labelledby="ModalExperDeleteLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- Modal Header -->
@@ -20,19 +22,19 @@
                        <span class="sr-only">Close</span>
                 </button>
                 <h4 class="modal-title" id="ModalReactionDeleteLabel">
-                    Удаление реакции
+                    Удаление эксперимента 
                 </h4>
             </div>            
             <!-- Modal Body -->
             <div class="modal-body">  
              
                         <div class="well well-lg">
-                          Вы действиельно хотите удалить реакцию?  
+                          Вы действиельно хотите удалить эксперимент?  
                         </div>                 
                   
                 <div>
                                     <button type="button" class="btn btn-default" data-dismiss="modal">Нет, не удалять</button>             
-                                    <a class = "btn btn-danger" href = "{% url 'reaction_delete' id_reaction %}" role = "button">
+                                    <a class = "btn btn-danger" href = "{% url 'experiment_delete' id_reaction experiment.pk %}" role = "button">
                                     Да, удалить!</a>
                                      </div>                     
             </div>     
