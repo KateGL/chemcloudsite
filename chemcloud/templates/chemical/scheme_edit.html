@@ -15,7 +15,11 @@
 	</div>
 	
 	<div class="page-content">
-		
+	
+<div class="panel panel-default">
+  <div class="panel-body">
+</div>
+</div>	
 {% if steps %}	
 			<div class="table-container">
 				<table id="all-steps"  class="paleblue">
@@ -35,7 +39,7 @@
 <button id="btn_{{step.id_step}}down" class="changeorder" data-stepid="{{step.id_step}}" data-direction="down"  type="button"  data-reacid="{{id_reaction}}" data-schemeid="{{step.scheme.id_scheme}}">&#9660</button></td>
 							<td id="order_{{step.id_step}}"> {{ step.order }} </td>
 							<td>{{ step.name }}</td>
-							<td> {% if step.is_revers %} &#8596 {% else %} &#8594 {% endif %} </td>
+							<td>{{ step.get_leftPart_of_step }} {% if step.is_revers %} &#8596 {% else %} &#8594 {% endif %} {{ step.get_rightPart_of_step }}</td>
 							<td><a href="{% url 'step_detail' id_reaction step.scheme.id_scheme step.id_step %}"> Детали</a> </td>
 						</tr>
 						{% endfor %}

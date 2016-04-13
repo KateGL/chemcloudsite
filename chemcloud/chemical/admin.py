@@ -4,7 +4,7 @@ from django.contrib import admin
 # Register your models here.
 
 from chemical.chemical_models import Dict_atom, Substance, Reaction, Reaction_scheme, Experiment
-from chemical.chemical_models import Scheme_step, Step_subst
+from chemical.chemical_models import Scheme_step, Scheme_step_subst
 from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_tag,Dict_feature,Reaction_feature, Dict_model_function, Dict_model_argument, Dict_measure_unit
 from chemical.chemical_models import User_reaction
 
@@ -44,7 +44,7 @@ admin.site.register( Reaction_scheme)
 
 admin.site.register( Scheme_step)
 
-admin.site.register( Step_subst)
+admin.site.register( Scheme_step_subst)
 
 #Вещества реакции
 admin.site.register( Reaction_subst)

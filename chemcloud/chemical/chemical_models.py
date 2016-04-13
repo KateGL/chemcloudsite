@@ -147,27 +147,48 @@ class Scheme_step(models.Model):
     def __unicode__ (self):
         return self.name
 
+    def get_leftPart_of_step(self):
+        s_substs_arr = self.scheme_step_substs.all()
+        left = ''
+        i = 1
+        cnt = s_substs_arr.count()
+        for s_subst in s_substs_arr:  
+            if s_subst.stoich_koef < 0:
+                if i != 1:
+                    left = left + '+'
+                alias = s_subst.reac_substance.alias
+                positiv_koef = -1*s_subst.stoich_koef 
+                str_koef = ''
+                if positiv_koef != 1.0:
+                    str_koef = '{0:.3g}'.format(positiv_koef)#str(positiv_koef)     
+                left = left + str_koef+alias
+
+            i = i+1
+        return left
+
+    def get_rightPart_of_step(self):
+        s_substs_arr = self.scheme_step_substs.all()
+        i = 1
+        cnt = s_substs_arr.count()
+        right = ''
+        for s_subst in s_substs_arr:  
+            if s_subst.stoich_koef > 0:
+                alias = s_subst.reac_substance.alias
+                positiv_koef = s_subst.stoich_koef  
+                str_koef = ''
+                if positiv_koef != 1.0:
+                    str_koef = '{0:.3g}'.format(positiv_koef)#str(positiv_koef)     
+                right = right + str_koef+alias
+                if i < cnt:
+                    right = right + '+'
+            i = i+1
+        return right         
+
+
     class Meta:
         ordering            = ["order"]
         verbose_name        = ('Стадия схемы')##Механизма или Схемы??? я путаюсь Рита: это общая модель схемы и механизма и маршрута. ПО крайней мере по вертабело. Пока так. Дойдем до маршрутов - будет видно
         verbose_name_plural = ('Стадии схемы')
-
-#Вещество в стадии схемы реакции
-class Step_subst(models.Model):
-    #первичный ключ, только для возможности django создать ключ
-    id_stepsubst = models.AutoField (primary_key = True, verbose_name='ИД')
-    step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE)
-    #subst       = models.ForeignKey(Reaction_subst, null = False, on_delete=models.CASCADE, related_name='+')
-    substance    = models.IntegerField()
-    position     =    models.IntegerField(verbose_name='Позиция вещества в стадии')
-    stoich_koef  =    models.DecimalField(max_digits=6, decimal_places=3,default = 0, verbose_name='Стехиометрический коэффициент')
-    class Meta:
-        unique_together     = ('step', 'substance')
-        verbose_name        = ('Вещество стадии')
-        verbose_name_plural = ('Вещества стадии')
-
-
-
 
 #Вещества реакции
 class Reaction_subst(models.Model):
@@ -185,6 +206,19 @@ class Reaction_subst(models.Model):
       verbose_name = ('Вещество реакции')
       verbose_name_plural = ('Вещества реакции')
 
+#Вещество в стадии схемы реакции
+class Scheme_step_subst(models.Model):
+    #первичный ключ, только для возможности django создать ключ
+    id_step = models.AutoField (primary_key = True, verbose_name='ИД')
+    step         = models.ForeignKey(Scheme_step, null = False, on_delete=models.CASCADE, related_name='scheme_step_substs')
+    reac_substance    = models.ForeignKey(Reaction_subst, null = False, on_delete=models.CASCADE, related_name='+')
+    position     =    models.IntegerField(verbose_name='Позиция вещества в стадии')
+    stoich_koef  =    models.DecimalField(max_digits=6, decimal_places=3,default = 0, verbose_name='Стехиометрический коэффициент')
+    class Meta:
+        ordering            = ["id_step", "position"]
+        unique_together     = ('step', 'reac_substance')
+        verbose_name        = ('Вещество стадии')
+        verbose_name_plural = ('Вещества стадии')
 
 #Эксперименты
 class Experiment (models.Model):

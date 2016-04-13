@@ -8,7 +8,7 @@ from django.utils.safestring import mark_safe
 #from django.utils.html import escape
 
 from chemical.chemical_models import Dict_atom, Substance, Substance_consist, Reaction_scheme, Experiment
-from chemical.chemical_models import Scheme_step, Step_subst
+from chemical.chemical_models import Scheme_step, Scheme_step_subst
 from chemical.chemical_models import Reaction_subst, User_reaction
 
 from .urls_utils import make_detail_link, make_name_link
