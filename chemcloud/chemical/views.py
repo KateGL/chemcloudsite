@@ -153,15 +153,15 @@ def scheme_detail(request, id_reaction, id_scheme):
     return render(request, 'chemical/scheme_detail.html', context )
 
 #@login_required
-#tets for dataTable
-#def scheme_edit_json(request, id_reaction, id_scheme):
-#    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
-#    #получаем список стадий схемы
-#    steps = scheme_dict['scheme'].steps.all()
-##    json = serializers.serialize('json', steps)
-#    data = '{"pk": 1, "fields": {"name": "1"}}'
-#    xml_bytes = json.dumps(data)
-#    return HttpResponse(xml_bytes, content_type='application/json')
+#test for dataTable
+def scheme_edit_json(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    #получаем список стадий схемы
+    steps = scheme_dict['scheme'].steps.all()
+#    json = serializers.serialize('json', steps)
+    data = '{"pk": 1, "fields": {"name": "1"}}'
+    xml_bytes = json.dumps(data)
+    return HttpResponse(xml_bytes, content_type='application/json')
 
 class MyDataView(FeedDataView):
 
@@ -172,14 +172,22 @@ class MyDataView(FeedDataView):
         token = steps.token
         return super(MyDataView, self).get_queryset().filter(id__gt=5)
 
+@login_required
+def scheme_edit2(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    #получаем список стадий схемы
+    steps = scheme_dict['scheme'].steps.all()
+    steps_table = StepsTable_test(steps) #StepsTable(steps)
+    context = {'steps': steps_table, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
+    return render(request, 'chemical/scheme_edit2.html', context)
+
 
 @login_required
 def scheme_edit(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     #получаем список стадий схемы
     steps = scheme_dict['scheme'].steps.all()
-    steps_table = StepsTable_test(steps) #StepsTable(steps)
-    context = {'steps': steps_table, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
+    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
     return render(request, 'chemical/scheme_edit.html', context)
 
 

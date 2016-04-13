@@ -1,5 +1,5 @@
 $(document).ready(function(){
-         $('#example').dataTable( {
+ /*       $('#example').DataTable( {
              "processing": true,
              "ajax": {
                  "processing": true,
@@ -12,7 +12,7 @@ $(document).ready(function(){
                      { "data": "pk" }
                  ]
          } );
-
+*/
 	$('.changeorder').click(function(){
 		var stepid   = $(this).attr("data-stepid");
 		var direct   = $(this).attr("data-direction");
