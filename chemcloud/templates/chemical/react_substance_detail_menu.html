@@ -1,8 +1,8 @@
 <ul class="list-group"> 
   <li class="list-group-item">
-   <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalReactSubstDelete">Удалить</a>
+   <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalReactSubstDelete"><span class="glyphicon glyphicon-remove"></span> Удалить</a>
   </li>
-  <li class="list-group-item">Детали вещества в справочник</li>
+    <li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'substance_detail' substance.substance.pk %}">Детали Вещества (справочник)</a></li>
 </ul>
 
 <!-- Modal Delete Reaction Substance-->   
@@ -25,12 +25,12 @@
             <div class="modal-body">  
              
                         <div class="well well-lg">
-                          Вы действиельно хотите удалить вещество из реакции?  
+                          Вы действительно хотите удалить вещество из реакции?  
                         </div>                 
                   
                 <div>
     <button type="button" class="btn btn-default" data-dismiss="modal">Нет, не удалять</button>             
-    <a class = "btn btn-danger" href = "{% url 'react_substance_delete' id_reaction substance.substance.pk  %}" role = "button">
+    <a class = "btn btn-danger" href = "{% url 'react_substance_delete' id_reaction substance.pk  %}" role = "button">
                                     Да, удалить!</a>
                                      </div>                     
             </div>     

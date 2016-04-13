@@ -104,6 +104,19 @@ def reaction_detail(request, id_reaction):
          {"reaction": react.reaction, "id_reaction": id_reaction, "is_owner": react.is_owner,
               'form': form, 'user_reacts': user_reacts})
 
+
+@login_required
+def reaction_copy(request, id_reaction):
+    #empty now TODO
+    return redirect('reaction_detail', id_reaction)
+
+
+@login_required
+def reaction_report(request, id_reaction):
+    #empty now TODO
+    return redirect('reaction_detail', id_reaction)
+
+
 @login_required
 @owner_required
 def reaction_delete(request, id_reaction):
@@ -168,6 +181,29 @@ def scheme_edit(request, id_reaction, id_scheme):
     steps_table = StepsTable_test(steps) #StepsTable(steps)
     context = {'steps': steps_table, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
     return render(request, 'chemical/scheme_edit.html', context)
+
+
+@login_required
+@owner_required
+def scheme_delete(request, id_reaction, id_scheme):
+    #тут нужно добавить обработчик ошибок...
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    scheme_dict['scheme'].delete()
+    return redirect('scheme_all', id_reaction)#или лушче на сообщение - "?"
+
+
+@login_required
+@owner_required
+def scheme_copy(request, id_reaction, id_scheme):
+    #empty now TODO
+    return redirect('scheme_detail', id_reaction, id_scheme)
+
+
+@login_required
+def scheme_report(request, id_reaction, id_scheme):
+    #empty now TODO
+    return redirect('scheme_detail', id_reaction, id_scheme)
+
 
 @login_required
 def step_detail(request, id_reaction, id_scheme, id_step):
@@ -316,6 +352,23 @@ def experiment_edit(request, id_reaction, id_experiment):
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
     context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner']}
     return render(request, 'chemical/experiment_edit.html', context)
+
+
+@login_required
+@owner_required
+def experiment_delete(request, id_reaction, id_experiment):
+    #тут нужно добавить обработчик ошибок...
+    exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
+    exper_dict['experiment'].delete()
+    return redirect('experiment_all', id_reaction)#или лушче на сообщение - "?"
+
+
+@login_required
+@owner_required
+def experiment_copy(request, id_reaction, id_experiment):
+    #empty now TODO
+    return redirect('experiment_detail', id_reaction, id_experiment)
+
 
 
 @login_required

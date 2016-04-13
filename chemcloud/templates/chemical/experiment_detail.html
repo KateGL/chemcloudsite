@@ -4,12 +4,23 @@
 
 
 {% block body_block %}
+
+	
 	<div class="page-header">
-		<h1>Детали эксперимента {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %}</h1>
-	</div>
-		<div class="page-content">
-			{% if experiment %}
-				<table>
+
+    <h1> <a href="{% url 'experiment_all' id_reaction %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Детали эксперимента  {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>          
+            
+    </div>
+	
+	
+		<div class="page-content">    
+           
+<div class="row">          
+ <div class="col-xs-7">
+    
+            
+  <table class="table col-xs-6">
+     <tbody>
 					<tr>
 						<td>Название:</td>
 						<td>{{ experiment.name }}</td>
@@ -42,10 +53,21 @@
 						<td>Эксперимент создал(а):</td>
 						<td>{{experiment.created_by}}</td>
 					</tr>
-				</table>
-			{% else %}
-				<strong> Не удалось получить детали эксперимента </strong>
-			{% endif %}
+				</tbody>
+  </table>
+    </div>
+        
+        <div class=" col-xs-3">
+    
+    {% include "chemical/experiment_detail_menu.html" %} 
+    
+     
+    
+    
+     
+      </div> 
+         
 
             </div>
+
 {% endblock %}
