@@ -166,7 +166,8 @@ def scheme_edit(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     #получаем список стадий схемы
     steps = scheme_dict['scheme'].steps.all()
-    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
+    reac_substs = request.user.chemistry.react_subst_all(id_reaction)
+    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs }
     return render(request, 'chemical/scheme_edit.html', context)
 
 

@@ -15,10 +15,18 @@
 	</div>
 	
 	<div class="page-content">
+<div class="row">          
+ <div class="col-xs-12">
 	
+<div class="col-xs-6">
 <div class="panel panel-default">
-  <div class="panel-body">
-</div>
+    <div class="btn-toolbar" role="toolbar">
+      <div class="btn-group">
+        <button type="button" id="add_step" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Добавить стадию"><span class="glyphicon glyphicon-plus"></span></button>
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-minus"></span></button>
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Редактировать стадию"><span class="glyphicon glyphicon-pencil"></span></button>
+        <button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Проверить баланс стадии"><span class="glyphicon glyphicon-check"></span></button>
+      </div>
 </div>	
 {% if steps %}	
 			<div class="table-container">
@@ -47,5 +55,17 @@
 				</table>
 			</div>
 		{% endif %}
-	</div>
+</div>
+
+</div>
+        
+        <div class=" col-xs-6">
+    
+    {% include "chemical/scheme_edit_step_detail.html" %} 
+    
+     
+    
+      </div>  
+     
+      </div> 
 {% endblock %}
