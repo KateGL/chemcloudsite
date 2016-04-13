@@ -11,7 +11,7 @@ from django_tables2 import RequestConfig
 
 from chemical.tables import AtomTable, SubstanceTable, ReactionTable
 from chemical.tables import ConsistTable, MechanizmTable, ReactionSubstTable, ExperimentTable
-from chemical.tables import StepsTable, UserOfReactionTable, StepsTable_test
+from chemical.tables import StepsTable, UserOfReactionTable
 
 
 from django.shortcuts import redirect
@@ -21,8 +21,6 @@ from .forms import ReacSchemeForm, ExperimentForm
 from .utils import decorate_formula
 
 from .models import owner_required
-
-from table.views import FeedDataView
 
 # Вещество
 
@@ -162,25 +160,6 @@ def scheme_edit_json(request, id_reaction, id_scheme):
     data = '{"pk": 1, "fields": {"name": "1"}}'
     xml_bytes = json.dumps(data)
     return HttpResponse(xml_bytes, content_type='application/json')
-
-class MyDataView(FeedDataView):
-
-    def get_queryset(self, request, id_reaction, id_scheme):
-        scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
-        #получаем список стадий схемы
-        steps = scheme_dict['scheme'].steps.all()
-        token = steps.token
-        return super(MyDataView, self).get_queryset().filter(id__gt=5)
-
-@login_required
-def scheme_edit2(request, id_reaction, id_scheme):
-    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
-    #получаем список стадий схемы
-    steps = scheme_dict['scheme'].steps.all()
-    steps_table = StepsTable_test(steps) #StepsTable(steps)
-    context = {'steps': steps_table, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner']}
-    return render(request, 'chemical/scheme_edit2.html', context)
-
 
 @login_required
 def scheme_edit(request, id_reaction, id_scheme):

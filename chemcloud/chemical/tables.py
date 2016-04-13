@@ -3,10 +3,6 @@ from __future__ import unicode_literals
 import django_tables2 as tables
 from django_tables2.utils import A  # alias for Accessor
 
-from table import Table
-from table.columns import Column
-from django.core.urlresolvers import reverse_lazy
-
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 #from django.utils.html import escape
@@ -155,25 +151,6 @@ class ReactionSubstTable(tables.Table):
         sequence = ("alias", "brutto_formula_short", "name", "detail_link")
 
 #Стадии механизма
-#tables.Table
-class StepsTable_test(Table):
-    id = Column(field='id_step')
-    name = Column(field='name')
-#    detail_link = tables.LinkColumn('step_detail', orderable=False,  verbose_name='', empty_values=())
-
-#    def render_detail_link(self,record):
-#        link = reverse('chemical.views.step_detail', args=[record.scheme.reaction.pk, #record.scheme.pk ,record.pk])
-#        return make_detail_link(link)
-
-    class Meta:
-        model = Scheme_step
-        ajax  = True
-#        ajax_source = reverse_lazy('chemical.views.scheme_edit', args=[record.scheme.reaction.pk, record.scheme.pk])
-        # add class="paleblue" to <table> tag
-#        attrs = {"class": "paleblue"}
-#        fields =("name", "order", "step", "order_arrows", "detail_link")
-#        sequence = ("order_arrows", "order","name", "step", "detail_link")
-
 class StepsTable(tables.Table):
     detail_link = tables.LinkColumn('step_detail', orderable=False,  verbose_name='', empty_values=())
     step = tables.Column(verbose_name='Стадия', orderable=False, empty_values=())

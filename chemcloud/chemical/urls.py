@@ -3,7 +3,6 @@ from django.conf.urls import url
 
 #import chemical.views
 from chemical import views
-from chemical.views import MyDataView
 
 urlpatterns = [
 #Вещества
@@ -31,8 +30,6 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/detail/$', views.scheme_detail, name='scheme_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/new/$', views.scheme_new, name='scheme_new'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/$', views.scheme_edit, name='scheme_edit'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/ajax2/$', MyDataView.as_view(), name='scheme_edit'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/edit/ajax1/$', views.scheme_edit_json, name='scheme_edit_ajax'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/delete/$', views.scheme_delete, name='scheme_delete'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/copy/$', views.scheme_copy, name='scheme_copy'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/report/$', views.scheme_report, name='scheme_report'),
