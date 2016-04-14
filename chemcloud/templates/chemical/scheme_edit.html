@@ -40,7 +40,7 @@
 							<th class="detail_link"></th>
 						</tr>
 					</thead>
-	    			<tbody>
+	    			<tbody id="steps_body">
 						{% for step in steps %}
 						<tr class="even">
 							<td><button id="btn_{{step.id_step}}up" class="changeorder" data-stepid="{{step.id_step}}" data-direction="up"  type="button" data-reacid="{{id_reaction}}" data-schemeid="{{id_scheme}}">&#9650</button></br>

@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	console.log('document');
+
  /*      $('#example').DataTable( {
              "processing": true,
              "ajax": {
@@ -15,7 +15,6 @@ $(document).ready(function(){
          } );
 */
 	$('#add_step').click(function(){
-		console.log('#add_step');		
 		/*
 		способы вставить строку:
 		1) $('<tr id="new_id_id"><td>more content ' + n + '</td><td>more content</td></tr>').insertAfter($('tr:last'));
@@ -32,28 +31,27 @@ $(document).ready(function(){
 
 		var url = '/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/step/new/';
 		$.getJSON(url, {}, function(data){
-		console.log('here');
+
 			var arr   = JSON.parse(data);
 			var step_order = arr.order;
 			var step_name = arr.name;
 			var id_step = arr.id_step;
 			var tr_str = '<tr class="even">';
-			tr_str = tr_str + '<td><button id="btn_' + id_step + 'up" class="changeorder" data-stepid="' + id_step + '" data-direction="up"  type="button" data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button"  data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9660</button></td>';
+			tr_str = tr_str + '<td><button id="btn_' + id_step + 'up" data-stepid="' + id_step + '" data-direction="up"  type="button" data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button"  data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9660</button></td>';
 
 			tr_str = tr_str + '<td id="order_' + id_step + '"> '+step_order+' </td>';
 			tr_str = tr_str + '<td>'+step_name+'</td>';
 			tr_str = tr_str + '<td></td>';//сама стадия пока пустая
 			tr_str = tr_str + '<td><a href="{% url \'step_detail\' ' + reac_id + ' ' + schem_id + ' ' + id_step + '"> Детали</a> </td>';
 			tr_str = tr_str + '</tr>';
-			$('#all-steps tbody').append(tr_str);
-
-			return false;	
+			$(tr_str).insertAfter($('tr:last'));
+			return true;	
 		});
 	});
 
 
-	$('.changeorder').click(function(){
-		console.log('.changeorder');
+	//$('.changeorder').click(function(){
+	$('#steps_body').on("click", "button", function(){//делегированная обработка события, так как обработчик к новым добавляемым строкам не прикрепляется, а дублировать код обработчика через метод bind не хочется
 		var stepid   = $(this).attr("data-stepid");
 		var direct   = $(this).attr("data-direction");
 		var me       = $(this);
@@ -70,7 +68,7 @@ $(document).ready(function(){
 	console.log($('.changeorder')) тэг элемента что ли
 	console.dir(pel); вся инфа об элементе
 	*/
-console.log('here');
+
 		var arr   = JSON.parse(data);
 		var cur_order = arr.cur_step_order;
 		var neighbor_order = arr.neighbor_step_order;
