@@ -49,9 +49,27 @@ $(document).ready(function(){
 		});
 	});
 
+	$('#steps_body').on("click", "button", function(){
+		if (!$(this).hasClass('step_delete')) //чтобы не реагировало на кнопки изменения порядка
+			return false;
+		var stepid   = $(this).attr("data-stepid");
+		var reac_id  = $(this).attr("data-reacid");
+		var schem_id = $(this).attr("data-schemeid");
+		var id_name = 'btn_'+stepid+'del';		
+		var url = '/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/step_delete/';
+
+		$.getJSON(url, {step_id: stepid}, function(data){
+			var btn_cur = $('#'+id_name);
+			var pel = btn_cur.parent('td');
+			pel = pel.parent('tr');
+			pel.remove();
+		});
+	});
 
 	//$('.changeorder').click(function(){
 	$('#steps_body').on("click", "button", function(){//делегированная обработка события, так как обработчик к новым добавляемым строкам не прикрепляется, а дублировать код обработчика через метод bind не хочется
+		if (!$(this).hasClass('changeorder')) //чтобы не реагировало на кнопку удаления стадии
+			return false;	
 		var stepid   = $(this).attr("data-stepid");
 		var direct   = $(this).attr("data-direction");
 		var me       = $(this);

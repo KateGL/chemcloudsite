@@ -223,6 +223,24 @@ def scheme_new(request, id_reaction):
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/scheme_new.html', context)
 
+@login_required
+def step_delete(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    step_id = None
+    if request.method == 'GET':
+        step_id = request.GET['step_id']
+    if step_id:
+        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+        step = step_dict['step']
+        step.delete()
+        #todo спросить
+        data = '{"result":"ok"}'
+        xml_bytes = json.dumps(data)
+        return HttpResponse(xml_bytes,'application/json')
+
+
+
+@login_required
 def step_new(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     scheme = scheme_dict['scheme'];
