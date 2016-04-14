@@ -130,6 +130,17 @@ class Reaction_scheme (models.Model):
     def __unicode__ (self):
         return self.name
 
+    def create_new_emptystep(self):
+        try:
+            steps = self.steps
+            new_order = steps.count() + 1
+            empty_step = Scheme_step.objects.get_or_create(name ='('+str(new_order)+')', scheme = self, order = new_order, is_revers = False )[0]
+            empty_step.save()
+            self.steps.add(empty_step)
+        except:
+            return -1
+        return empty_step
+
     class Meta:
         ordering            = ["updated_date"]
         verbose_name        = ('Механизм')

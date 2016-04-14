@@ -167,7 +167,7 @@ def scheme_edit(request, id_reaction, id_scheme):
     #получаем список стадий схемы
     steps = scheme_dict['scheme'].steps.all()
     reac_substs = request.user.chemistry.react_subst_all(id_reaction)
-    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs }
+    context = {'steps': steps, 'id_reaction': id_reaction, 'id_scheme': id_scheme, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs }
     return render(request, 'chemical/scheme_edit.html', context)
 
 
@@ -222,6 +222,17 @@ def scheme_new(request, id_reaction):
 
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/scheme_new.html', context)
+
+def step_new(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    scheme = scheme_dict['scheme'];
+    new_step = scheme.create_new_emptystep();
+    if new_step == -1:
+        return HttpResponse(status=400)
+    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'"}'
+    xml_bytes = json.dumps(data)
+    return HttpResponse(xml_bytes,'application/json')
+
 
 #изменение порядка стадии
 @login_required
