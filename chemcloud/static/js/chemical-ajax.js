@@ -59,18 +59,34 @@ $(document).ready(function(){
 			 $.ajax({ type: "POST", url: url_str, data: data_str,
 				//при удачном выполнении скрипта, производим действия
 				 success: function(data){
-					//находим input внутри элемента с классом ajax и вставляем вместо input его значение
-					 $('.ajax').html($('.ajax input').val());
-					//удаялем класс ajax
-					 $('.ajax').removeClass('ajax');
+					var arr   = JSON.parse(data);
+					var result = arr.result;			
+					var errorText = arr.errorText;
+					if (result == 'success')		
+					{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
+					 	$('.ajax').html($('.ajax input').val());
+						//удаялем класс ajax
+					 	$('.ajax').removeClass('ajax');
+					}
+					else
+					{
+						alert(errorText);
+						var el = $('#editbox');
+		            el.blur();
 
-			 }});
+					}	
+				},								
+				 error: function(jqXHR, textStatus, errorThrown) { 
+			        alert(jqXHR.statusText);
+
+					}
+			 });
 	 	}
 	});
 
 	//убираем input при нажатии вне поля ввода, если не хотим сохранять введенную информацию
-	$(document).on('blur', '#editbox', function(){
-			td_el = $(this).parent();			
+	$(document).on('blur', '#editbox', function(){			
+			td_el = $(this).parent();				
 			arr = td_el.attr('class').split( " " );
 			var table_str = $('table').attr('id');
 			var url_str  = "/chemical/cell_value/";
@@ -82,6 +98,7 @@ $(document).ready(function(){
 					 $('.ajax').html(old_val);
 					//удаялем класс ajax
 					 $('.ajax').removeClass('ajax');
+console.log('old_val='+old_val);	
 
 			 }, 'JSON');
 	});
