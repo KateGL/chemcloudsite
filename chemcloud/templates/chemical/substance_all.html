@@ -3,25 +3,39 @@
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
 
+{% block header_block %}
+
+{% endblock %}
+
 
 {% block body_block %}
+   
+     
+   
     <div class="page-header">
                 <h1>Справочник веществ</h1>
+                
+                <p><b>Start typing a name in the input field below:</b></p>
+<form>
+First name: <input type="text" onkeyup="showHint(this.value)">
+</form>
+<p>Suggestions: <span id="txtHint"></span></p>
             </div>
             <div class="page-content">
            
                 <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-body"> 
-          <a class = "btn btn-new" href = "{% url 'substance_new' %}" role = "button">Добавить вещество</a>       
-          <a href="{% url 'atom_all' %}" class="pull-right">Таблица Менделеева</a>
-          
+ 
+         
                    
                      
-     <div class="container">
+    <div class="well well-md">
 	<div class="row" >
-        <div class="col-md-6">
-    		
+        <div class="col-md-2">
+         <a class = "btn btn-new" href = "{% url 'substance_new' %}" role = "button">Добавить вещество</a>       
+   
+        </div>
+    		<div class="col-md-6">
             <div id="custom-search-input">
                 <div class="input-group col-md-12">
                     <input type="text" class="form-control input-md" placeholder="Введите строку для поиска" />
@@ -32,12 +46,19 @@
                     </span>
                 </div>
             </div>
+            
         </div>
+        
+        <div class="col-md-4">
+     
+          <a href="{% url 'atom_all' %}" >Таблица Менделеева</a>
+        </div>
+        
 	</div>
 </div>
 
   
-</div>
+
             
             
  
@@ -47,4 +68,8 @@
                       {% render_table substance %}
                        <!-- Table -->
                        
+{% endblock %}
+
+{% block footer_block %}
+<script src="{% static "js/subst_all.js" %}"></script>
 {% endblock %}
