@@ -53,15 +53,12 @@ $(document).ready(function(){
 			//id = номер строки
 			//field = название столбца
 			//table = название таблицы - в названии таблицы поместить через _ нужные ид
-			var url_str  = "http://127.0.0.1:8000/chemical/cell_update/";
+			var url_str  = "/chemical/cell_update/";
 			var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
 			var data_str = "value="+$('.ajax input').val()+"&id="+arr[2]+"&field="+arr[1]+"&table="+table_str+"&csrfmiddlewaretoken="+csrftoken;
-	console.log(data_str);
 			 $.ajax({ type: "POST", url: url_str, data: data_str,
 				//при удачном выполнении скрипта, производим действия
 				 success: function(data){
-
-					//$.post(url_str, {value: $('.ajax input').val(), id: arr[2], field: arr[1], table: table_str, csrfmiddlewaretoken:  csrftoken},function(data){тело функции}, 'JSON'); //алтернативный способ
 					//находим input внутри элемента с классом ajax и вставляем вместо input его значение
 					 $('.ajax').html($('.ajax input').val());
 					//удаялем класс ajax
@@ -73,9 +70,20 @@ $(document).ready(function(){
 
 	//убираем input при нажатии вне поля ввода, если не хотим сохранять введенную информацию
 	$(document).on('blur', '#editbox', function(){
-		$('.ajax').html($('.ajax input').val());
-		$('.ajax').removeClass('ajax');
-console.log('tut2');
+			td_el = $(this).parent();			
+			arr = td_el.attr('class').split( " " );
+			var table_str = $('table').attr('id');
+			var url_str  = "/chemical/cell_value/";
+			var csrftoken = getCookie('csrftoken');
+ 		 $.post(url_str, {id: arr[2], field: arr[1], table: table_str, csrfmiddlewaretoken:  csrftoken},function(data){
+					var arr   = JSON.parse(data);
+					old_val = arr.value;
+					//находим input внутри элемента с классом ajax и вставляем вместо input его значение
+					 $('.ajax').html(old_val);
+					//удаялем класс ajax
+					 $('.ajax').removeClass('ajax');
+
+			 }, 'JSON');
 	});
 
 //=====================================================================
