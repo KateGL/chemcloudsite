@@ -32,6 +32,11 @@ def substance_all(request):
     RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
     return render(request, 'chemical/substance_all.html', {"substance": substance_table})
 
+@login_required
+def substance_search(request, searched):
+    tmp = searched+ ' Hello, World!'
+    return HttpResponse(tmp)
+
 
 @login_required
 def substance_detail(request, id_substance):

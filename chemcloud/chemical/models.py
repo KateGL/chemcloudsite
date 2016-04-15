@@ -9,7 +9,8 @@ from django.contrib.auth.models import User
 
 from chemical.chemical_models import Dict_atom, Substance, Reaction, User_reaction
 from chemical.chemical_models import Reaction_subst, Experiment, Reaction_scheme
-from chemical.chemical_models import Scheme_step
+from chemical.chemical_models import Scheme_step,Substance_synonym,Dict_feature
+from chemical.chemical_models import Reaction_feature
 
 
 def owner_required(f):
@@ -147,7 +148,48 @@ class Chemistry(models.Model):
         exp_dict['is_owner'] = react.is_owner
         return exp_dict
 
+    # по id вещества
+    def subst_synonym_all(self, id_substance):
+        try:
+            subst = Substance_synonym.objects.get(pk=id_substance)
+        except Substance_synonym.DoesNotExist:
+            raise Http404("Substance does not exist")
+        return subst
+
+    # по id синонима (возможно не нужен)
+    # def subst_synonym_get(self,):
+
+    #вернуть весь справочник характеристик
+    def dic_feature_all(self):
+        return Dict_feature.objects.all()
+
+    # вернуть характеристику по id характеристики
+    def dic_feature_get (self, id_feat):
+        try:
+            dict_feature = Dict_feature.objects.get(pk=id_feat)
+        except Dict_feature.DoesNotExist:
+            raise Http404("Dict_feature does not exist")
+        return dict_feature
+
+    # TODO
+
+    # по id реакции вернуть все характеристики реакции
+    #def react_feature_all(self, id_reac):
+
+    # по id реакции
+    #def react_tag_all
+
+    # по id реакции и id тэга
+    #def react_tag_get
+
+    #* exper_subst_all(..), exper_subst_get(по id вещества эксперимента)
+    #* dict_model_funct_all(..), //
+    #dict_model_funct_get(по id фукнции)
+    #* dict_model_arg_all(..),
+    #dict_model_arg_get(по id аргумента)
+    #* dict_unit_all(..),
+    #dict_unit_get(.по id ед.изм.)
 
     class Meta:
-      verbose_name = ('Доступ к Химии')
-      verbose_name_plural = ('Доступ к Химии')
+        verbose_name = ('Доступ к Химии')
+        verbose_name_plural = ('Доступ к Химии')

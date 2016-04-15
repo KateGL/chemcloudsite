@@ -163,15 +163,15 @@ class Scheme_step(models.Model):
         left = ''
         i = 1
         cnt = s_substs_arr.count()
-        for s_subst in s_substs_arr:  
+        for s_subst in s_substs_arr:
             if s_subst.stoich_koef < 0:
                 if i != 1:
                     left = left + '+'
                 alias = s_subst.reac_substance.alias
-                positiv_koef = -1*s_subst.stoich_koef 
+                positiv_koef = -1*s_subst.stoich_koef
                 str_koef = ''
                 if positiv_koef != 1.0:
-                    str_koef = '{0:.3g}'.format(positiv_koef)#str(positiv_koef)     
+                    str_koef = '{0:.3g}'.format(positiv_koef)#str(positiv_koef)
                 left = left + str_koef+alias
 
             i = i+1
@@ -182,18 +182,18 @@ class Scheme_step(models.Model):
         i = 1
         cnt = s_substs_arr.count()
         right = ''
-        for s_subst in s_substs_arr:  
+        for s_subst in s_substs_arr:
             if s_subst.stoich_koef > 0:
                 alias = s_subst.reac_substance.alias
-                positiv_koef = s_subst.stoich_koef  
+                positiv_koef = s_subst.stoich_koef
                 str_koef = ''
                 if positiv_koef != 1.0:
-                    str_koef = '{0:.3g}'.format(positiv_koef)#str(positiv_koef)     
+                    str_koef = '{0:.3g}'.format(positiv_koef)#str(positiv_koef)
                 right = right + str_koef+alias
                 if i < cnt:
                     right = right + '+'
             i = i+1
-        return right         
+        return right
 
 
     class Meta:
