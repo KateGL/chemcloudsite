@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+
 import json
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -222,6 +224,47 @@ def scheme_new(request, id_reaction):
 
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/scheme_new.html', context)
+
+
+def cell_update(request):
+    log = logging.getLogger('django')  # описан в настройках
+    log.info('cell_update')
+    if not request.is_ajax():
+        log.info('not ajax')
+        return HttpResponse(status=400)
+    table_str = ''
+    id_str = ''
+    field_str = ''
+    value_str = ''
+    if request.method == 'POST':
+        table_str = request.POST['table']
+        id_str    = request.POST['id']
+        field_str = request.POST['field']
+        value_str = request.POST['value']
+    logging.debug('Debug Message')
+    print(table_str)
+    #обработка редакрирвоания стадий
+    arr = table_str.split('_');
+    pos = arr[0].find('all-steps');
+    if pos != -1:
+        logging.debug('tut')
+        id_reaction = int(arr[1])
+        id_scheme   = int(arr[2])
+        step_id = int(id_str)
+        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+        step = step_dict['step']
+        if field_str == 'name':
+            step.name = value_str
+        step.save()
+        data = '{"result":"ok"}'
+        xml_bytes = json.dumps(data)
+        return HttpResponse(xml_bytes,'application/json')
+    return HttpResponse(
+            json.dumps({"nothing to see": "this isn't happening"}),
+            content_type="application/json"
+        )
+
+
 
 @login_required
 def step_delete(request, id_reaction, id_scheme):
