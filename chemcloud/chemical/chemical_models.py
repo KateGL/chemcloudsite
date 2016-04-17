@@ -216,6 +216,7 @@ class Reaction_subst(models.Model):
     class Meta:
       verbose_name = ('Вещество реакции')
       verbose_name_plural = ('Вещества реакции')
+      unique_together = ('reaction', 'substance')
 
 #Вещество в стадии схемы реакции
 class Scheme_step_subst(models.Model):
