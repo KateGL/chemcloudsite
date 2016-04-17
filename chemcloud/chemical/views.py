@@ -54,6 +54,8 @@ def substance_new(request):
             substance.formula_brutto_formatted = decorate_formula(substance.formula_brutto)
             substance.consist_create()
             form.save()
+            if 'save_and_new_btn' in request.POST:
+                return redirect('substance_new')
             return redirect('substance_detail', substance.pk)
     return render(request,'chemical/substance_new.html', {'form': form})
 
@@ -281,7 +283,7 @@ def cell_update(request):
     table_str = request.POST['table']
     id_str    = request.POST['id']
     field_str = request.POST['field']
-    value_str = request.POST['value'] 
+    value_str = request.POST['value']
 
     #обработка редактирования стадий
     arr = table_str.split('_');
@@ -310,8 +312,8 @@ def cell_update(request):
                 if pos != -1:
                     step.is_revers = True
                     arr = table_str.split('<->');
-                else:     
-                    result = 'error'           
+                else:
+                    result = 'error'
                     errorText = 'Неправильно введен флаг обратимости стадии'
             if pos != -1:
                 left_str = arr[0]
@@ -437,9 +439,13 @@ def react_substance_new(request, id_reaction):
             react_substance = form.save(commit=False)
             react_substance.reaction = react.reaction
             form.save()
+            if 'save_and_new_btn' in request.POST:
+                return redirect('react_substance_new', id_reaction)
             return redirect('react_substance_detail', id_reaction, react_substance.pk)
 
-    context = {'id_reaction': id_reaction, 'form': form}
+    rst = ReactionSubstTable(request.user.chemistry.react_subst_all(id_reaction))
+    RequestConfig(request, paginate={"per_page": 25}).configure(rst)
+    context = {'id_reaction': id_reaction, 'form': form, 'substance': rst}
     return render(request, 'chemical/react_substance_new.html', context)
 
 
