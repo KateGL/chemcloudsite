@@ -37,6 +37,12 @@ class Chemistry(models.Model):
             raise Http404("Substance does not exist")
         return subst
 
+    def substance_get_like(self, searched, top_count):
+        if top_count > 0:
+            return Substance.objects.filter(name__icontains= searched)[:top_count]
+        else:
+            return Substance.objects.filter(name__icontains= searched)[:top_count]
+
     def atom_all(self):
         return Dict_atom.objects.all()
 
