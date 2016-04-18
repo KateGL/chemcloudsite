@@ -38,6 +38,10 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step/(?P<id_step>[0-9]+)/detail/$', views.step_detail, name='step_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/change_order/$', views.change_step_order, name='change_step_order'),
 
+#Урл для обновления данных при редактировании ячейки какой-либо таблицы. Универсальныйй
+    url(r'^cell_update/$', views.cell_update, name='cell_update'),
+    url(r'^cell_value/$', views.get_cell_value, name='get_cell_value'),
+
 #Вещества реакции
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/all/$', views.react_substance_all, name='react_substance_all'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/new/$', views.react_substance_new, name='react_substance_new'),

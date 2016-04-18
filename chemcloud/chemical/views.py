@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import logging
+
 import json
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -66,6 +68,8 @@ def substance_new(request):
             substance.formula_brutto_formatted = decorate_formula(substance.formula_brutto)
             substance.consist_create()
             form.save()
+            if 'save_and_new_btn' in request.POST:
+                return redirect('substance_new')
             return redirect('substance_detail', substance.pk)
     return render(request,'chemical/substance_new.html', {'form': form})
 
@@ -242,6 +246,138 @@ def scheme_new(request, id_reaction):
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/scheme_new.html', context)
 
+
+def get_cell_value(request): #взятие старого значения ячейки
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+    table_str = ''
+    id_str = ''
+    field_str = ''
+    if request.method != 'POST':
+        return HttpResponse(status=400)
+    table_str = request.POST['table']
+    id_str    = request.POST['id']
+    field_str = request.POST['field']
+    #взятие значения ячейки из базы
+    arr = table_str.split('_');
+    #таблица стадий механизма
+    pos = arr[0].find('all-steps');
+    if pos != -1:
+        id_reaction = int(arr[1])
+        id_scheme   = int(arr[2])
+        step_id = int(id_str)
+        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+        step = step_dict['step']
+        value = ''
+        if field_str == 'name':
+            value = step.name
+        if field_str == 'step':
+            value = 'kuku'
+        data = '{"value": "' +value + '"}'
+        xml_bytes = json.dumps(data)
+        return HttpResponse(xml_bytes,'application/json')
+
+    #сюда для других таблиц вставлять свои проверки названия таблицы и соответствующие обработчики
+    return HttpResponse(
+            json.dumps({"nothing to see": "this isn't happening"}),
+            content_type="application/json"
+        )
+
+def cell_update(request):
+    log = logging.getLogger('django') # описан в настройках
+    log.info('а это будет')
+    if not request.is_ajax():
+        return HttpResponse(status=400)
+    log.info('а это будет2')
+    table_str = ''
+    id_str = ''
+    field_str = ''
+    value_str = ''
+    if request.method != 'POST':
+        return HttpResponse(status=400)
+    table_str = request.POST['table']
+    id_str    = request.POST['id']
+    field_str = request.POST['field']
+    value_str = request.POST['value']
+
+    #обработка редактирования стадий
+    arr = table_str.split('_');
+    #таблица стадий механизма
+    pos = arr[0].find('all-steps');
+    if pos != -1:
+        id_reaction = int(arr[1])
+        id_scheme   = int(arr[2])
+        step_id = int(id_str)
+        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+        step = step_dict['step']
+        result = 'success'
+        errorText = ''
+        if field_str == 'name':
+            step.name = value_str
+        if field_str == 'step':
+            step_str = value_str
+            left_str = ''
+            right_str = ''
+            pos=step_str.find('->');
+            if pos != -1:
+                step.is_revers = False
+                arr = table_str.split('->');
+            else:
+                pos = step_str.find('<->');
+                if pos != -1:
+                    step.is_revers = True
+                    arr = table_str.split('<->');
+                else:
+                    result = 'error'
+                    errorText = 'Неправильно введен флаг обратимости стадии'
+            if pos != -1:
+                left_str = arr[0]
+                right_str = arr[1]
+                log.info('left_str')
+                log.info('right_str')
+        if result == 'success':
+            step.save()
+        data = '{"result":"' + result  +'", "errorText": "' + errorText + '"}'
+        xml_bytes = json.dumps(data)
+        return HttpResponse(xml_bytes,'application/json')
+
+    #сюда для других таблиц вставлять свои проверки названия таблицы и соответствующие обработчики
+    return HttpResponse(
+            json.dumps('{"result": "error", "errorText": "unknown error"}'),
+            content_type="application/json"
+        )
+
+
+
+@login_required
+def step_delete(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    step_id = None
+    if request.method == 'GET':
+        step_id = request.GET['step_id']
+    if step_id:
+        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+        step = step_dict['step']
+        step.delete()
+        #todo спросить
+        data = '{"result":"success"}'
+        xml_bytes = json.dumps(data)
+        return HttpResponse(xml_bytes,'application/json')
+
+
+
+@login_required
+def step_new(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    scheme = scheme_dict['scheme'];
+    new_step = scheme.create_new_emptystep();
+    if new_step == -1:
+        return HttpResponse(status=400)
+    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'"}'
+    xml_bytes = json.dumps(data)
+    return HttpResponse(xml_bytes,'application/json')
+
+
 #изменение порядка стадии
 @login_required
 def change_step_order(request, id_reaction, id_scheme):
@@ -318,9 +454,13 @@ def react_substance_new(request, id_reaction):
             react_substance = form.save(commit=False)
             react_substance.reaction = react.reaction
             form.save()
+            if 'save_and_new_btn' in request.POST:
+                return redirect('react_substance_new', id_reaction)
             return redirect('react_substance_detail', id_reaction, react_substance.pk)
 
-    context = {'id_reaction': id_reaction, 'form': form}
+    rst = ReactionSubstTable(request.user.chemistry.react_subst_all(id_reaction))
+    RequestConfig(request, paginate={"per_page": 25}).configure(rst)
+    context = {'id_reaction': id_reaction, 'form': form, 'substance': rst}
     return render(request, 'chemical/react_substance_new.html', context)
 
 
