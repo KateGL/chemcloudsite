@@ -230,6 +230,7 @@ def scheme_new(request, id_reaction):
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/scheme_new.html', context)
 
+@login_required
 def get_cell_value(request): #взятие старого значения ячейки
     if not request.is_ajax():
         return HttpResponse(status=400)
@@ -266,12 +267,15 @@ def get_cell_value(request): #взятие старого значения яч�
             content_type="application/json"
         )
 
-def cell_update(request):
-    log = logging.getLogger('django') # описан в настройках
+def _create_step_part(step, is_left, part ):
+    log = logging.getLogger('django') 
     log.info('а это будет')
+    return 1   
+
+@login_required
+def cell_update(request):
     if not request.is_ajax():
         return HttpResponse(status=400)
-    log.info('а это будет2')
     table_str = ''
     id_str = ''
     field_str = ''
@@ -304,20 +308,19 @@ def cell_update(request):
             pos=step_str.find('->');
             if pos != -1:
                 step.is_revers = False
-                arr = table_str.split('->');
+                arr2 = table_str.split('->');
             else:
                 pos = step_str.find('<->');
                 if pos != -1:
                     step.is_revers = True
-                    arr = table_str.split('<->');
+                    arr2 = table_str.split('<->');
                 else:     
                     result = 'error'           
                     errorText = 'Неправильно введен флаг обратимости стадии'
             if pos != -1:
-                left_str = arr[0]
-                right_str = arr[1]
-                log.info('left_str')
-                log.info('right_str')
+                left_str = arr2[0]
+                right_str = arr2[1]
+                _create_step_part(step, True, left_str)
         if result == 'success':
             step.save()
         data = '{"result":"' + result  +'", "errorText": "' + errorText + '"}'

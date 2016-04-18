@@ -17,7 +17,6 @@
 
 	
 <div class="col-xs-6">
-{% if steps %}	
 
 <div class="panel panel-default">
     <div class="btn-toolbar" role="toolbar">
@@ -40,6 +39,7 @@
 						</tr>
 					</thead>
 	    			<tbody id="steps_body">
+{% if steps %}	
 						{% for step in steps %}
 						<tr class="even">
 							<td><button id="btn_{{step.id_step}}up" class="changeorder" data-stepid="{{step.id_step}}" data-direction="up"  type="button" data-reacid="{{id_reaction}}" data-schemeid="{{id_scheme}}">&#9650</button></br>
@@ -50,10 +50,11 @@
 							<td><button id="btn_{{step.id_step}}del" class="step_delete" type="button" class="btn btn-default"  data-reacid="{{id_reaction}}" data-schemeid="{{id_scheme}}" data-stepid="{{step.id_step}}" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>
 						</tr>
 						{% endfor %}
+		{% endif %}
+
 					</tbody>
 				</table>
 			</div>
-		{% endif %}
 </div>
 
 
