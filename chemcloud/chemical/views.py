@@ -190,7 +190,7 @@ def scheme_edit(request, id_reaction, id_scheme):
     #получаем список стадий схемы
     steps = scheme_dict['scheme'].steps.all()
     reac_substs = request.user.chemistry.react_subst_all(id_reaction)
-    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs }
+    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs, 'id_scheme': id_scheme }
     return render(request, 'chemical/scheme_edit.html', context)
 
 
@@ -354,7 +354,7 @@ def cell_update(request):
 @login_required
 def step_delete(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
-    step_id = None
+    step_id = ''
     if request.method == 'GET':
         step_id = request.GET['step_id']
     if step_id:

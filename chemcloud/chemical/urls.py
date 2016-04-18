@@ -37,6 +37,9 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/report/$', views.scheme_report, name='scheme_report'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step/(?P<id_step>[0-9]+)/detail/$', views.step_detail, name='step_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/change_order/$', views.change_step_order, name='change_step_order'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step_delete/$', views.step_delete, name='step_delete'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step/new/$', views.step_new, name='step_new'),
+ 
 
 #Урл для обновления данных при редактировании ячейки какой-либо таблицы. Универсальныйй
     url(r'^cell_update/$', views.cell_update, name='cell_update'),

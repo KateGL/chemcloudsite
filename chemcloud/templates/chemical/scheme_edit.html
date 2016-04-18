@@ -17,7 +17,6 @@
 
 	
 <div class="col-xs-6">
-
 <div class="panel panel-default">
     <div class="btn-toolbar" role="toolbar">
       <div class="btn-group">
@@ -36,6 +35,7 @@
 							<th class="name orderable"><a href="?sort=name">Обозначение</a></th>
 							<th class="step">Стадия</th>
 							<th class="remove"></th>
+							<th class="detail_link">Детали</th>
 						</tr>
 					</thead>
 	    			<tbody id="steps_body">
@@ -48,6 +48,8 @@
 							<td class="edit name {{step.id_step}}">{{ step.name }}</td>
 							<td class="edit step {{step.id_step}}">{{ step.get_leftPart_of_step }} {% if step.is_revers %} &#8596 {% else %} &#8594 {% endif %} {{ step.get_rightPart_of_step }}</td>
 							<td><button id="btn_{{step.id_step}}del" class="step_delete" type="button" class="btn btn-default"  data-reacid="{{id_reaction}}" data-schemeid="{{id_scheme}}" data-stepid="{{step.id_step}}" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>
+							<td><a href="{% url 'step_detail' id_reaction id_scheme step.id_step %}"> Детали</a> </td>
+			
 						</tr>
 						{% endfor %}
 		{% endif %}

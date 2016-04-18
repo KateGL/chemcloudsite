@@ -132,7 +132,8 @@ console.log('old_val='+old_val);
 			tr_str = tr_str + '<td id="order_' + id_step + '"> '+step_order+' </td>';
 			tr_str = tr_str + '<td>'+step_name+'</td>';
 			tr_str = tr_str + '<td></td>';//сама стадия пока пустая
-			tr_str = tr_str + '<td><a href="{% url \'step_detail\' ' + reac_id + ' ' + schem_id + ' ' + id_step + '"> Детали</a> </td>';
+			tr_str = tr_str + '<td><button id="btn_' + id_step + 'del" class="step_delete" type="button" class="btn btn-default"  data-reacid="' + reac_id + '" data-schemeid="' + schem_id + '" data-stepid="' + id_step + '" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>';
+			tr_str = tr_str + '<td><a href="/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/step/'+id_step + '/detail/"> Детали</a> </td>';
 			tr_str = tr_str + '</tr>';
 			$(tr_str).insertAfter($('tr:last'));
 			return true;	
@@ -158,8 +159,9 @@ console.log('old_val='+old_val);
 
 	//$('.changeorder').click(function(){
 	$('#steps_body').on("click", "button", function(){//делегированная обработка события, так как обработчик к новым добавляемым строкам не прикрепляется, а дублировать код обработчика через метод bind не хочется
-		if (!$(this).hasClass('changeorder')) //чтобы не реагировало на кнопку удаления стадии
+if (!$(this).hasClass('changeorder')) //чтобы не реагировало на кнопку удаления стадии
 			return false;	
+console.log('tut4');
 		var stepid   = $(this).attr("data-stepid");
 		var direct   = $(this).attr("data-direction");
 		var me       = $(this);
