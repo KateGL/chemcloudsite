@@ -39,6 +39,20 @@ def substance_search(request, searched):
 
 
 @login_required
+def substance_search_hint(request, searched):
+    subst = request.user.chemistry.substance_get_like(searched, 3)
+    tmp = ''
+    for value in subst.values():
+        if tmp > '':
+            tmp = tmp + ', '
+        tmp = tmp + value['name']
+
+
+    #tmp = searched + ' ' + str(subst)
+    return HttpResponse(tmp)
+
+
+@login_required
 def substance_detail(request, id_substance):
     substance = request.user.chemistry.substance_get(id_substance)
     consist_table = ConsistTable(substance.consist.all())
@@ -54,6 +68,8 @@ def substance_new(request):
             substance.formula_brutto_formatted = decorate_formula(substance.formula_brutto)
             substance.consist_create()
             form.save()
+            if 'save_and_new_btn' in request.POST:
+                return redirect('substance_new')
             return redirect('substance_detail', substance.pk)
     return render(request,'chemical/substance_new.html', {'form': form})
 
@@ -174,7 +190,7 @@ def scheme_edit(request, id_reaction, id_scheme):
     #получаем список стадий схемы
     steps = scheme_dict['scheme'].steps.all()
     reac_substs = request.user.chemistry.react_subst_all(id_reaction)
-    context = {'steps': steps, 'id_reaction': id_reaction, 'id_scheme': id_scheme, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs }
+    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs }
     return render(request, 'chemical/scheme_edit.html', context)
 
 
@@ -285,7 +301,7 @@ def cell_update(request):
     table_str = request.POST['table']
     id_str    = request.POST['id']
     field_str = request.POST['field']
-    value_str = request.POST['value'] 
+    value_str = request.POST['value']
 
     #обработка редактирования стадий
     arr = table_str.split('_');
@@ -440,9 +456,13 @@ def react_substance_new(request, id_reaction):
             react_substance = form.save(commit=False)
             react_substance.reaction = react.reaction
             form.save()
+            if 'save_and_new_btn' in request.POST:
+                return redirect('react_substance_new', id_reaction)
             return redirect('react_substance_detail', id_reaction, react_substance.pk)
 
-    context = {'id_reaction': id_reaction, 'form': form}
+    rst = ReactionSubstTable(request.user.chemistry.react_subst_all(id_reaction))
+    RequestConfig(request, paginate={"per_page": 25}).configure(rst)
+    context = {'id_reaction': id_reaction, 'form': form, 'substance': rst}
     return render(request, 'chemical/react_substance_new.html', context)
 
 

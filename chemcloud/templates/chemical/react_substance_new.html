@@ -1,7 +1,7 @@
 {% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
-
+{% load render_table from django_tables2 %}
 
 {% block body_block %}
 	<div class="page-header">
@@ -9,18 +9,21 @@
 	</div>
 	<div class="page-content">
 		
-		<div class="page-content">
-            
+		<div class="row">
+          <div class="col-xs-7">  
            
  <form method="POST" class="form" action="{% url 'react_substance_new' id_reaction %}">  
             
             {% include "chemical/form_body_new.html" %} 
-            
+            <button type="submit" class="save btn btn-success" name="save_and_new_btn">Сохранить и добавить новое</button>
             
 </form >
 
             </div>
 		
-		
+		<div class="col-xs-5">
+            {% render_table substance %}
+            </div>
    </div>
+</div>
 {% endblock %}
