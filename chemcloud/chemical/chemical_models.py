@@ -134,7 +134,7 @@ class Reaction_scheme (models.Model):
         try:
             steps = self.steps
             new_order = steps.count() + 1
-            empty_step = Scheme_step.objects.get_or_create(name ='('+str(new_order)+')', scheme = self, order = new_order, is_revers = False )[0]
+            empty_step = Scheme_step.objects.get_or_create( scheme = self, order = new_order, is_revers = False )[0]
             empty_step.save()
             self.steps.add(empty_step)
         except:
