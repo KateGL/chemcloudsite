@@ -383,6 +383,8 @@ def step_new(request, id_reaction, id_scheme):
 #изменение порядка стадии
 @login_required
 def change_step_order(request, id_reaction, id_scheme):
+    log = logging.getLogger('django') 
+    log.info('а это будет 1')
 #    if not request.is_ajax():
 #        return HttpResponse(status=400)
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
@@ -390,12 +392,10 @@ def change_step_order(request, id_reaction, id_scheme):
     steps_count = scheme_dict['scheme'].steps.count()
 
     step_id = None
-    if request.method == 'GET':
-        step_id = request.GET['step_id']
     direction = None
     if request.method == 'GET':
+        step_id = request.GET['step_id']
         direction = request.GET['direction']
-
     #todo проверки на соответствие шага схемы схеме и реакции
     new_order = -1
     cur_order = -1
@@ -432,7 +432,6 @@ def change_step_order(request, id_reaction, id_scheme):
         xml_bytes = json.dumps(data)
        # data = serializers.serialize(format_str, data)
         return HttpResponse(xml_bytes,mimetype)
-
 
 #Вещества реакции
 @login_required
