@@ -354,18 +354,25 @@ def cell_update(request):
 @login_required
 def step_delete(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    steps = scheme_dict['scheme'].steps.all()
+    #удалить текущую стадию, у всех следующих после текущей стадии понизить на 1 порядок
     step_id = ''
     if request.method == 'GET':
         step_id = request.GET['step_id']
     if step_id:
         step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
         step = step_dict['step']
+        cur_step_order = step.order
+        for temp_step in steps:
+            if temp_step.order > cur_step_order:
+                temp_step.order = temp_step.order - 1
+                temp_step.save()
         step.delete()
         #todo спросить
-        data = '{"result":"success"}'
+        data = '{"result":"success", "deleted_step_order": "'+ str(cur_step_order) + '"}'
         xml_bytes = json.dumps(data)
         return HttpResponse(xml_bytes,'application/json')
-
+    return HttpResponse(status=400)
 
 
 @login_required
@@ -383,8 +390,6 @@ def step_new(request, id_reaction, id_scheme):
 #изменение порядка стадии
 @login_required
 def change_step_order(request, id_reaction, id_scheme):
-    log = logging.getLogger('django') 
-    log.info('а это будет 1')
 #    if not request.is_ajax():
 #        return HttpResponse(status=400)
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
@@ -432,6 +437,7 @@ def change_step_order(request, id_reaction, id_scheme):
         xml_bytes = json.dumps(data)
        # data = serializers.serialize(format_str, data)
         return HttpResponse(xml_bytes,mimetype)
+    return HttpResponse(status=400)
 
 #Вещества реакции
 @login_required
