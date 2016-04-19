@@ -14,20 +14,20 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.contrib import admin
 
-from django.conf import settings
-from django.conf.urls.static import static
+#from django.conf import settings
+#from django.conf.urls.static import static
 
 import chemmain.views
-import chemical.views
 from django.conf.urls import include
 
 from registration.backends.simple.views import RegistrationView
 
+
 class MyRegistrationView(RegistrationView):
-    def get_success_url(self,request):
+    def get_success_url(self, request):
         return '/'
 
 
@@ -45,6 +45,7 @@ urlpatterns = [
     url(r'^accounts/', include('registration.backends.simple.urls')),
 
     url(r'^chemical/', include('chemical.urls')),
+    url(r'^chem_ajax/', include('chem_ajax.urls')),
 ]
 
 # Так и не смогла настроить чтоб отладка проходила по адресу. Но не суть

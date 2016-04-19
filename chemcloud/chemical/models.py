@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
@@ -40,13 +41,12 @@ class Chemistry(models.Model):
 
     def substance_get_like(self, searched, top_count):
         if top_count > 0:
-            return Substance.objects.filter(name__icontains= searched)[:top_count]
+            return Substance.objects.filter(Q(name__icontains=searched) | Q(formula_brutto__icontains=searched))[:top_count]
         else:
-            return Substance.objects.filter(name__icontains= searched)[:top_count]
+            return Substance.objects.filter(Q(name__icontains=searched) | Q(formula_brutto__icontains=searched))
 
     def atom_all(self):
         return Dict_atom.objects.all()
-
 
     def atom_get(self, atom_number):
         try:

@@ -7,8 +7,7 @@ from chemical import views
 urlpatterns = [
 #Вещества
     url(r'^substance/all/$', views.substance_all, name='substance_all'),
-    url(r'^substance/search/(?P<searched>[\w\-]+)/$', views.substance_search, name='substance_search'),
-    url(r'^substance/search_hint/(?P<searched>[\w\-]+)/$', views.substance_search_hint, name='substance_search_hint'),
+    url(r'^substance/search/(?P<searched>[\w\-]+)/$', views.substance_all_search, name='substance_all_search'),
     url(r'^substance/(?P<id_substance>[0-9]+)/detail/$', views.substance_detail, name='substance_detail'),
     url(r'^substance/new/$', views.substance_new, name='substance_new'),
 
@@ -39,7 +38,7 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/change_order/$', views.change_step_order, name='change_step_order'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step_delete/$', views.step_delete, name='step_delete'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/step/new/$', views.step_new, name='step_new'),
- 
+
 
 #Урл для обновления данных при редактировании ячейки какой-либо таблицы. Универсальныйй
     url(r'^cell_update/$', views.cell_update, name='cell_update'),

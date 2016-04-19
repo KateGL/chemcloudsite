@@ -32,24 +32,13 @@ def substance_all(request):
     RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
     return render(request, 'chemical/substance_all.html', {"substance": substance_table})
 
-@login_required
-def substance_search(request, searched):
-    tmp = searched+ ' Hello, World!'
-    return HttpResponse(tmp)
-
 
 @login_required
-def substance_search_hint(request, searched):
-    subst = request.user.chemistry.substance_get_like(searched, 3)
-    tmp = ''
-    for value in subst.values():
-        if tmp > '':
-            tmp = tmp + ', '
-        tmp = tmp + value['name']
-
-
-    #tmp = searched + ' ' + str(subst)
-    return HttpResponse(tmp)
+def substance_all_search(request, searched):
+    substance_table = SubstanceTable(request.user.chemistry.substance_get_like(searched, 0))
+    RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
+    return render(request, 'chemical/substance_all.html',
+    {"substance": substance_table, "searched": searched})
 
 
 @login_required
@@ -284,9 +273,9 @@ def get_cell_value(request): #взятие старого значения яч�
         )
 
 def _create_step_part(step, is_left, part ):
-    log = logging.getLogger('django') 
+    log = logging.getLogger('django')
     log.info('а это будет')
-    return 1   
+    return 1
 
 @login_required
 def cell_update(request):
@@ -330,8 +319,8 @@ def cell_update(request):
                 if pos != -1:
                     step.is_revers = True
                     arr2 = table_str.split('<->');
-                else:     
-                    result = 'error'           
+                else:
+                    result = 'error'
                     errorText = 'Неправильно введен флаг обратимости стадии'
             if pos != -1:
                 left_str = arr2[0]

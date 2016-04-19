@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'chemmain', # main pages of site
     'chemical', #models and views of main chemical entyties: atom, substance, reaction, mechanism, etc
+    'chem_ajax', #for ajax methods
 ]
 
 MIDDLEWARE_CLASSES = []
