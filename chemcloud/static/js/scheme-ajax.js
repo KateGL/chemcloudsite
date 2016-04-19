@@ -35,7 +35,7 @@ $(document).ready(function(){
 		});
 	});
 
-	$('#steps_body').on("click", "button", function(){
+	$('#steps_body').on("click", "button.step_delete", function(){
 		if (!$(this).hasClass('step_delete')) //чтобы не реагировало на кнопки изменения порядка
 			return false;
 		var stepid   = $(this).attr("data-stepid");
@@ -66,7 +66,7 @@ $(document).ready(function(){
 	});
 
 	//$('.changeorder').click(function(){
-	$('#steps_body').on("click", "button", function(){//делегированная обработка события, так как обработчик к новым добавляемым строкам не прикрепляется, а дублировать код обработчика через метод bind не хочется
+	$('#steps_body').on("click", "button.changeorder", function(){//делегированная обработка события, так как обработчик к новым добавляемым строкам не прикрепляется, а дублировать код обработчика через метод bind не хочется
 if (!$(this).hasClass('changeorder')) //чтобы не реагировало на кнопку удаления стадии
 			return false;	
 		var stepid   = $(this).attr("data-stepid");

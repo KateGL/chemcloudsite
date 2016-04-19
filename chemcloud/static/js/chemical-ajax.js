@@ -21,9 +21,91 @@ function getCookie(name) {
 //Присваиваем таблице уникальный идентификатор id, который соответствует названию таблицы и через нижнее подчеркивание нужные и реакции, эксперимента и т.д. .
 //Редактируемым ячейкам (td) присваиваем класс — edit, класс с названием столбца в БД и числовой класс с идентификатором строки в БД (ид стадии, или ид точки эксперимента, и т.д.).
 //=====================================================================
-	//при нажатии на ячейку таблицы с классом edit
+
+	//$('button.editbtn').click(function(){ 
+   $('tbody').on("click", "button.editbtn", function(){
+      console.log('tut');
+		ptd = $(this).parent('td');
+		$('.ajax').html($('.ajax input').val());
+		//удаляем все классы ajax
+		$('.ajax').removeClass('ajax');
+		ptd.addClass('ajax');
+console.log(ptd);
+		//внутри ячейки создаём input и вставляем текст из ячейки в него
+		ptd.html('<input id="editbox" size="'+ ptd.text().length+'" type="text" value="' + ptd.text() + '" /> <button type="button" class="save step 123"  ><span class="glyphicon glyphicon-floppy-disk"></span></button> <button type="button" class="delete step 123"  ><span class="glyphicon glyphicon-remove"></span></button>');
+		//устанавливаем фокус на созданном элементе
+		$('#editbox').focus();
+		});
+
+   $('tbody').on("click", "button.save", function(){
+      console.log('tut_save');
+		//получаем значение класса и разбиваем на массив
+		//в итоге получаем такой массив - arr[0] = edit, arr[1] = наименование столбца, arr[2] = id строки
+		ptd = $(this).parent('td');
+		arr = ptd.attr('class').split( " " );
+console.log(arr);
+		//получаем наименование таблицы, в которую будем вносить изменения
+		var table_str = $('table').attr('id');
+		//выполняем ajax запрос методом POST
+		//в файл update_cell.php
+		//создаём строку для отправки запроса
+		//value = введенное значение
+		//id = номер строки
+		//field = название столбца
+		//table = название таблицы - в названии таблицы поместить через _ нужные ид
+		var url_str  = "/chemical/cell_update/";
+		var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
+		var data_str = "value="+$('.ajax input').val()+"&id="+arr[2]+"&field="+arr[1]+"&table="+table_str+"&csrfmiddlewaretoken="+csrftoken;
+		 $.ajax({ type: "POST", url: url_str, data: data_str,
+			//при удачном выполнении скрипта, производим действия
+			 success: function(data){
+				var arr   = JSON.parse(data);
+				var result = arr.result;			
+				var errorText = arr.errorText;
+				if (result == 'success')		
+				{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
+				 	$('.ajax').html($('.ajax input').val() + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
+					//удаялем класс ajax
+				 	$('.ajax').removeClass('ajax');
+				}
+				else
+				{
+					alert(errorText);
+					var el = $('#editbox');
+	            el.blur();
+
+				}	
+			},								
+			 error: function(jqXHR, textStatus, errorThrown) { 
+		        alert(jqXHR.statusText);
+
+				}
+		 });
+		});
+
+   $('tbody').on("click", "button.delete", function(){
+      console.log('tut_delete');
+			td_el = $(this).parent('td');				
+			arr = td_el.attr('class').split( " " );
+console.log(arr);
+			var table_str = $('table').attr('id');
+			var url_str  = "/chemical/cell_value/";
+			var csrftoken = getCookie('csrftoken');
+ 		 $.post(url_str, {id: arr[2], field: arr[1], table: table_str, csrfmiddlewaretoken:  csrftoken},function(data){
+					var arr   = JSON.parse(data);
+					old_val = arr.value;
+					//находим input внутри элемента с классом ajax и вставляем вместо input его значение
+					 $('.ajax').html(old_val + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
+					//удаялем класс ajax
+					 $('.ajax').removeClass('ajax');
+console.log('old_val='+old_val);	
+
+			 }, 'JSON');
+		});
+
+	//при нажатии на ячейку таблицы с классом edit	
 	//$('td.edit').click(function(){ Катя! у тебя поля фикированные, не добавляемые, ты так вызывай метод
-	$(document).on('click', 'td.edit', function(){
+/*   $(document).on('click', 'td.edit', function(){
 		//находим input внутри элемента с классом ajax и вставляем вместо input его значение
 		$('.ajax').html($('.ajax input').val());
 		//удаляем все классы ajax
@@ -34,7 +116,7 @@ function getCookie(name) {
 		$(this).html('<input id="editbox" size="'+ $(this).text().length+'" type="text" value="' + $(this).text() + '" />');
 		//устанавливаем фокус на созданном элементе
 		$('#editbox').focus();
-		});
+		});*.
 
 	//определяем нажатие кнопки на клавиатуре
 //	$('td.edit').keydown(function(event){ Катя! у тебя поля фикированные, не добавляемые, ты так вызывай метод
@@ -87,7 +169,7 @@ function getCookie(name) {
 	});
 
 	//убираем input при нажатии вне поля ввода, если не хотим сохранять введенную информацию
-	$(document).on('blur', '#editbox', function(){			
+	/*$(document).on('blur', '#editbox', function(){			
 			td_el = $(this).parent();				
 			arr = td_el.attr('class').split( " " );
 			var table_str = $('table').attr('id');
@@ -104,6 +186,7 @@ console.log('old_val='+old_val);
 
 			 }, 'JSON');
 	});
+*/
 
 //=====================================================================
 
