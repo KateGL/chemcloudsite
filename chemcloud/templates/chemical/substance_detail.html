@@ -8,45 +8,139 @@
    
     <div class="page-header">
 
-    <h1> <a href="{% url 'substance_all' %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Детали вещества (read only)</h1>
+    <h1> <a href="{% url 'substance_all' %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span>
+          </a>Детали вещества {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %}</h1>
            
             
     </div>
 <div class="page-content">
-        
-            
-   <div class="table">
-  <table class="table">
-    <tbody>
+        <div class="row">
+     <div class="col-xs-7">
+        <table class="table" >
+    <tbody id="detail_main" model_name="Substance" url_edit="{% url 'substance_detail_edit' substance.pk %}" >
      <tr>
-        <td class="text-right">Название</td>
-        <td class="text-left">{{  substance.name }}</td>
-      </tr>
-      <tr>
-        <td class="pull-right">Брутто-формула</td>
-        <td class="text-left">{{  substance.formula_brutto_formatted | safe}}</td>
-      </tr>
-      
-      <tr>
-      <td class="pull-right">Заряд</td>
-      <td class="text-left">{{  substance.charge }}</td>
+        <td class="detail_caption">Название:</td>
+        <td class="detail_value"><input class="box_input" size="30" type="text" disabled="disabled" value="{{  substance.name }}"/></td>
+        {% if is_owner %}
+        <td class="detail_edit" > </td>         
+         <td class="detail_btns">
+        <button type="button" class="detail_btn_edit"></button>
+        <button type="button" class="detail_btn_save" ></button>
+        </td>
+        {% endif %}
       </tr>
       
       <tr>
-        <td class="pull-right">Радикал</td>
-        <td class="text-left">{{  substance.is_radical }}</td>
+      <td class="detail_caption">Синонимы:</td>
+      <td class="text-left">...</td>
       </tr>
       
       <tr>
-        <td class="pull-right">Примечание</td>
-        <td class="text-left">{{  substance.note }}</td>
+        <td class="detail_caption">Брутто-формула:</td>
+        <td class="detail_value"><input class="box_input" size="30" type="text" disabled="disabled" value="{{  substance.formula_brutto }}"/></td>
+        {% if is_owner %}
+        <td class="detail_edit"  ></td>         
+         <td class="detail_btns">
+        <button type="button" class="detail_btn_edit"></button>
+        <button type="button" class="detail_btn_save" refresh_page="True"></button>
+        </td>
+        {% endif %}
+      </tr>
+      
+      <tr>
+        <td class="detail_caption">Формат *.mol:</td>
+        <td class="text-left">...</td>
+      </tr>
+      
+      <tr>
+        <td class="detail_caption">Графическая формула:</td>
+        <td class="text-left">...</td>
+      </tr>
+      
+            
+      <tr>
+        <td class="detail_caption">Заряд:</td>
+        <td class="detail_value"><input class="box_input" size="30" type="text" disabled="disabled" value="{{  substance.charge }}"/></td>
+        {% if is_owner %}
+        <td class="detail_edit" ></td>         
+         <td class="detail_btns">
+        <button type="button" class="detail_btn_edit"></button>
+        <button type="button" class="detail_btn_save"></button>
+        </td>
+        {% endif %}
+      </tr>
+      
+     
+      <tr>
+        <td class="detail_caption">Радикал:</td>
+        <td class="detail_value"><input  size="30" type="checkbox" disabled="disabled" value="{{  substance.is_radical }}"/></td>
+        {% if is_owner %}
+        <td class="detail_edit"  ></td>         
+         <td class="detail_btns">
+        <button type="button" class="detail_btn_edit"></button>
+        <button type="button" class="detail_btn_save"></button>
+        </td>
+        {% endif %}
+      </tr>
+      
+     
+      <tr>
+        <td class="detail_caption">Примечание:</td>
+        <td class="detail_value"><textarea class="form-control col-xs-12"  rows="10" disabled="disabled">{{  substance.note }}</textarea></td>
+        {% if is_owner %}
+        <td class="detail_edit"  ></td>         
+         <td class="detail_btns">
+        <button type="button" class="detail_btn_edit"></button>
+        <button type="button" class="detail_btn_save"></button>
+        </td>
+        {% endif %}
       </tr>
       
     </tbody>
   </table>
-</div>          
+       
+       <table class="table">
+    <tbody>
+     <tr>
+        <td class="detail_caption">Дата последних изменений:</td>
+        <td class="detail_value">...</td>
+      </tr>
+          
+          <tr>
+        <td class="detail_caption">Последние изменения внес(ла):</td>
+        <td class="detail_value">...</td>
+      </tr>
+          
+          <tr>
+        <td class="detail_caption">Дата создания:</td>
+        <td class="detail_value">...</td>
+      </tr>
+          
+          <tr>
+        <td class="text-right">Создал(а):</td>
+        <td class="detail_value">...</td>
+      </tr>
+           </tbody>
+         </table>
+         
+</div>
+
+        
+       <div class="col-xs-5">
+        <h4> Состав вещества</h4>
+           <h5>{{  substance.formula_brutto_formatted | safe}}</h5>
+            {% render_table substance_consist %}
+        </div> 
+        
+    </div>     
+       
+          
 
             </div>
-            <h3> Состав вещества</h3>
-            {% render_table substance_consist %}
+            
+{% endblock %}
+
+
+{% block footer_block %}
+<script src="{% static "js/details.js" %}"></script>
 {% endblock %}

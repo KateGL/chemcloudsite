@@ -7,6 +7,7 @@ from chemical.chemical_models import Dict_atom, Substance, Reaction, Reaction_sc
 from chemical.chemical_models import Scheme_step, Scheme_step_subst
 from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_tag,Dict_feature,Reaction_feature, Dict_model_function, Dict_model_argument, Dict_measure_unit
 from chemical.chemical_models import User_reaction
+from chemical.models import Chemistry
 
 
 class Dict_atomAdmin(admin.ModelAdmin):
@@ -33,6 +34,7 @@ class ReactionAdmin(admin.ModelAdmin):
 
 admin.site.register(Reaction, ReactionAdmin)
 
+admin.site.register(Chemistry)
 
 #  механизмы реакции
 

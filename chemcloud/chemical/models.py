@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 
 from chemical.chemical_models import Dict_atom, Substance, Reaction, User_reaction
 from chemical.chemical_models import Reaction_subst, Experiment, Reaction_scheme
-from chemical.chemical_models import Scheme_step,Substance_synonym,Dict_feature
+from chemical.chemical_models import Scheme_step, Substance_synonym, Dict_feature
 from chemical.chemical_models import Reaction_feature
 
 
@@ -25,9 +25,23 @@ def owner_required(f):
     return decorator
 
 
+def substance_owner_required(f):
+    def decorator(request, *args, **kwargs):
+        is_owner = request.user.chemistry.is_substance_owner
+        if not is_owner:
+            raise PermissionDenied
+        return f(request, *args, **kwargs)
+
+    return decorator
+
+
 #Объект для доступа к химии
 class Chemistry(models.Model):
-    user = AutoOneToOneField(User, primary_key=True, null = False,on_delete=models.CASCADE)
+    user = AutoOneToOneField(User, primary_key=True, null=False, on_delete=models.CASCADE)
+    is_substance_owner = models.BooleanField(default=False, null=False, verbose_name='Редактирует Вещества')
+
+    def __unicode__(self):
+        return self.user.username
 
     def substance_all(self):
         return Substance.objects.all()
@@ -60,7 +74,7 @@ class Chemistry(models.Model):
 
     def is_owner(self, id_reaction):
         try:
-            react = User_reaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
+            react = User_reaction.objects.get(reaction__pk=id_reaction, user__pk=self.user.pk)
         except User_reaction.DoesNotExist:
             raise Http404("Reaction does not exist or access denied")
         return react.is_owner
@@ -68,7 +82,7 @@ class Chemistry(models.Model):
 #на самом деле возвращает объект UserReaction
     def reaction_get(self, id_reaction):
         try:
-            react = User_reaction.objects.get(reaction__pk=id_reaction, user__pk = self.user.pk)
+            react = User_reaction.objects.get(reaction__pk=id_reaction, user__pk=self.user.pk)
         except User_reaction.DoesNotExist:
             raise Http404("Reaction does not exist or access denied")
         return react
@@ -170,7 +184,7 @@ class Chemistry(models.Model):
         return Dict_feature.objects.all()
 
     # вернуть характеристику по id характеристики
-    def dic_feature_get (self, id_feat):
+    def dic_feature_get(self, id_feat):
         try:
             dict_feature = Dict_feature.objects.get(pk=id_feat)
         except Dict_feature.DoesNotExist:

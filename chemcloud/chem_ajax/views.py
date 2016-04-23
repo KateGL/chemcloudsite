@@ -27,3 +27,8 @@ def substance_search_hint(request, searched):
         lnk = get_subst_detail_link(value['id_substance'])
         tmp = tmp + make_name_link(lnk, value['name']) + ' (' + value['formula_brutto_formatted'] + ')'
     return HttpResponse(tmp)
+
+@login_required
+@owner_required
+def substance_detail_edit(request, id_substance):
+    return HttpResponse('Hello, World!')

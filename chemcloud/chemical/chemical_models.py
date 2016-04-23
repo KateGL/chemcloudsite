@@ -266,7 +266,7 @@ class User_reaction(models.Model):
 
 #Синонимы вещества
 class Substance_synonym (models.Model):
-    substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
+    substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='synonyms' )
     name = models.CharField (max_length = 250, verbose_name='Название')
 
     def __unicode__ (self):

@@ -45,8 +45,9 @@ def substance_all_search(request, searched):
 def substance_detail(request, id_substance):
     substance = request.user.chemistry.substance_get(id_substance)
     consist_table = ConsistTable(substance.consist.all())
+    is_substance_owner = request.user.chemistry.is_substance_owner
     return render(request, 'chemical/substance_detail.html',
-    {"substance": substance,"substance_consist":consist_table})
+    {"substance": substance,"substance_consist":consist_table, "is_owner":is_substance_owner})
 
 @login_required
 def substance_new(request):
