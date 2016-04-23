@@ -28,6 +28,7 @@ def owner_required(f):
 def substance_owner_required(f):
     def decorator(request, *args, **kwargs):
         is_owner = request.user.chemistry.is_substance_owner
+        #print(is_owner)
         if not is_owner:
             raise PermissionDenied
         return f(request, *args, **kwargs)

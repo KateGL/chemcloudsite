@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import json
+
 from django.shortcuts import render
 from django.http import HttpResponse
 
 from django.contrib.auth.decorators import login_required
 
-from chemical.models import owner_required
+from chemical.models import owner_required, substance_owner_required
 from chemical.urls_utils import make_name_link
 from chemical.urls_utils import get_subst_detail_link
 # Create your views here.
@@ -29,6 +31,20 @@ def substance_search_hint(request, searched):
     return HttpResponse(tmp)
 
 @login_required
-@owner_required
+@substance_owner_required
 def substance_detail_edit(request, id_substance):
-    return HttpResponse('Hello, World!')
+    subst = request.user.chemistry.substance_get(id_substance)
+
+    if request.is_ajax():
+        if request.method == 'POST':
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            field_name = body['field_name']
+            value = body['value']
+            setattr(subst, field_name, value)
+            subst.save()
+
+    data = '{"greeting":"Hello!", "who":"World"}'
+    xml_bytes = json.dumps(data)
+    return HttpResponse(xml_bytes, 'application/json')
+
