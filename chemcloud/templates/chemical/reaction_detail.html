@@ -19,27 +19,46 @@
   <div class="row">          
  <div class="col-xs-7">
  <div>
+ 
   <table class="table ">
-    <tbody>
-     <tr>
-        <td class="text-right col-xs-2">Название</td>
-        <td class="text-left col-xs-5">{{  reaction.name }}</td>
+    <tbody id="detail_main" model_name="Reaction" url_edit="{% url 'reaction_detail_edit' reaction.pk %}" >
+      
+      <tr>
+        <td class="detail_caption">Название:</td>
+        <td class="detail_value"><input class="box_input" size="30" type="text" disabled="disabled" value="{{  reaction.name }}"/></td>
+        {% if is_owner %}
+        <td class="detail_edit" > </td>         
+         <td class="detail_btns" field_name="name">
+        <button type="button" class="detail_btn_edit"></button>
+        <button type="button" class="detail_btn_save" ></button>
+        </td>
+        {% endif %}
       </tr>
-  <tr>
-        <td class="text-right">Описание</td>
-        <td class="text-left">{{  reaction.description }}</td>
+      
+ 
+      
+      <tr>
+        <td class="detail_caption">Описание:</td>
+        <td class="detail_value"><textarea class="form-control col-xs-12"  rows="10" disabled="disabled">{{  reaction.description }}</textarea></td>
+        {% if is_owner %}
+        <td class="detail_edit"  ></td>         
+         <td class="detail_btns" field_name="description">
+        <button type="button" class="detail_btn_edit"></button>
+        <button type="button" class="detail_btn_save"></button>
+        </td>
+        {% endif %}
       </tr>
       
       <tr>
-        <td class="text-right">Тип реакции</td>
-        <td class="text-left">
+        <td class="detail_caption">Тип реакции</td>
+        <td class="detail_value">
          <div class="well well-sm">
       
             <div >
-  <label>Нестационарная</label>: <!--{{  reaction.is_notstationary }}-->
+  <label>Нестационарная</label> <!--{{  reaction.is_notstationary }}-->
 </div>
                    <div >
-  <label>Изотермическая</label>: <!--{{  reaction.is_isothermal }}-->
+  <label>Изотермическая</label> <!--{{  reaction.is_isothermal }}-->
 </div>
 
          </div>
@@ -49,13 +68,13 @@
       </tr>
       
       <tr>
-        <td class="text-right">Дата создания</td>
-        <td class="text-left">{{  reaction.created_date }}</td>
+        <td class="detail_caption">Дата создания</td>
+        <td class="detail_value">{{  reaction.created_date }}</td>
       </tr>
       
       <tr>
-        <td class="text-right">Создал(ла)</td>
-        <td class="text-left">{{  reaction.created_by }}</td>
+        <td class="detail_caption">Создал(ла)</td>
+        <td class="detail_value">{{  reaction.created_by }}</td>
       </tr>
       
        
@@ -118,4 +137,8 @@
 
 </div>
 </div>
+{% endblock %}
+
+{% block footer_block %}
+<script src="{% static "js/details.js" %}"></script>
 {% endblock %}

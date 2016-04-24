@@ -55,3 +55,30 @@ def substance_detail_edit(request, id_substance):
 
     return HttpResponse(xml_bytes, 'application/json')
 
+
+@login_required
+@owner_required
+def reaction_detail_edit(request, id_reaction):
+    #print('get react')
+    ureact = request.user.chemistry.reaction_get(id_reaction)
+    react = ureact.reaction
+
+    data = '{"result":"ok", "message":"ok"}'
+    xml_bytes = json.dumps(data)
+
+    if request.is_ajax():
+        if request.method == 'POST':
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            field_name = body['field_name']
+            value = body['value']
+            #print(field_name)
+            #print(value)
+            setattr(react, field_name, value)
+
+            react.save()
+            #print('after_save')
+            #print(react.name)
+    return HttpResponse(xml_bytes, 'application/json')
+
+
