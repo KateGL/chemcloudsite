@@ -41,7 +41,7 @@
         <td class="detail_value"><input class="box_input" size="30" type="text" disabled="disabled" value="{{  substance.formula_brutto }}"/></td>
         {% if is_owner %}
         <td class="detail_edit"  ></td>         
-         <td class="detail_btns" >
+         <td class="detail_btns" field_name="formula_brutto">
         <button type="button" class="detail_btn_edit"></button>
         <button type="button" class="detail_btn_save" refresh_page="True"></button>
         </td>
@@ -61,7 +61,7 @@
             
       <tr>
         <td class="detail_caption">Заряд:</td>
-        <td class="detail_value"><input class="box_input" size="30" type="text" disabled="disabled" value="{{  substance.charge }}"/></td>
+        <td class="detail_value"><input type="number" id="replyNumber" min="-300" step="1" data-bind="value:replyNumber" value="{{  substance.charge }}"/></td>
         {% if is_owner %}
         <td class="detail_edit" ></td>         
          <td class="detail_btns" field_name="charge">
