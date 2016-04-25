@@ -12,4 +12,5 @@ urlpatterns = [
 
     url(r'^reaction/(?P<id_reaction>[0-9]+)/detail_edit/$', views.reaction_detail_edit, name='reaction_detail_edit'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/detail_edit/$', views.react_substance_detail_edit, name='react_substance_detail_edit'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/detail_edit/$', views.scheme_detail_edit, name='scheme_detail_edit'),
     ]
