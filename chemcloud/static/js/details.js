@@ -144,7 +144,8 @@ $(document).ready(function(){
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(data_to_edit),
         dataType: 'json',
-        success: function(json_msg){//alert(json_msg);
+        success: function(json_msg){
+              //alert(json_msg);
               after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue);
               return false;
               },

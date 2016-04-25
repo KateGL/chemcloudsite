@@ -207,6 +207,7 @@ class Reaction_subst(models.Model):
     substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
     alias = models.CharField (max_length = 250, verbose_name='Псевдоним', null = False)
     brutto_formula_short = models.CharField (max_length = 250, verbose_name='Краткая брутто-формула')
+    #brutto_formula_short_formatted = models.CharField (max_length = 250, verbose_name='Краткая брутто-формула')
     note = models.TextField(blank = True,  verbose_name='Примечание')
 
 

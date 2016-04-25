@@ -14,6 +14,20 @@ from chemical.urls_utils import get_subst_detail_link
 from chemical.utils import decorate_formula
 # Create your views here.
 
+def get_field_and_value_from_request(request):
+    data = '{"result":"True", "message":"ok"}'
+    if request.is_ajax():
+        if request.method == 'POST':
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            field_name = body['field_name']
+            value = body['value']
+            return {"is_error": False,"err_msg":data, "field_name": field_name, "value": value}
+
+    data = '{"result":"False", "message":"Request not Ajax or not POST"}'
+    return {"is_error": True,"err_msg":data}
+
+
 @login_required
 def substance_search(request, searched):
     tmp = searched + ' Hello, World!'
@@ -35,50 +49,44 @@ def substance_search_hint(request, searched):
 @substance_owner_required
 def substance_detail_edit(request, id_substance):
     subst = request.user.chemistry.substance_get(id_substance)
+    fv_dict = get_field_and_value_from_request(request)
 
-    data = '{"result":"ok", "message":"ok"}'
-    xml_bytes = json.dumps(data)
+    if (fv_dict['is_error'] is False):
+        setattr(subst, fv_dict['field_name'], fv_dict['value'])
+        if fv_dict['field_name'] == 'formula_brutto':
+            subst.formula_brutto_formatted = decorate_formula(subst.formula_brutto)
+            subst.consist_create()
+        subst.save()
 
-    if request.is_ajax():
-        if request.method == 'POST':
-            body_unicode = request.body.decode('utf-8')
-            body = json.loads(body_unicode)
-            field_name = body['field_name']
-            value = body['value']
-            setattr(subst, field_name, value)
-
-            if field_name == 'formula_brutto':
-                subst.formula_brutto_formatted = decorate_formula(subst.formula_brutto)
-                subst.consist_create()
-
-            subst.save()
-
+    xml_bytes = json.dumps(fv_dict['err_msg'])
     return HttpResponse(xml_bytes, 'application/json')
 
 
 @login_required
 @owner_required
 def reaction_detail_edit(request, id_reaction):
-    #print('get react')
     ureact = request.user.chemistry.reaction_get(id_reaction)
     react = ureact.reaction
+    fv_dict = get_field_and_value_from_request(request)
 
-    data = '{"result":"ok", "message":"ok"}'
-    xml_bytes = json.dumps(data)
+    if (fv_dict['is_error'] is False):
+        setattr(react, fv_dict['field_name'], fv_dict['value'])
+        react.save()
 
-    if request.is_ajax():
-        if request.method == 'POST':
-            body_unicode = request.body.decode('utf-8')
-            body = json.loads(body_unicode)
-            field_name = body['field_name']
-            value = body['value']
-            #print(field_name)
-            #print(value)
-            setattr(react, field_name, value)
-
-            react.save()
-            #print('after_save')
-            #print(react.name)
+    xml_bytes = json.dumps(fv_dict['err_msg'])
     return HttpResponse(xml_bytes, 'application/json')
 
 
+@login_required
+@owner_required
+def react_substance_detail_edit(request, id_reaction, id_react_substance):
+    subst_dict = request.user.chemistry.react_subst_get(id_reaction, id_react_substance)
+    rsubst = subst_dict['substance']
+    fv_dict = get_field_and_value_from_request(request)
+
+    if (fv_dict['is_error'] is False):
+        setattr(rsubst, fv_dict['field_name'], fv_dict['value'])
+        rsubst.save()
+
+    xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')
