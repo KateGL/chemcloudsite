@@ -115,7 +115,9 @@ class Chemistry(models.Model):
         try:
             subst_list = react.reaction.substances.filter(alias=alias_str)
             if subst_list.count() > 1:
-                raise Http404("Более 1 вещества с псевдонимом '"+ alias_str + "'")
+                raise Http404("More than substance with alias: '"+ alias_str + "'")
+            if subst_list.count() == 0:
+                raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
         except Reaction_subst.DoesNotExist:
             raise Http404("Substance does not exist")
         subst_dict = {}
