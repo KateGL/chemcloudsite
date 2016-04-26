@@ -8,6 +8,9 @@ django.setup()
 #from chemical.models import Dict_atom
 from chemical.chemical_models import Dict_atom,Dict_feature,Dict_model_function
 from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
+from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
+from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
+from django.contrib.auth.models import User
 
 def drop_all():
      Dict_atom.objects.all().delete()
@@ -15,6 +18,14 @@ def drop_all():
      Dict_model_function.objects.all().delete()
      Dict_model_argument.objects.all().delete()
      Dict_measure_unit.objects.all().delete()
+     Reaction.objects.all().delete()
+     User_reaction.objects.all().delete()
+     Substance_synonym.objects.all().delete()
+     Substance.objects.all().delete()
+     Reaction_subst.objects.all().delete()
+     Reaction_scheme.objects.all().delete()
+     Scheme_step.objects.all().delete()
+     Scheme_step_subst.objects.all().delete()
      print "dropped all data"
 
 def populate():
@@ -151,13 +162,56 @@ def populate():
    add_dict_measure_unit(10,'%','Проценты',1,1,b)
    add_dict_measure_unit(11,'кг/(м2*сек)','Массовая скорость потока',1,1,b)
 
-#5 M Моль/л Да 1 1
-#6 doli Мольные доли Да 1 1
-#7 % Процентные соотношения наблюдаемых веществ Да 1 1
-#8 м Метр Да 1 1
-#9 см Сантиметр Нет 100 8
-#10 % Проценты Да 1 1
-#11 (Ед.изм.Скорости потока, Лениза, в твоих реакциях есть? Тогда укажи)
+    # тестовая реакция
+   add_reaction(id_reac=1, nm='Паровая конверсия пропана', dscr='Низкотемпературная паровая конверсия пропана', is_f=1, cb='Admin', ub='Admin')
+   b = Reaction.objects.get(id_reaction=1)
+   c = User.objects.get(id=1)
+   add_user_reaction(b,c,1)
+   add_substance(1,'пропан',0,0,'C3H8','пропан')
+   add_substance(2,'вода',0,0,'H2O','вода')
+   add_substance(3,'оксид углерода (IV)',0,0,'CO2','углекислый газ')
+   add_substance(4,'водород',0,0,'H2','водород')
+   add_substance(5,'метан',0,0,'CH4','метан')
+   c = Substance.objects.get(id_substance=1)
+   add_reac_subst(b,c,'x1','C3H8','')
+   c = Substance.objects.get(id_substance=2)
+   add_reac_subst(b,c,'x2','H2O','')
+   c = Substance.objects.get(id_substance=3)
+   add_reac_subst(b,c,'x3','CO2','')
+   c = Substance.objects.get(id_substance=4)
+   add_reac_subst(b,c,'x4','H2','')
+   c = Substance.objects.get(id_substance=5)
+   add_reac_subst(b,c,'x5','CH4','')
+   add_reac_scheme(1,b,'Схема реакции паровой конверсии пропана','Схема реакции паровой конверсии пропана',1,'Admin','Admin')
+   c = Reaction_scheme.objects.get(id_scheme=1)
+   add_scheme_step(1,c,'Стадия № 1',1,0,'Первая стадия','')
+   add_scheme_step(2,c,'Стадия № 2',2,1,'Вторая стадия','')
+   c = Scheme_step.objects.get(id_step=1)
+   d = Substance.objects.get(id_substance=1)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(1,c,f,1,-1)
+   d = Substance.objects.get(id_substance=2)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(2,c,f,2,-6)
+   d = Substance.objects.get(id_substance=3)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(3,c,f,3,3)
+   d = Substance.objects.get(id_substance=4)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(4,c,f,4,10)
+   c = Scheme_step.objects.get(id_step=2)
+   d = Substance.objects.get(id_substance=3)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(5,c,f,1,-1)
+   d = Substance.objects.get(id_substance=4)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(6,c,f,2,-4)
+   d = Substance.objects.get(id_substance=5)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(7,c,f,3,1)
+   d = Substance.objects.get(id_substance=2)
+   f = Reaction_subst.objects.get(reaction=b,substance=d)
+   add_scheme_step_subst(8,c,f,4,2)
 
 
     # Print out what we have added to the user.
@@ -168,6 +222,44 @@ def populate():
 
 def add_atom(atom_num, symb, atom_m, n, nl):
     a = Dict_atom.objects.get_or_create(atom_number=atom_num, symbol=symb, atom_mass = atom_m, name = n, name_latin = nl)[0]
+    a.save()
+    return a
+
+#def add_reaction(id_reac, nm, dscr, is_f, cb, cd, ub, ud):
+def add_reaction(id_reac, nm, dscr, is_f, cb, ub):
+    #a = Reaction.objects.get_or_create(id_reaction=id_reac, name=nm, description=dscr, is_favorite=is_f, created_by=cb, created_date=cd, updated_by=ub, updated_date=ud)[0]
+    a = Reaction.objects.get_or_create(id_reaction=id_reac, name=nm, description=dscr, is_favorite=is_f, created_by=cb, updated_by=ub)[0]
+    a.save()
+    return a
+
+def add_user_reaction(reac,us,is_ow):
+    #a = Reaction.objects.get_or_create(id_reaction=id_reac, name=nm, description=dscr, is_favorite=is_f, created_by=cb, created_date=cd, updated_by=ub, updated_date=ud)[0]
+    a = User_reaction.objects.get_or_create(reaction=reac,user=us,is_owner=is_ow)[0]
+    a.save()
+    return a
+
+def add_substance(id_s,nm,ch,is_r,fb,nt):
+    a = Substance.objects.get_or_create(id_substance=id_s,name=nm,charge=ch,is_radical=is_r,formula_brutto=fb,note=nt)[0]
+    a.save()
+    return a
+
+def add_reac_subst(r,s,al,bfs,nt):
+    a = Reaction_subst.objects.get_or_create(reaction=r,substance=s,alias=al,brutto_formula_short=bfs,note=nt)[0]
+    a.save()
+    return a
+
+def add_reac_scheme(id_s,r,nm,descr,is_p,cb,ub):
+    a = Reaction_scheme.objects.get_or_create(id_scheme=id_s,reaction=r,name=nm,description=descr,is_possible=is_p,created_by=cb,updated_by=ub)[0]
+    a.save()
+    return a
+
+def add_scheme_step(id_s,s,nm,od,is_r,nt,re):
+    a = Scheme_step.objects.get_or_create(id_step=id_s,scheme=s,name=nm,order=od,is_revers=is_r,note=nt,rate_equation=re)[0]
+    a.save()
+    return a
+
+def add_scheme_step_subst(id_s,s,rs,p,sk):
+    a = Scheme_step_subst.objects.get_or_create(id_step=id_s,step=s,reac_substance=rs,position=p,stoich_koef=sk)[0]
     a.save()
     return a
 
