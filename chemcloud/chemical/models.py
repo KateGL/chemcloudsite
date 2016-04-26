@@ -110,6 +110,19 @@ class Chemistry(models.Model):
         subst_dict['is_owner'] = react.is_owner
         return subst_dict
 
+    def react_subst_filterbyAlias(self, id_reaction, alias_str):
+        react = self.reaction_get(id_reaction)
+        try:
+            subst_list = react.reaction.substances.filter(alias=alias_str)
+            if subst_list.count() > 1:
+                raise Http404("Более 1 вещества с псевдонимом '"+ alias_str + "'")
+        except Reaction_subst.DoesNotExist:
+            raise Http404("Substance does not exist")
+        subst_dict = {}
+        subst_dict['substance'] = subst_list[0]
+        subst_dict['is_owner'] = react.is_owner
+        return subst_dict
+
     def react_scheme_all(self, id_reaction):
         react = self.reaction_get(id_reaction)
         return react.reaction.schemes.all()
