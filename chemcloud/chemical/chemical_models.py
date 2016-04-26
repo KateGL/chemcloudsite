@@ -195,8 +195,6 @@ class Scheme_step(models.Model):
             i = i+1
         return right
 
-
-
     def generate_step_from_str(self, data_list):
         try:
             self.scheme_step_substs.all().delete()
@@ -211,6 +209,28 @@ class Scheme_step(models.Model):
             return False
         return True
 
+    def check_step_balance(self):
+        try:
+            step_substs = self.scheme_step_substs.all()
+            atoms_list = []
+            A_mtrx_Transp = []
+            G_coll = []
+            for subst_i in step_substs:
+                G_coll = G_coll + [subst_i.stoich_koef]
+                print(G_coll)
+                atoms = subst_i.reac_substance.substance.consist.all()
+                print(atoms)
+                print('tututu3')
+                for atom_j in atoms:
+                    atoms_list = atoms_list + [atom.symbol]
+            print (atoms_list )
+            atoms_list = list(set(atoms_list))
+            print (atoms_list )
+            print('tututu345')
+        except:
+            print('tututu567')
+            return False
+        return True
 
     class Meta:
         ordering            = ["order"]
