@@ -12,7 +12,8 @@ from chemical.chemical_models import Dict_atom,Dict_feature,Dict_model_function
 from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
-from chemical.chemical_models import Experiment,Substance_consist
+from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
+from chemical.chemical_models import Dict_subst_role
 from django.contrib.auth.models import User
 
 def drop_all():
@@ -31,6 +32,9 @@ def drop_all():
      Scheme_step.objects.all().delete()
      Scheme_step_subst.objects.all().delete()
      Substance_consist.objects.all().delete()
+     Dict_exper_param.objects.all().delete()
+     Dict_exper_subst_param.objects.all().delete()
+     Dict_subst_role.objects.all().delete()
      print "dropped all data"
 
 def populate():
@@ -166,6 +170,14 @@ def populate():
    b = Dict_measure_unit.objects.get(id_unit=1)
    add_dict_measure_unit(10,'%','Проценты',1,1,b)
    add_dict_measure_unit(11,'кг/(м2*сек)','Массовая скорость потока',1,1,b)
+   add_dict_exper_param(1,'Влажность смеси')
+   add_dict_exper_param(2,'Скорость потока')
+   add_dict_exper_subst_param(1,'Период индукции')
+   add_dict_exper_subst_param(2,'Начальная скорость')
+   add_dict_subst_role(1,'Исходное')
+   add_dict_subst_role(2,'Промежуточное')
+   add_dict_subst_role(3,'Продукт')
+
 
     # тестовая реакция
    add_reaction(id_reac=1, nm='Паровая конверсия пропана', dscr='Низкотемпературная паровая конверсия пропана', is_f=1, cb='Admin', ub='Admin')
@@ -337,6 +349,21 @@ def add_dict_model_argument(id_arg_,name_,symbol_):
 
 def add_dict_measure_unit(id_unit_,code_,name_,is_si_,multiplier_,id_unit_si_):
     a = Dict_measure_unit.objects.get_or_create(id_unit=id_unit_,code=code_, name=name_,is_si=is_si_,multiplier=multiplier_,id_unit_si=id_unit_si_)[0]
+    a.save()
+    return a
+
+def add_dict_exper_param(id_ep,nm):
+    a = Dict_exper_param.objects.get_or_create(id_experparam=id_ep,name=nm)[0]
+    a.save()
+    return a
+
+def add_dict_exper_subst_param(id_esp,nm):
+    a = Dict_exper_subst_param.objects.get_or_create(id_expersubstparam=id_esp,name=nm)[0]
+    a.save()
+    return a
+
+def add_dict_subst_role(id_r,nm):
+    a = Dict_subst_role.objects.get_or_create(id_role=id_r,name=nm)[0]
     a.save()
     return a
 

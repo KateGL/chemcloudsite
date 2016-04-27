@@ -444,7 +444,7 @@ class Exper_data (models.Model):
 class Exper_subst (models.Model):
     id_expersubst = models.AutoField (primary_key = True, verbose_name='ИД')
     experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_subst' )
-    reaction_subst = models.ForeignKey(Reaction, null = False, on_delete=models.PROTECT, related_name='+' )
+    reaction_subst = models.ForeignKey(Reaction_subst, null = False, on_delete=models.PROTECT, related_name='+' )
     dict_subst_role = models.ForeignKey(Dict_subst_role, null = False, on_delete=models.PROTECT, related_name='+' )
     is_observed  = models.BooleanField(default = False, verbose_name='Наблюдаемое')
     # todo правильное название?
