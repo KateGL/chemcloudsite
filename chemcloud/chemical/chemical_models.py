@@ -202,8 +202,8 @@ class Scheme_step(models.Model):
             self.scheme_step_substs.all().delete()
             for element in data_list:
                 position_temp   = element[0]
-                steh_koef_temp  = element[1]    
-                reac_subst_temp = element[2]         
+                steh_koef_temp  = element[1]
+                reac_subst_temp = element[2]
                 step_subst = Scheme_step_subst.objects.get_or_create( step = self, reac_substance = reac_subst_temp, position = position_temp, stoich_koef =steh_koef_temp )[0]
                 step_subst.save()
                 self.scheme_step_substs.add(step_subst)
