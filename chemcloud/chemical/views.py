@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
-
+import re
 import json
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.core import serializers
 
 # Create your views here.
@@ -273,11 +273,6 @@ def get_cell_value(request): #взятие старого значения яч�
             content_type="application/json"
         )
 
-def _create_step_part(step, is_left, part ):
-    log = logging.getLogger('django')
-    log.info('а это будет')
-    return 1
-
 @login_required
 def cell_update(request):
     if not request.is_ajax():
@@ -293,43 +288,14 @@ def cell_update(request):
     field_str = request.POST['field']
     value_str = request.POST['value']
 
-    #обработка редактирования стадий
-    arr = table_str.split('_');
+    data = '';
     #таблица стадий механизма
-    pos = arr[0].find('all-steps');
+    pos = table_str.find('all-steps');
     if pos != -1:
-        id_reaction = int(arr[1])
-        id_scheme   = int(arr[2])
-        step_id = int(id_str)
-        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
-        step = step_dict['step']
-        result = 'success'
-        errorText = ''
-        if field_str == 'name':
-            step.name = value_str
-        if field_str == 'step':
-            step_str = value_str
-            left_str = ''
-            right_str = ''
-            pos=step_str.find('->');
-            if pos != -1:
-                step.is_revers = False
-                arr2 = table_str.split('->');
-            else:
-                pos = step_str.find('<->');
-                if pos != -1:
-                    step.is_revers = True
-                    arr2 = table_str.split('<->');
-                else:
-                    result = 'error'
-                    errorText = 'Неправильно введен флаг обратимости стадии'
-            if pos != -1:
-                left_str = arr2[0]
-                right_str = arr2[1]
-                _create_step_part(step, True, left_str)
-        if result == 'success':
-            step.save()
-        data = '{"result":"' + result  +'", "errorText": "' + errorText + '"}'
+        #обработка редактирования стадий
+        data = scheme_cell_update(request, table_str, id_str, field_str, value_str )
+    
+    if data != '':
         xml_bytes = json.dumps(data)
         return HttpResponse(xml_bytes,'application/json')
 
@@ -339,6 +305,84 @@ def cell_update(request):
             content_type="application/json"
         )
 
+def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
+    arr2 = part_str.split('+') 
+    i = start_i
+    list_temp = []
+    for str_i in arr2:
+        #убрать пробелы. Отделить псевдоним от стехиометрического коэффициента
+        #поиск соответствующего вещества реакции, если нет - ошибка
+        #subst_list = request.user.chemistry.react_subst_all(id_reaction)
+        str_temp = str_i.strip()
+        #ищем любую латинскую букву - это значит начало псевдонима. Все , что до - это стех.коэффициент
+        req_res = re.search(r'([A-Z,a-z]+\d*)', str_temp) #r перед строкой - включение сырого режима. Отключение экранирования
+        if req_res == None:
+            return list_temp
+        start_pos = req_res.start()
+        alias = str_temp[start_pos:]
+        steh_koef = 1.000;
+        if start_pos > 0:
+            steh_koef_str = str_temp[0:req_res.start()]
+            try:
+                steh_koef = float(steh_koef_str)
+            except:
+                return list_temp
+                #raise Http404("Ошибка ввода стехиометрического коэффициента: " + steh_koef_str)
+        if is_left:
+            steh_koef = -1.0*steh_koef
+        subst_dict = request.user.chemistry.react_subst_filterbyAlias(id_reaction, alias) 
+        reac_subst = subst_dict['substance']   
+        element = [i, steh_koef, reac_subst]
+        i=i+1
+        list_temp = list_temp + [element]
+    return list_temp
+
+def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
+    arr = table_str.split('_');
+    id_reaction = int(arr[1])
+    id_scheme   = int(arr[2])
+    step_id = int(id_str)
+
+    step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
+    step = step_dict['step']
+    result = 'success'
+    errorText = ''
+    if field_str == 'name':
+        step.name = value_str
+    if field_str == 'step':
+        step_str = value_str
+        left_str = ''
+        right_str = ''
+        pos=step_str.find('->')
+        arr2 = []
+        if pos != -1:
+            step.is_revers = False
+            arr2 = value_str.split('->')
+        else:
+            pos = step_str.find('<->')
+            if pos != -1:
+                step.is_revers = True
+                arr2 = value_str.split('<->')
+            else:
+                result = 'error'
+                errorText = 'Неправильно введен флаг обратимости стадии'
+        if pos != -1:
+            if len(arr2) != 2:
+                result = 'error'
+                errorText = 'Введено несколько флагов обратимости' 
+            else:
+                left_str = arr2[0]
+                right_str = arr2[1]
+                data_list = _create_step_part(request, id_reaction, step, True, left_str, 0)
+                if len(data_list) > 0:
+                    data_list = data_list + _create_step_part(request, id_reaction, step, False, right_str, len(data_list))
+                if len(data_list) == 0 or not step.generate_step_from_str(data_list):
+                    result = 'error'
+                    errorText = 'Ошибка распознавания и сохранения стадии. Длина = '  + str(len(data_list))
+    if result == 'success':
+        step.save()
+    data = '{"result":"' + result  +'", "errorText": "' + errorText + '"}'
+    return data
 
 
 @login_required
