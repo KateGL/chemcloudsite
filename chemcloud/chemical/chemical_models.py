@@ -18,6 +18,9 @@ class Dict_atom(models.Model):
         verbose_name_plural = ('Атомы')
         ordering = ["atom_number"]
 
+    def __unicode__ (self):
+        return self.symbol
+
 # Вещество
 class Substance(models.Model):
     id_substance = models.AutoField(primary_key = True, verbose_name='ИД')
@@ -84,6 +87,9 @@ class Substance_consist(models.Model):
     class Meta:
         verbose_name = ('Состав Вещества')
         verbose_name_plural = ('Составы Вещества')
+
+    #def __unicode__ (self):
+    #   return self.substance
 
 # Реакция
 class Reaction(models.Model):

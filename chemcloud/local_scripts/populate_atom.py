@@ -12,7 +12,7 @@ from chemical.chemical_models import Dict_atom,Dict_feature,Dict_model_function
 from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
-from chemical.chemical_models import Experiment
+from chemical.chemical_models import Experiment,Substance_consist
 from django.contrib.auth.models import User
 
 def drop_all():
@@ -30,6 +30,7 @@ def drop_all():
      Reaction_scheme.objects.all().delete()
      Scheme_step.objects.all().delete()
      Scheme_step_subst.objects.all().delete()
+     Substance_consist.objects.all().delete()
      print "dropped all data"
 
 def populate():
@@ -216,6 +217,41 @@ def populate():
    d = Substance.objects.get(id_substance=2)
    f = Reaction_subst.objects.get(reaction=b,substance=d)
    add_scheme_step_subst(8,c,f,4,2)
+   # Добавление состава веществ
+
+   # C3H8
+   c = Substance.objects.get(id_substance=1)
+   d = Dict_atom.objects.get(atom_number=1)
+   add_substance_consist(c,d,8)
+   d = Dict_atom.objects.get(atom_number=6)
+   add_substance_consist(c,d,3)
+
+   # H2O
+   c = Substance.objects.get(id_substance=2)
+   d = Dict_atom.objects.get(atom_number=1)
+   add_substance_consist(c,d,2)
+   d = Dict_atom.objects.get(atom_number=8)
+   add_substance_consist(c,d,1)
+
+   # CO2
+   c = Substance.objects.get(id_substance=3)
+   d = Dict_atom.objects.get(atom_number=6)
+   add_substance_consist(c,d,1)
+   d = Dict_atom.objects.get(atom_number=8)
+   add_substance_consist(c,d,2)
+
+   # H2
+   c = Substance.objects.get(id_substance=4)
+   d = Dict_atom.objects.get(atom_number=1)
+   add_substance_consist(c,d,2)
+
+   # CH4
+   c = Substance.objects.get(id_substance=5)
+   d = Dict_atom.objects.get(atom_number=6)
+   add_substance_consist(c,d,1)
+   d = Dict_atom.objects.get(atom_number=1)
+   add_substance_consist(c,d,4)
+
    # Добавление экспериментов
    d = Dict_measure_unit.objects.get(id_unit=8)
    e = Dict_measure_unit.objects.get(id_unit=10)
@@ -276,6 +312,11 @@ def add_scheme_step_subst(id_s,s,rs,p,sk):
 
 def add_exper(id_e,r,am,fm,ifm,des,id_f,id_a,ed,ub,is_f,nm,cb):
     a = Experiment.objects.get_or_create(id_experiment=id_e,reaction=r,argument_measure=am,function_measure=fm,init_function_measure=ifm,description=des,id_func=id_f,id_arg=id_a,exper_date=ed,updated_by=ub,is_favorite=is_f,name=nm,created_by=cb)[0]
+    a.save()
+    return a
+
+def add_substance_consist(s,a,ac):
+    a = Substance_consist.objects.get_or_create(substance=s,atom=a,atom_count=ac)[0]
     a.save()
     return a
 
