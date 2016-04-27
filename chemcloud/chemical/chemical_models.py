@@ -233,28 +233,6 @@ class Scheme_step_subst(models.Model):
         verbose_name        = ('Вещество стадии')
         verbose_name_plural = ('Вещества стадии')
 
-#Эксперименты
-class Experiment (models.Model):
-    id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='experiments' )
-    #argument_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
-    #function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
-
-    name         = models.CharField (max_length = 250, verbose_name='Название')
-    description  = models.TextField (blank = True, verbose_name='Описание')
-    #temperature  =    models.DecimalField(max_digits=6, decimal_places=3,default = 0, verbose_name='Температура')
-    exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
-    is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
-    created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
-    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
-    updated_by   = models.TextField (verbose_name='Обновил(а)')#todo data type
-    updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
-    class Meta:
-      ordering            = ["updated_date"]
-      verbose_name = ('Эксперимент')
-      verbose_name_plural = ('Эксперименты')
-
-
 
 #Права пользователя
 #Считаем, что если есть запист в этой таблице, то Пользователь имеет право на чтение Реакции
@@ -366,3 +344,30 @@ class Dict_measure_unit(models.Model):
         verbose_name = ('Единица измерения')
         verbose_name_plural = ('Единицы измерения')
         ordering = ["name"]
+
+
+#Эксперименты
+class Experiment (models.Model):
+    id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
+    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='experiments' )
+    argument_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
+    function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
+    init_function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
+    description  = models.TextField (blank = True, verbose_name='Описание')
+    id_func = models.ForeignKey(Dict_model_function, null = True, on_delete=models.PROTECT, related_name='+' )
+    id_arg = models.ForeignKey(Dict_model_argument, null = True, on_delete=models.PROTECT, related_name='+' )
+    exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
+    updated_by   = models.TextField (verbose_name='Обновил(а)')
+    updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+    is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
+    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+    name         = models.CharField (max_length = 250, verbose_name='Название')
+    created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+      ordering            = ["updated_date"]
+      verbose_name = ('Эксперимент')
+      verbose_name_plural = ('Эксперименты')

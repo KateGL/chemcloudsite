@@ -5,14 +5,18 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chemcloud.settings')
 import django
 django.setup()
 
+from datetime import datetime,date,time
+
 #from chemical.models import Dict_atom
 from chemical.chemical_models import Dict_atom,Dict_feature,Dict_model_function
 from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
+from chemical.chemical_models import Experiment
 from django.contrib.auth.models import User
 
 def drop_all():
+     Experiment.objects.all().delete()
      Dict_atom.objects.all().delete()
      Dict_feature.objects.all().delete()
      Dict_model_function.objects.all().delete()
@@ -212,7 +216,14 @@ def populate():
    d = Substance.objects.get(id_substance=2)
    f = Reaction_subst.objects.get(reaction=b,substance=d)
    add_scheme_step_subst(8,c,f,4,2)
-
+   # Добавление экспериментов
+   d = Dict_measure_unit.objects.get(id_unit=8)
+   e = Dict_measure_unit.objects.get(id_unit=10)
+   f = Dict_model_function.objects.get(id_func=1)
+   g = Dict_model_argument.objects.get(id_arg=2)
+   h = date(2005,7,14)
+   i = time(12,30)
+   add_exper(1,b,d,e,e,'Эксперимент 1. Катализатор НИАП-12-05',f,g,datetime.combine(h,i),'Admin',1,'Эксперимент 1','Admin')
 
     # Print out what we have added to the user.
    #for a in Dict_atom.objects.all():
@@ -260,6 +271,11 @@ def add_scheme_step(id_s,s,nm,od,is_r,nt,re):
 
 def add_scheme_step_subst(id_s,s,rs,p,sk):
     a = Scheme_step_subst.objects.get_or_create(id_step=id_s,step=s,reac_substance=rs,position=p,stoich_koef=sk)[0]
+    a.save()
+    return a
+
+def add_exper(id_e,r,am,fm,ifm,des,id_f,id_a,ed,ub,is_f,nm,cb):
+    a = Experiment.objects.get_or_create(id_experiment=id_e,reaction=r,argument_measure=am,function_measure=fm,init_function_measure=ifm,description=des,id_func=id_f,id_arg=id_a,exper_date=ed,updated_by=ub,is_favorite=is_f,name=nm,created_by=cb)[0]
     a.save()
     return a
 
