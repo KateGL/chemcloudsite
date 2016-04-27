@@ -393,3 +393,91 @@ class Experiment (models.Model):
       ordering            = ["updated_date"]
       verbose_name = ('Эксперимент')
       verbose_name_plural = ('Эксперименты')
+
+class Dict_subst_role (models.Model):
+    id_role = models.AutoField (primary_key = True, verbose_name='ИД')
+    name         = models.CharField (max_length = 250, verbose_name='Название')
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+      ordering            = ["id_role"]
+      verbose_name = ('Роль вещества в механизме')
+      verbose_name_plural = ('Роли вещества в механизме')
+
+class Dict_exper_param (models.Model):
+    id_experparam = models.AutoField (primary_key = True, verbose_name='ИД')
+    name         = models.CharField (max_length = 250, verbose_name='Название')
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+      ordering            = ["id_experparam"]
+      verbose_name = ('Дополнительные данные эксперимента')
+      verbose_name_plural = ('Дополнительные данные эксперимента')
+
+class Dict_exper_subst_param (models.Model):
+    id_expersubstparam = models.AutoField (primary_key = True, verbose_name='ИД')
+    name         = models.CharField (max_length = 250, verbose_name='Название')
+
+    def __unicode__ (self):
+        return self.name
+
+    class Meta:
+      ordering            = ["id_expersubstparam"]
+      verbose_name = ('Дополнительная информация о веществе реакции')
+      verbose_name_plural = ('Дополнительная информация о веществе реакции')
+
+class Exper_data (models.Model):
+    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_data' )
+    value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
+    exper_param    = models.ForeignKey(Dict_exper_param, null = False, on_delete=models.PROTECT, related_name='+' )
+    dict_unit_id_unit = models.ForeignKey(Dict_measure_unit, null = False, on_delete=models.PROTECT, related_name='+' )
+
+    class Meta:
+      verbose_name = ('Дополнительная информация эксперимента')
+      verbose_name_plural = ('Дополнительная информация эксперимента')
+
+
+class Exper_subst (models.Model):
+    id_expersubst = models.AutoField (primary_key = True, verbose_name='ИД')
+    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_subst' )
+    reaction_subst = models.ForeignKey(Reaction, null = False, on_delete=models.PROTECT, related_name='+' )
+    dict_subst_role = models.ForeignKey(Dict_subst_role, null = False, on_delete=models.PROTECT, related_name='+' )
+    is_observed  = models.BooleanField(default = False, verbose_name='Наблюдаемое')
+    # todo правильное название?
+    init_func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Начальное значение')
+
+    def __unicode__ (self):
+        return self.id_expersubst
+
+    class Meta:
+      ordering            = ["id_expersubst"]
+      verbose_name = ('Вещество реакции в эксперименте')
+      verbose_name_plural = ('Вещества реакции в эксперименте')
+
+class Exper_subst_data (models.Model):
+    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_subst_data' )
+    value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
+    subst_param    = models.ForeignKey(Dict_exper_subst_param, null = False, on_delete=models.PROTECT, related_name='+' )
+    unit = models.ForeignKey(Dict_measure_unit, null = False, on_delete=models.PROTECT, related_name='+' )
+
+    class Meta:
+      verbose_name = ('Дополнительные экспериментальные данные')
+      verbose_name_plural = ('Дополнительные экспериментальные данные')
+
+###
+class Exper_point (models.Model):
+    id_point = models.AutoField (primary_key = True, verbose_name='ИД')
+    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_point' )
+    arg_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение аргумента')
+    func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение концентрации')
+
+    subst_param    = models.ForeignKey(Dict_exper_subst_param, null = False, on_delete=models.PROTECT, related_name='+' )
+    unit = models.ForeignKey(Dict_measure_unit, null = False, on_delete=models.PROTECT, related_name='+' )
+
+    class Meta:
+      verbose_name = ('Экспериментальные данные')
+      verbose_name_plural = ('Экспериментальные данные')
