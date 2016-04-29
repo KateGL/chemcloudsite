@@ -294,7 +294,7 @@ def cell_update(request):
     if pos != -1:
         #обработка редактирования стадий
         data = scheme_cell_update(request, table_str, id_str, field_str, value_str )
-    
+
     if data != '':
         xml_bytes = json.dumps(data)
         return HttpResponse(xml_bytes,'application/json')
@@ -306,7 +306,7 @@ def cell_update(request):
         )
 
 def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
-    arr2 = part_str.split('+') 
+    arr2 = part_str.split('+')
     i = start_i
     list_temp = []
     for str_i in arr2:
@@ -332,8 +332,8 @@ def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
             return []       
         if is_left:
             steh_koef = -1.0*steh_koef
-        subst_dict = request.user.chemistry.react_subst_filterbyAlias(id_reaction, alias) 
-        reac_subst = subst_dict['substance']   
+        subst_dict = request.user.chemistry.react_subst_filterbyAlias(id_reaction, alias)
+        reac_subst = subst_dict['substance']
         element = [i, steh_koef, reac_subst]
         i=i+1
         list_temp = list_temp + [element]
@@ -371,7 +371,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         if pos != -1:
             if len(arr2) != 2:
                 result = 'error'
-                errorText = 'Введено несколько флагов обратимости' 
+                errorText = 'Введено несколько флагов обратимости'
             else:
                 left_str = arr2[0]
                 right_str = arr2[1]
