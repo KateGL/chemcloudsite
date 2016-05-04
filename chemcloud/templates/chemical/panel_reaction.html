@@ -5,37 +5,54 @@
             
             <ul class="nav navbar-nav ">
                     <li>
-                        <a href="{% url 'reaction_detail' id_reaction %}">Детали реакции</a>
+                        <a href="{% url 'reaction_detail' id_reaction %}" title=
+                        "Детали реакции"><span class="glyphicon glyphicon-wrench"></span>
+                        <span class ="hidden-xs hidden-sm">Детали реакции</span></a>
                     </li>
                    
                    <li>
-                        <a href="{% url 'react_substance_all' id_reaction %}">Вещества</a>
+                        <a href="{% url 'react_substance_all' id_reaction %}" title="Вещества">
+                         <span class="glyphicon glyphicon-bold"></span>
+                        <span class ="hidden-xs hidden-sm">Вещества</span></a>
                     </li>
                    <li>
-                        <a href="{% url 'scheme_all' id_reaction %}">Механизмы</a>
+                        <a href="{% url 'scheme_all' id_reaction %}" title="Механизмы">
+                            <span class="glyphicon glyphicon-cog"></span>   
+                        <span class ="hidden-xs hidden-sm">Механизмы</span></a>
                     </li>
                    
                    
                    <li>
-                        <a href="{% url 'experiment_all' id_reaction %}">Эксперименты</a>
+                        <a href="{% url 'experiment_all' id_reaction %}" title="Эксперименты">
+                        <span class="glyphicon glyphicon-glass"></span>
+                        <span class ="hidden-xs hidden-sm">Эксперименты</span></a>
                     </li>
                    
                     <li>
-                        <a href="{% url 'problem_all' id_reaction %}">Задачи</a>
+                        <a href="{% url 'problem_all' id_reaction %}" title="Задачи">
+                        <span class="glyphicon glyphicon-question-sign"></span>
+                        <span class ="hidden-xs hidden-sm">Задачи</span></a>
                     </li>
                     
                     <li>
-                        <a href="{% url 'calc_all' id_reaction %}">Решения</a>
+                        <a href="{% url 'calc_all' id_reaction %}" title="Решения">
+                        <span class="glyphicon glyphicon-tasks"></span>
+                            <span class ="hidden-xs hidden-sm">Решения</span></a>
                     </li>
                          
                                                         <li>
-                        <a href="{% url 'statistic' id_reaction %}">Статистика</a>
+                        <a href="{% url 'statistic' id_reaction %}" title="Статистика">
+                        <span class="glyphicon glyphicon-stats"></span>
+                            <span class ="hidden-xs hidden-sm">Статистика</span></a>
+                         
                     </li>                               
                   
                     </li>
                          
                                                         <li>
-                        <a href="{% url 'log' id_reaction %}">Журнал</a>
+                        <a href="{% url 'log' id_reaction %}" title="Журнал">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                            <span class ="hidden-xs hidden-sm">Журнал</span></a>
                     </li> 
                     
                 </ul>
