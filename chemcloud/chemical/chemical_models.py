@@ -81,6 +81,7 @@ class Substance(models.Model):
 
 # Состав вещества
 class Substance_consist(models.Model):
+    id_subst_consist = models.AutoField(primary_key=True, verbose_name='ИД')
     substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
     atom = models.ForeignKey(Dict_atom, null = False, on_delete=models.CASCADE, related_name='+')
     atom_count = models.DecimalField(max_digits=11, decimal_places=7,default = 0, verbose_name = 'Количество атомов')
@@ -225,6 +226,7 @@ class Scheme_step(models.Model):
 
 #Вещества реакции
 class Reaction_subst(models.Model):
+    id_react_subst = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='substances' )
     substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
     alias = models.CharField (max_length = 250, verbose_name='Псевдоним', null = False)
@@ -239,7 +241,7 @@ class Reaction_subst(models.Model):
     class Meta:
       verbose_name = ('Вещество реакции')
       verbose_name_plural = ('Вещества реакции')
-      unique_together = ('reaction', 'substance')
+      unique_together = (('reaction', 'substance'), ('reaction', 'alias'))
 
 #Вещество в стадии схемы реакции
 class Scheme_step_subst(models.Model):
@@ -260,6 +262,7 @@ class Scheme_step_subst(models.Model):
 #Считаем, что если есть запист в этой таблице, то Пользователь имеет право на чтение Реакции
 #Если is_owner == True то пользователь может редактировать реакцию и расшаривать ее другим Пользователям
 class User_reaction(models.Model):
+    id_user_reaction = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, related_name='users', verbose_name='Реакция', null = False,on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='reactions', verbose_name='Пользователь', null = False,on_delete=models.CASCADE)
     is_owner = models.BooleanField(default = False, verbose_name='Владелец')
@@ -271,6 +274,7 @@ class User_reaction(models.Model):
 
 #Синонимы вещества
 class Substance_synonym (models.Model):
+    id_subst_synonym = models.AutoField (primary_key = True, verbose_name='ИД')
     substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='synonyms' )
     name = models.CharField (max_length = 250, verbose_name='Название')
 
@@ -285,6 +289,7 @@ class Substance_synonym (models.Model):
 
 #Тэги реакции
 class Reaction_tag(models.Model):
+    id_reaction_tag = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
     tag = models.CharField (max_length = 250, verbose_name='Тэг')
 
@@ -313,6 +318,7 @@ class Dict_feature(models.Model):
 
 #Свойства реакции
 class Reaction_feature(models.Model):
+    id_reaction_feature = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
     feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+' )
 
@@ -431,6 +437,7 @@ class Dict_exper_subst_param (models.Model):
       verbose_name_plural = ('Дополнительная информация о веществе реакции')
 
 class Exper_data (models.Model):
+    id_exper_data = models.AutoField (primary_key = True, verbose_name='ИД')
     experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_data' )
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
     exper_param    = models.ForeignKey(Dict_exper_param, null = False, on_delete=models.PROTECT, related_name='+' )
@@ -459,6 +466,7 @@ class Exper_subst (models.Model):
       verbose_name_plural = ('Вещества реакции в эксперименте')
 
 class Exper_subst_data (models.Model):
+    id_exper_subst_data = models.AutoField (primary_key = True, verbose_name='ИД')
     exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_subst_data' )
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
     subst_param    = models.ForeignKey(Dict_exper_subst_param, null = False, on_delete=models.PROTECT, related_name='+' )
