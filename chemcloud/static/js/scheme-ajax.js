@@ -25,8 +25,8 @@ $(document).ready(function(){
 			tr_str = tr_str + '<td><button id="btn_' + id_step + 'up" class="changeorder" data-stepid="' + id_step + '" data-direction="up"  type="button" data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button"  data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9660</button></td>';
 
 			tr_str = tr_str + '<td id="order_' + id_step + '"> '+step_order+' </td>';
-			tr_str = tr_str + '<td class="edit name '+id_step + '">'+step_name+'</td>';
-			tr_str = tr_str + '<td class="edit step '+id_step + '"></td>';//сама стадия пока пустая
+			tr_str = tr_str + '<td class="edit name '+id_step + '">'+step_name+'<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></td>';
+			tr_str = tr_str + '<td class="edit step '+id_step + '"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></td>';//сама стадия пока пустая
 			tr_str = tr_str + '<td><button id="btn_' + id_step + 'del" class="step_delete" type="button" class="btn btn-default"  data-reacid="' + reac_id + '" data-schemeid="' + schem_id + '" data-stepid="' + id_step + '" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>';
 			tr_str = tr_str + '<td><a href="/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/step/'+id_step + '/detail/"> Детали</a> </td>';
 			tr_str = tr_str + '</tr>';

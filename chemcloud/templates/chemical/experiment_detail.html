@@ -8,17 +8,17 @@
 	
 	<div class="page-header">
 
-    <h1> <a href="{% url 'experiment_all' id_reaction %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Детали эксперимента  {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>          
-            
+    <h1> <a href="{% url 'experiment_all' id_reaction %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Детали эксперимента  {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>
+
     </div>
 	
 	
-		<div class="page-content">    
-           
-<div class="row">          
+		<div class="page-content">
+
+<div class="row">
  <div class="col-xs-7">
-    
-            
+
+
   <table class="table col-xs-6">
      <tbody>
 					<tr>
@@ -26,12 +26,32 @@
 						<td>{{ experiment.name }}</td>
 					</tr>
 					<tr>
+						<td>Дата проведения:</td>
+						<td>{{ experiment.exper_date }}</td>
+					</tr>
+					<tr>
 						<td>Описание:</td>
 						<td>{{ experiment.description }}</td>
 					</tr>
 					<tr>
-						<td>Дата проведения:</td>
-						<td>{{ experiment.exper_date }}</td>
+						<td>Функция:</td>
+						<td>{{ experiment.id_func }}</td>
+					</tr>
+					<tr>
+						<td>Единица измерения:</td>
+						<td>{{ experiment.function_measure }}</td>
+					</tr>
+					<tr>
+						<td>Аргумент:</td>
+						<td>{{ experiment.id_arg }}</td>
+					</tr>
+					<tr>
+						<td>Единица измерения:</td>
+						<td>{{ experiment.argument_measure }}</td>
+					</tr>
+					<tr>
+						<td>Единица измерения начальных концентраций:</td>
+						<td>{{ experiment.init_function_measure }}</td>
 					</tr>
 					<tr>
 						<td>Избранное:</td>
@@ -55,18 +75,20 @@
 					</tr>
 				</tbody>
   </table>
+
+  ДОПОЛНИТЕЛЬНЫЕ СВОЙСТВА:
     </div>
-        
+
         <div class=" col-xs-3">
-    
-    {% include "chemical/experiment_detail_menu.html" %} 
-    
-     
-    
-    
-     
-      </div> 
-         
+
+    {% include "chemical/experiment_detail_menu.html" %}
+
+
+
+
+
+      </div>
+
 
             </div>
 

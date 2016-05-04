@@ -16,6 +16,25 @@ function getCookie(name) {
     return cookieValue;
 }
 
+String.prototype.toUTF8 = function() {
+    var n, s = '';
+    for (var i = 0, iTextLen = this.length; i < iTextLen; i++) {
+        n = this.charCodeAt(i);
+        if (n < 128) s += String.fromCharCode(n);
+        else if (n < 2048) s += String.fromCharCode(192 | n >> 6) + String.fromCharCode(128 | n & 63);
+        else if (n < 65536) s += String.fromCharCode(224 | n >> 12) + String.fromCharCode(128 | n >> 6 & 63) + String.fromCharCode(128 | n & 63);
+        else s += String.fromCharCode(240 | n >> 18) + String.fromCharCode(128 | n >> 12 & 63) + String.fromCharCode(128 | n >> 6 & 63) + String.fromCharCode(128 | n & 63);
+    };
+    return s;
+};
+String.prototype.UrlEncode = function() {
+    return this.toUTF8().replace( /[^-_\.!~*'\(\)\da-zA-Z]/g , function(ch) {
+        var c = ch.charCodeAt(0).toString(16);
+        if (c.length == 1) c = '0' + c;
+        return '%' + c;
+    });
+};
+
 //=====================================================================
 //=== УНИВЕРСАЛЬНЫЙ ОБРАБОТЧИК РЕДАКТИРОВАНИЯ ЯЧЕЕК ТАБЛИЦ ============
 //Присваиваем таблице уникальный идентификатор id, который соответствует названию таблицы и через нижнее подчеркивание нужные и реакции, эксперимента и т.д. .
@@ -43,9 +62,10 @@ console.log(ptd);
 		//в итоге получаем такой массив - arr[0] = edit, arr[1] = наименование столбца, arr[2] = id строки
 		ptd = $(this).parent('td');
 		arr = ptd.attr('class').split( " " );
-console.log(arr);
 		//получаем наименование таблицы, в которую будем вносить изменения
 		var table_str = $('table').attr('id');
+        var value = $('.ajax input').val();
+        value = value.toUTF8().UrlEncode();//кодируем передаваемое значение, иначе символ + не передается
 		//выполняем ajax запрос методом POST
 		//в файл update_cell.php
 		//создаём строку для отправки запроса
@@ -55,7 +75,7 @@ console.log(arr);
 		//table = название таблицы - в названии таблицы поместить через _ нужные ид
 		var url_str  = "/chemical/cell_update/";
 		var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
-		var data_str = "value="+$('.ajax input').val()+"&id="+arr[2]+"&field="+arr[1]+"&table="+table_str+"&csrfmiddlewaretoken="+csrftoken;
+		var data_str = "value="+value+"&id="+arr[2]+"&field="+arr[1]+"&table="+table_str+"&csrfmiddlewaretoken="+csrftoken;
 		 $.ajax({ type: "POST", url: url_str, data: data_str,
 			//при удачном выполнении скрипта, производим действия
 			 success: function(data){
