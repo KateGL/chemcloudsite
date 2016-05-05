@@ -5,6 +5,8 @@ from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
 
+from .utils import decorate_formula
+
 
 # Атом
 class Dict_atom(models.Model):
@@ -35,6 +37,10 @@ class Substance(models.Model):
 
     def __unicode__ (self):
         return self.name
+
+    def after_create(self):
+        self.formula_brutto_formatted = decorate_formula(self.formula_brutto)
+        self.consist_create()
 
     def consist_create(self):#создает состав вещества на основе брутто-формулы
         self.consist.all().delete()#clear consist
