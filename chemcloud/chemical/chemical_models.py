@@ -89,8 +89,8 @@ class Substance_consist(models.Model):
         verbose_name = ('Состав Вещества')
         verbose_name_plural = ('Составы Вещества')
 
-    #def __unicode__ (self):
-    #   return self.substance
+    def __unicode__ (self):
+       return self.substance.name
 
 # Реакция
 class Reaction(models.Model):
@@ -239,6 +239,7 @@ class Reaction_subst(models.Model):
         return self.alias
 
     class Meta:
+      ordering            = ["id_react_subst", "reaction"]
       verbose_name = ('Вещество реакции')
       verbose_name_plural = ('Вещества реакции')
       unique_together = (('reaction', 'substance'), ('reaction', 'alias'))
@@ -251,6 +252,10 @@ class Scheme_step_subst(models.Model):
     reac_substance    = models.ForeignKey(Reaction_subst, null = False, on_delete=models.CASCADE, related_name='+')
     position     =    models.IntegerField(verbose_name='Позиция вещества в стадии')
     stoich_koef  =    models.DecimalField(max_digits=6, decimal_places=3,default = 0, verbose_name='Стехиометрический коэффициент')
+
+    #def __unicode__ (self):
+        #return self.id_step
+
     class Meta:
         ordering            = ["id_step", "position"]
         unique_together     = ('step', 'reac_substance')
@@ -458,7 +463,7 @@ class Exper_subst (models.Model):
     init_func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Начальное значение')
 
     def __unicode__ (self):
-        return self.id_expersubst
+        return self.experiment.name
 
     class Meta:
       ordering            = ["id_expersubst"]
