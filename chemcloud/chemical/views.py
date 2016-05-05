@@ -20,7 +20,7 @@ from django.shortcuts import redirect
 from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm
 from .forms import ReacSchemeForm, ExperimentForm
 
-from .utils import decorate_formula
+
 
 from .models import owner_required
 
@@ -55,13 +55,12 @@ def substance_new(request):
     if request.method == 'POST':
         if form.is_valid():
             substance = form.save()
-            substance.formula_brutto_formatted = decorate_formula(substance.formula_brutto)
-            substance.consist_create()
+            substance.after_create()
             form.save()
             if 'save_and_new_btn' in request.POST:
                 return redirect('substance_new')
             return redirect('substance_detail', substance.pk)
-    return render(request,'chemical/substance_new.html', {'form': form})
+    return render(request, 'chemical/substance_new.html', {'form': form})
 
 
 

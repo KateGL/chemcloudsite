@@ -48,16 +48,28 @@ admin.site.register( Reaction_scheme)
 
 admin.site.register( Scheme_step)
 
-admin.site.register( Scheme_step_subst)
+class Scheme_step_substAdmin(admin.ModelAdmin):
+  fields = ['id_step', 'step','reac_substance','position','stoich_koef']
+  list_display = ('id_step', 'step','reac_substance','position','stoich_koef')
+
+admin.site.register(Scheme_step_subst,Scheme_step_substAdmin)
 
 #Вещества реакции
-admin.site.register( Reaction_subst)
+class Reaction_substAdmin(admin.ModelAdmin):
+  fields = ['id_react_subst', 'reaction','substance','alias','brutto_formula_short','note']
+  list_display = ('id_react_subst', 'reaction','substance','alias','brutto_formula_short','note')
+
+admin.site.register(Reaction_subst,Reaction_substAdmin)
 
 #  Эксперименты
 admin.site.register(Experiment)#, ReactionSchemeAdmin)
 
 #Состав вещества
-admin.site.register(Substance_consist)
+class Substance_consistAdmin(admin.ModelAdmin):
+  fields = ['id_subst_consist', 'atom','atom_count','substance']
+  list_display = ('id_subst_consist', 'substance','atom', 'atom_count')
+
+admin.site.register(Substance_consist,Substance_consistAdmin)
 
 #Права пользователя
 admin.site.register(User_reaction)
@@ -78,28 +90,60 @@ admin.site.register(Reaction_tag)
 admin.site.register(Dict_model_function)
 
 #Аргументы модели
-admin.site.register(Dict_model_argument)
+class Dict_model_argumentAdmin(admin.ModelAdmin):
+  fields = ['id_arg', 'name','symbol']
+  list_display = ('id_arg', 'name','symbol')
+
+admin.site.register(Dict_model_argument,Dict_model_argumentAdmin)
 
 #Единицы
-admin.site.register(Dict_measure_unit)
+class Dict_measure_unitAdmin(admin.ModelAdmin):
+  fields = ['id_unit', 'code','name','is_si','multiplier','id_unit_si']
+  list_display = ('name','id_unit', 'code','is_si','multiplier','id_unit_si')
+
+admin.site.register(Dict_measure_unit,Dict_measure_unitAdmin)
 
 #Вещества реакции в эксперименте
-admin.site.register(Exper_subst)
+class Exper_substAdmin(admin.ModelAdmin):
+  fields = ['id_expersubst', 'experiment','reaction_subst','dict_subst_role','is_observed','init_func_val']
+  list_display = ('id_expersubst', 'experiment','reaction_subst','dict_subst_role','is_observed','init_func_val')
+
+admin.site.register(Exper_subst,Exper_substAdmin)
 
 #Роли вещества в механизме
-admin.site.register(Dict_subst_role)
+class Dict_subst_roleAdmin(admin.ModelAdmin):
+  fields = ['id_role', 'name']
+  list_display = ('id_role', 'name')
+
+admin.site.register(Dict_subst_role,Dict_subst_roleAdmin)
 
 #Дополнительные данные эксперимента
-admin.site.register(Dict_exper_param)
+class Dict_exper_paramAdmin(admin.ModelAdmin):
+  fields = ['id_experparam', 'name']
+  list_display = ('id_experparam', 'name')
+
+admin.site.register(Dict_exper_param,Dict_exper_paramAdmin)
 
 #Дополнительная информация о веществе реакции
-admin.site.register(Dict_exper_subst_param)
+class Dict_exper_subst_paramAdmin(admin.ModelAdmin):
+  fields = ['id_expersubstparam', 'name']
+  list_display = ('id_expersubstparam', 'name')
+
+admin.site.register(Dict_exper_subst_param,Dict_exper_subst_paramAdmin)
 
 #Дополнительная информация эксперимента
-admin.site.register(Exper_data)
+class Exper_dataAdmin(admin.ModelAdmin):
+  fields = ['id_exper_data', 'experiment','value','exper_param','dict_unit_id_unit']
+  list_display = ('id_exper_data', 'experiment','value','exper_param','dict_unit_id_unit')
+
+admin.site.register(Exper_data,Exper_dataAdmin)
 
 #Дополнительные экспериментальные данные
-admin.site.register(Exper_subst_data)
+class Exper_subst_dataAdmin(admin.ModelAdmin):
+  fields = ['id_exper_subst_data', 'exper_subst','value','subst_param','unit']
+  list_display = ('id_exper_subst_data', 'exper_subst','value','subst_param','unit')
+
+admin.site.register(Exper_subst_data,Exper_subst_dataAdmin)
 
 #Экспериментальные данные
 admin.site.register(Exper_point)

@@ -299,6 +299,7 @@ def add_user_reaction(reac,us,is_ow):
 
 def add_substance(id_s,nm,ch,is_r,fb,nt):
     a = Substance.objects.get_or_create(id_substance=id_s,name=nm,charge=ch,is_radical=is_r,formula_brutto=fb,note=nt)[0]
+    a.after_create()
     a.save()
     return a
 
