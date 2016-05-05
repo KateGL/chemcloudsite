@@ -225,8 +225,8 @@ class Scheme_step(models.Model):
                 G_coll = G_coll + [subst_i.stoich_koef]
                 print(G_coll)
                 atoms = subst_i.reac_substance.substance.consist.all()
-                print(atoms)
-                print('tututu3')
+                #print(atoms)
+                #print('tututu3')
                 for atom_j in atoms:
                     atoms_list = atoms_list + [atom.symbol]
             print (atoms_list )
