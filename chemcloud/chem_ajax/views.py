@@ -59,8 +59,7 @@ def substance_detail_edit(request, id_substance):
 
     if (fv_dict['is_error'] is False):
         if fv_dict['field_name'] == 'formula_brutto':
-            subst.formula_brutto_formatted = decorate_formula(subst.formula_brutto)
-            subst.consist_create()
+            subst.after_create()
         subst.save()
 
     xml_bytes = json.dumps(fv_dict['err_msg'])

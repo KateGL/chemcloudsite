@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from django.db import models
 from django.contrib.auth.models import User
+from decimal import Decimal
 # Create your models here.
 
 from .utils import decorate_formula
@@ -10,93 +11,117 @@ from .utils import decorate_formula
 
 # Атом
 class Dict_atom(models.Model):
-    atom_number = models.IntegerField(primary_key = True, verbose_name='Атомный номер')
+    atom_number = models.IntegerField(primary_key=True, verbose_name='Атомный номер')
     symbol = models.CharField(max_length=3, unique=True, verbose_name='Обозначение')
     atom_mass = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Атомная масса')
     name = models.CharField(max_length=100, unique=True, verbose_name='Название (рус)')
     name_latin = models.CharField(max_length=100, unique=True, verbose_name='Название (лат)')
+
     class Meta:
         verbose_name = ('Атом')
         verbose_name_plural = ('Атомы')
         ordering = ["atom_number"]
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.symbol
+
 
 # Вещество
 class Substance(models.Model):
-    id_substance = models.AutoField(primary_key = True, verbose_name='ИД')
+    id_substance = models.AutoField(primary_key=True, verbose_name='ИД')
     name = models.CharField(max_length=255, verbose_name='Название', unique=True)
-    charge = models.SmallIntegerField (default = 0, verbose_name='Заряд')
-    is_radical = models.BooleanField(default = False, verbose_name='Радикал')
-    formula_brutto = models.CharField(max_length=255, default = '',verbose_name='Брутто-формула')
-    formula_brutto_formatted = models.CharField(max_length=255, default = '', verbose_name='Брутто-формула')
-    note = models.TextField( verbose_name='Примечание')
+    charge = models.SmallIntegerField(default=0, verbose_name='Заряд')
+    is_radical = models.BooleanField(default=False, verbose_name='Радикал')
+    formula_brutto = models.CharField(max_length=255, default='', verbose_name='Брутто-формула')
+    formula_brutto_formatted = models.CharField(max_length=255, default='', verbose_name='Брутто-формула')
+    note = models.TextField(verbose_name='Примечание')
+    #Вспомогательное поле для поиска изомеров
+    consist_as_string = models.CharField(max_length=255, default='', verbose_name='Состав вещества строкой')
     #formula_mol = models.FileField()
     #formula_picture = models.ImageField()
 
-    def __unicode__ (self):
+    class Meta:
+        verbose_name = ('Вещество')
+        verbose_name_plural = ('Вещества')
+
+    def __unicode__(self):
         return self.name
 
     def after_create(self):
         self.formula_brutto_formatted = decorate_formula(self.formula_brutto)
         self.consist_create()
 
-    def consist_create(self):#создает состав вещества на основе брутто-формулы
-        self.consist.all().delete()#clear consist
-        atoms_dict = self.get_atom_dict()# ахтунг! говнокод
+    def consist_create(self):  # создает состав вещества на основе брутто-формулы
+        self.consist.all().delete()  # clear consist
+        atoms_dict = self.get_atom_dict()  # ахтунг! говнокод
+        self.consist_as_string = consist_dict_to_string(atoms_dict)
+
         #atoms_dict = {'H':2, 'Oh':3}
         for key, val in atoms_dict.items():
             try:
-              atom = Dict_atom.objects.get(symbol=key)
-              if atom:
-                co = Substance_consist.objects.get_or_create(atom =atom, substance = self, atom_count = val)[0]
-                co.save()
-                self.consist.add(co)
+                atom = Dict_atom.objects.get(symbol=key)
+                if atom:
+                    co = Substance_consist.objects.get_or_create(atom=atom, substance=self, atom_count=val)[0]
+                    co.save()
+                    self.consist.add(co)
             except:
                 return -1
-            #
 
-
-    def get_atom_dict(self,):# получение словаря с типа атомами
-        formula_s = self.formula_brutto+' '
-        atom_name =''
+    def get_atom_dict(self,):  # получение словаря с типа атомами
+        formula_s = self.formula_brutto.strip(' \t\n\r') + ' '
+        atom_name = ''
         atom_count = ''
         atoms_dict = {}
         for s in formula_s:
-            if('A'<=s<='Z') or (s==' '):#начало названия элемента
-               if atom_name !='':
-                   atoms_dict.setdefault(atom_name,0)
-                   if atom_count !='':
-                     atoms_dict[atom_name]+= int(atom_count)
-                   else:
-                     atoms_dict[atom_name]+=1
-               atom_name = s
-               atom_count = ''
-            if('a'<=s<='z'):# продолжение имени
-               atom_name +=s
-               atom_count = ''
+            if('A' <= s <= 'Z') or (s == ' '):  # начало названия элемента
+                if atom_name != '':
+                    atoms_dict.setdefault(atom_name, 0)
+                    if atom_count != '':
+                        atoms_dict[atom_name] += Decimal(atom_count)
+                    else:
+                        atoms_dict[atom_name] += Decimal(1)
+                atom_name = s
+                atom_count = ''
+            if('a' <= s <= 'z'):  # продолжение имени
+                atom_name += s
+                atom_count = ''
             #кол-во
-            if(s in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']):
+            if(s in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']):
                 atom_count += s
+            if(s == ','):
+                atom_count += '.'
         return atoms_dict
 
-    class Meta:
-        verbose_name = ('Вещество')
-        verbose_name_plural = ('Вещества')
 
 # Состав вещества
+#def consist_to_string(subst):
+    #consist = subst.consist.all().order_by('atom__symbol')
+    #as_str = ''
+    #for sub_cons in consist:
+        #as_str += sub_cons.atom.symbol + str(sub_cons.atom_count.normalize())
+    #return as_str
+
+def consist_dict_to_string(mydict):
+    as_str = ''
+    for key in sorted(mydict):
+        as_str += key + str(mydict[key].normalize())
+    return as_str
+
+
 class Substance_consist(models.Model):
     id_subst_consist = models.AutoField(primary_key=True, verbose_name='ИД')
-    substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
-    atom = models.ForeignKey(Dict_atom, null = False, on_delete=models.CASCADE, related_name='+')
-    atom_count = models.DecimalField(max_digits=11, decimal_places=7,default = 0, verbose_name = 'Количество атомов')
+    substance = models.ForeignKey(Substance, null=False, on_delete=models.CASCADE, related_name='consist')
+    atom = models.ForeignKey(Dict_atom, null=False, on_delete=models.CASCADE, related_name='+')
+    atom_count = models.DecimalField(max_digits=11, decimal_places=7, default=0, verbose_name='Кол-во атомов')
+
     class Meta:
         verbose_name = ('Состав Вещества')
         verbose_name_plural = ('Составы Вещества')
+        unique_together = (('substance', 'atom'), )
 
-    def __unicode__ (self):
-       return self.substance.name
+    def __unicode__(self):
+        return self.substance.name
+
 
 # Реакция
 class Reaction(models.Model):
@@ -230,6 +255,7 @@ class Scheme_step(models.Model):
         verbose_name        = ('Стадия схемы')##Механизма или Схемы??? я путаюсь Рита: это общая модель схемы и механизма и маршрута. ПО крайней мере по вертабело. Пока так. Дойдем до маршрутов - будет видно
         verbose_name_plural = ('Стадии схемы')
 
+
 #Вещества реакции
 class Reaction_subst(models.Model):
     id_react_subst = models.AutoField (primary_key = True, verbose_name='ИД')
@@ -240,8 +266,7 @@ class Reaction_subst(models.Model):
     #brutto_formula_short_formatted = models.CharField (max_length = 250, verbose_name='Краткая брутто-формула')
     note = models.TextField(blank = True,  verbose_name='Примечание')
 
-
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.alias
 
     class Meta:
@@ -249,6 +274,7 @@ class Reaction_subst(models.Model):
       verbose_name = ('Вещество реакции')
       verbose_name_plural = ('Вещества реакции')
       unique_together = (('reaction', 'substance'), ('reaction', 'alias'))
+
 
 #Вещество в стадии схемы реакции
 class Scheme_step_subst(models.Model):

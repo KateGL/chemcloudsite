@@ -129,8 +129,8 @@
 
         
        <div class="col-xs-5">
-        <h4> Состав вещества</h4>
-           <h5>{{  substance.formula_brutto_formatted | safe}}</h5>
+           <h4>{{  substance.formula_brutto_formatted | safe}}</h4>
+           <h5>Состав: {{  substance.consist_as_string}}</h5>
             {% render_table substance_consist %}
         </div> 
         

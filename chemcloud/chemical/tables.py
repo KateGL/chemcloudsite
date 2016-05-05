@@ -48,6 +48,9 @@ class SubstanceTable(tables.Table):
 class ConsistTable(tables.Table):
     atom_symbol = tables.Column(accessor='atom.symbol')
 
+    def render_atom_count(self, record):
+        return str(record.atom_count.normalize())
+
     class Meta:
         model = Substance_consist
         attrs = {"class": "paleblue"}
