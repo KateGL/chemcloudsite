@@ -381,10 +381,14 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
                 if len(data_list) == 0 or not step.generate_step_from_str(data_list):
                     result = 'error'
                     errorText = 'Ошибка распознавания и сохранения стадии. Длина = '  + str(len(data_list))
+    mess = ''
     if result == 'success':
         step.save()
-        step.check_step_balance()
-    data = '{"result":"' + result  +'", "errorText": "' + errorText + '"}'
+        balance_mess = []
+        balance_bool = step.check_step_balance(balance_mess)
+        if not balance_bool: 
+            mess = balance_mess[0]
+    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '"}'
     return data
 
 

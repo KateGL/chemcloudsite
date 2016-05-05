@@ -3,6 +3,7 @@ from django.utils import timezone
 
 from django.db import models
 from django.contrib.auth.models import User
+import numpy as np
 # Create your models here.
 
 
@@ -81,6 +82,7 @@ class Substance(models.Model):
 
 # Состав вещества
 class Substance_consist(models.Model):
+    id_subst_consist = models.AutoField(primary_key=True, verbose_name='ИД')
     substance = models.ForeignKey(Substance, null = False, on_delete=models.CASCADE, related_name='consist')
     atom = models.ForeignKey(Dict_atom, null = False, on_delete=models.CASCADE, related_name='+')
     atom_count = models.DecimalField(max_digits=11, decimal_places=7,default = 0, verbose_name = 'Количество атомов')
@@ -215,26 +217,64 @@ class Scheme_step(models.Model):
             return False
         return True
 
-    def check_step_balance(self):
+    def check_step_balance(self, error_list): #если нужна передача по ссылке, то передаем лист
         try:
+            error_str=''
             step_substs = self.scheme_step_substs.all()
             atoms_list = []
-            A_mtrx_Transp = []
-            G_coll = []
+            atoms_count_list = []
+            subst_count = step_substs.count()            
+            G_coll = np.zeros((1,subst_count)) 
+            i = 0
             for subst_i in step_substs:
-                G_coll = G_coll + [subst_i.stoich_koef]
-                print(G_coll)
-                atoms = subst_i.reac_substance.substance.consist.all()
-                #print(atoms)
-                #print('tututu3')
-                for atom_j in atoms:
-                    atoms_list = atoms_list + [atom.symbol]
-            print (atoms_list )
+                G_coll[0][i] =  subst_i.stoich_koef
+                subst_consist_list = subst_i.reac_substance.substance.consist.all()
+                list_temp = []
+                for subst_consist in subst_consist_list:
+                    atom_j = subst_consist.atom                    
+                    atoms_list = atoms_list + [atom_j.symbol]
+                    list_temp2 = [atom_j.symbol, subst_consist.atom_count] 
+                    list_temp = list_temp + [list_temp2]
+                atoms_count_list = atoms_count_list + [list_temp]
+                i = i+1
+            #удаляем дубликаты в списке атомов            
             atoms_list = list(set(atoms_list))
-            print (atoms_list )
-            print('tututu345')
+            elem_count = len(atoms_list)
+            #строки - число атомов хим элемента в веществе, стоблцы - хим.элементы
+            A_mtrx = np.zeros((subst_count, elem_count)) 
+            i = 0
+            for elem_i in atoms_count_list : #бежим по веществам
+                for elem_j in elem_i: #бежим по атомам 
+                    symbol = elem_j[0] 
+                    atom_cnt = elem_j[1]  
+                    pos_symbol = atoms_list.index(symbol) 
+                    if pos_symbol < 0:
+                        error_str = 'Этого не может быть, потому что этого быть не может'
+                        return false
+                    A_mtrx[i][pos_symbol] = A_mtrx[i][pos_symbol] + float(atom_cnt) 
+                i = i+1
+            GA = np.dot(G_coll, A_mtrx)
+            GA_zero = np.zeros((1, elem_count))
+            b = np.array_equal(GA, GA_zero) 
+            #b = not b
+            if not b:
+                i = 0
+                k=0
+                error_str = 'Не соблюдается баланс по элементу(-ам): '
+                while i < elem_count:
+                    elem = GA[0][i]
+                    if elem!=0.0:
+                        if k != 0:
+                            error_str = error_str + ', '   
+                        error_str = error_str + str(atoms_list[i]) 
+                        k = k+1
+                    i = i+1
+                error_list.append(error_str)
+            return b
+           
         except:
-            print('tututu567')
+            error_str = 'Неизвестная ошибка по исключению'
+            error_list.append(error_str)
             return False
         return True
 
@@ -245,6 +285,7 @@ class Scheme_step(models.Model):
 
 #Вещества реакции
 class Reaction_subst(models.Model):
+    id_react_subst = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='substances' )
     substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
     alias = models.CharField (max_length = 250, verbose_name='Псевдоним', null = False)
@@ -259,7 +300,7 @@ class Reaction_subst(models.Model):
     class Meta:
       verbose_name = ('Вещество реакции')
       verbose_name_plural = ('Вещества реакции')
-      unique_together = ('reaction', 'substance')
+      unique_together = (('reaction', 'substance'), ('reaction', 'alias'))
 
 #Вещество в стадии схемы реакции
 class Scheme_step_subst(models.Model):
@@ -280,6 +321,7 @@ class Scheme_step_subst(models.Model):
 #Считаем, что если есть запист в этой таблице, то Пользователь имеет право на чтение Реакции
 #Если is_owner == True то пользователь может редактировать реакцию и расшаривать ее другим Пользователям
 class User_reaction(models.Model):
+    id_user_reaction = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, related_name='users', verbose_name='Реакция', null = False,on_delete=models.CASCADE)
     user = models.ForeignKey(User, related_name='reactions', verbose_name='Пользователь', null = False,on_delete=models.CASCADE)
     is_owner = models.BooleanField(default = False, verbose_name='Владелец')
@@ -291,6 +333,7 @@ class User_reaction(models.Model):
 
 #Синонимы вещества
 class Substance_synonym (models.Model):
+    id_subst_synonym = models.AutoField (primary_key = True, verbose_name='ИД')
     substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='synonyms' )
     name = models.CharField (max_length = 250, verbose_name='Название')
 
@@ -305,6 +348,7 @@ class Substance_synonym (models.Model):
 
 #Тэги реакции
 class Reaction_tag(models.Model):
+    id_reaction_tag = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
     tag = models.CharField (max_length = 250, verbose_name='Тэг')
 
@@ -333,6 +377,7 @@ class Dict_feature(models.Model):
 
 #Свойства реакции
 class Reaction_feature(models.Model):
+    id_reaction_feature = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
     feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+' )
 
@@ -451,6 +496,7 @@ class Dict_exper_subst_param (models.Model):
       verbose_name_plural = ('Дополнительная информация о веществе реакции')
 
 class Exper_data (models.Model):
+    id_exper_data = models.AutoField (primary_key = True, verbose_name='ИД')
     experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_data' )
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
     exper_param    = models.ForeignKey(Dict_exper_param, null = False, on_delete=models.PROTECT, related_name='+' )
@@ -479,6 +525,7 @@ class Exper_subst (models.Model):
       verbose_name_plural = ('Вещества реакции в эксперименте')
 
 class Exper_subst_data (models.Model):
+    id_exper_subst_data = models.AutoField (primary_key = True, verbose_name='ИД')
     exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_subst_data' )
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
     subst_param    = models.ForeignKey(Dict_exper_subst_param, null = False, on_delete=models.PROTECT, related_name='+' )
