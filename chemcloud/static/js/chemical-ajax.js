@@ -82,11 +82,14 @@ console.log(ptd);
 				var arr   = JSON.parse(data);
 				var result = arr.result;			
 				var errorText = arr.errorText;
+                var messageText = arr.messageText;
 				if (result == 'success')		
 				{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
 				 	$('.ajax').html($('.ajax input').val() + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
 					//удаялем класс ajax
 				 	$('.ajax').removeClass('ajax');
+                    if (messageText.length !=0)
+                        alert(messageText);
 				}
 				else
 				{

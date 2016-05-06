@@ -316,7 +316,7 @@ def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
         #ищем любую латинскую букву - это значит начало псевдонима. Все , что до - это стех.коэффициент
         req_res = re.search(r'([A-Z,a-z]+\d*)', str_temp) #r перед строкой - включение сырого режима. Отключение экранирования
         if req_res == None:
-            return list_temp
+            return []
         start_pos = req_res.start()
         alias = str_temp[start_pos:]
         steh_koef = 1.000;
@@ -325,8 +325,10 @@ def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
             try:
                 steh_koef = float(steh_koef_str)
             except:
-                return list_temp
+                return []
                 #raise Http404("Ошибка ввода стехиометрического коэффициента: " + steh_koef_str)
+        if steh_koef <= 0:
+            return []       
         if is_left:
             steh_koef = -1.0*steh_koef
         subst_dict = request.user.chemistry.react_subst_filterbyAlias(id_reaction, alias)
@@ -378,9 +380,14 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
                 if len(data_list) == 0 or not step.generate_step_from_str(data_list):
                     result = 'error'
                     errorText = 'Ошибка распознавания и сохранения стадии. Длина = '  + str(len(data_list))
+    mess = ''
     if result == 'success':
         step.save()
-    data = '{"result":"' + result  +'", "errorText": "' + errorText + '"}'
+        balance_mess = []
+        balance_bool = step.check_step_balance(balance_mess)
+        if not balance_bool: 
+            mess = balance_mess[0]
+    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '"}'
     return data
 
 

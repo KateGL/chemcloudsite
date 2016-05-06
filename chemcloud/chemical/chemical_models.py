@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth.models import User
 from decimal import Decimal
+import numpy as np
+
 # Create your models here.
 
 from .utils import decorate_formula
@@ -233,8 +235,6 @@ class Scheme_step(models.Model):
             i = i+1
         return right
 
-
-
     def generate_step_from_str(self, data_list):
         try:
             self.scheme_step_substs.all().delete()
@@ -249,6 +249,66 @@ class Scheme_step(models.Model):
             return False
         return True
 
+    def check_step_balance(self, error_list): #если нужна передача по ссылке, то передаем лист
+        try:
+            error_str=''
+            step_substs = self.scheme_step_substs.all()
+            atoms_list = []
+            atoms_count_list = []
+            subst_count = step_substs.count()
+            G_coll = np.zeros((1,subst_count))
+            i = 0
+            for subst_i in step_substs:
+                G_coll[0][i] =  subst_i.stoich_koef
+                subst_consist_list = subst_i.reac_substance.substance.consist.all()
+                list_temp = []
+                for subst_consist in subst_consist_list:
+                    atom_j = subst_consist.atom
+                    atoms_list = atoms_list + [atom_j.symbol]
+                    list_temp2 = [atom_j.symbol, subst_consist.atom_count]
+                    list_temp = list_temp + [list_temp2]
+                atoms_count_list = atoms_count_list + [list_temp]
+                i = i+1
+            #удаляем дубликаты в списке атомов
+            atoms_list = list(set(atoms_list))
+            elem_count = len(atoms_list)
+            #строки - число атомов хим элемента в веществе, стоблцы - хим.элементы
+            A_mtrx = np.zeros((subst_count, elem_count))
+            i = 0
+            for elem_i in atoms_count_list : #бежим по веществам
+                for elem_j in elem_i: #бежим по атомам
+                    symbol = elem_j[0]
+                    atom_cnt = elem_j[1]
+                    pos_symbol = atoms_list.index(symbol)
+                    if pos_symbol < 0:
+                        error_str = 'Этого не может быть, потому что этого быть не может'
+                        return false
+                    A_mtrx[i][pos_symbol] = A_mtrx[i][pos_symbol] + float(atom_cnt)
+                i = i+1
+            GA = np.dot(G_coll, A_mtrx)
+            GA_zero = np.zeros((1, elem_count))
+            b = np.array_equal(GA, GA_zero)
+            #b = not b
+            if not b:
+                i = 0
+                k=0
+                error_str = 'Не соблюдается баланс по элементу(-ам): '
+                while i < elem_count:
+                    elem = GA[0][i]
+                    if elem!=0.0:
+                        if k != 0:
+                            error_str = error_str + ', '
+                        error_str = error_str + str(atoms_list[i])
+                        k = k+1
+                    i = i+1
+                error_list.append(error_str)
+            return b
+
+        except:
+            error_str = 'Неизвестная ошибка по исключению'
+            error_list.append(error_str)
+            return False
+        return True
 
     class Meta:
         ordering            = ["order"]
