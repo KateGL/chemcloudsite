@@ -19,9 +19,9 @@
     <!-- django-tables2 CSS -->
     <link href="{% static "django_tables2/themes/paleblue/css/screen.css" %}"  rel="stylesheet" />
 
-    <!-- Custom Fonts -->
+    <!-- Custom Fonts-->
     <link href="{% static "css/landing-page.css" %}" rel="stylesheet">
-
+ 
     <!-- other CSS -->
     <link href="{% static "custom/other.css" %}" rel="stylesheet" type="text/css">
 
@@ -37,13 +37,13 @@
 <body>
 <header>
   
-  <div class="container">      
+  <div class="container col-xs-12">      
     {% include "chemical/nav_cabinet_main.html" %}    
 </div> 
 </header>
    
 
-<div class="container">
+<div class="container col-xs-12">
    
   {% block body_block %}  {% endblock %}
 </div>

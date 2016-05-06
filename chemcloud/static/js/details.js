@@ -86,6 +86,8 @@ $(document).ready(function(){
     $('.detail_caption').addClass('text-right');
     $('.detail_edit').hide().addClass('text-left').css({ 'font-weight': "bold" });
     $('.detail_value').addClass('text-left').addClass('col-xs-12').css({ 'font-weight': "bold" });
+    $('.box_input').addClass('col-xs-12');
+    $('.form-control').addClass('col-xs-12');
     $('.detail_btn_edit').addClass('btn btn-lg btn-link').html('<span class="glyphicon glyphicon-edit"></span>');
     $('.detail_btn_save').addClass('btn btn-lg btn-link disabled').html('<span class="glyphicon glyphicon-ok"></span>');
 
