@@ -35,12 +35,6 @@ def set_field_and_value_from_request(request, my_model):
 
 
 @login_required
-def substance_search(request, searched):
-    tmp = searched + ' Hello, World!'
-    return HttpResponse(tmp)
-
-
-@login_required
 def substance_search_hint(request, searched):
     subst = request.user.chemistry.substance_get_like(searched, 3)
     tmp = ''

@@ -26,17 +26,12 @@ text-decoration: none;
 при наведении курсора становится оранжевым*/
 #arrow:hover {
 /*
-text-decoration: underline; /*подчеркивание при наведении*/
+text-decoration: underline; подчеркивание при наведении
 */
 color: #FEC63D;
 }
 
-body { /* just for this demo. */
-    padding: 30px;
-}
-.btn { /* just for this demo. */
-    margin-top: 5px;
-}
+
 .btn-arrow-right,
 .btn-arrow-left {
     position: relative;

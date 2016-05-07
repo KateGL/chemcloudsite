@@ -23,15 +23,24 @@
                      
      <div class="well well-md"> 
 	<div class="row" >
-        <div class="col-md-2">
-         <a class = "btn btn-new" href = "{% url 'substance_new' %}" role = "button">Добавить вещество</a>       
-   
+        <div class="col-xs-12">
+         <a class = "btn btn-new" href = "{% url 'substance_new' %}" role = "button">Добавить вещество</a>          
+         <a class = "btn btn-link" href="{% url 'atom_all' %}" >Таблица Менделеева</a>
+         <br><br>
         </div>
-    		<div class="col-md-6">
+        
+    </div>
+      	<div class="row" >
+      <div class="col-xs-12">      
+    
+           
+            
+          
             <div id="custom-search-input">
                 <div class="input-group col-md-12">
                     <input type="text" id="search" class="form-control input-md" placeholder="Введите строку для поиска" 
-                    
+                    data-search-url="{% url 'substance_all_search' '___' %}"
+                    data-hint-url="{% url 'substance_search_hint' '___' %}"
                    value= {% if searched %} "{{searched}}"{% else %} ""{% endif %}
                     />
                     <span class="input-group-btn">
@@ -43,12 +52,15 @@
                 </div>
             </div>
             <div><span id="txtHint"></span></div>
+       
+           
+            </div>
         </div>
         
-        <div class="col-md-4">
+        
      
-          <a href="{% url 'atom_all' %}" >Таблица Менделеева</a>
-        </div>
+          
+        
         
 	</div>
  </div>
@@ -59,7 +71,7 @@
             
  
 
-            </div>
+         
             <div> {% render_table substance %}</div>
                       
                       
