@@ -328,7 +328,7 @@ def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
                 return []
                 #raise Http404("Ошибка ввода стехиометрического коэффициента: " + steh_koef_str)
         if steh_koef <= 0:
-            return []       
+            return []
         if is_left:
             steh_koef = -1.0*steh_koef
         subst_dict = request.user.chemistry.react_subst_filterbyAlias(id_reaction, alias)
@@ -385,7 +385,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         step.save()
         balance_mess = []
         balance_bool = step.check_step_balance(balance_mess)
-        if not balance_bool: 
+        if not balance_bool:
             mess = balance_mess[0]
     data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '"}'
     return data
@@ -585,6 +585,13 @@ def experiment_new(request, id_reaction):
 @login_required
 def problem_all(request, id_reaction):
     return render(request, 'chemical/problem_all.html', {"id_reaction": id_reaction})
+
+
+def problem_detail(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_detail.html', context)
+
 
 #Решения
 @login_required

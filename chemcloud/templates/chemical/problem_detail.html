@@ -1,0 +1,41 @@
+{% extends 'chemical/base_reaction.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+
+	
+	<div class="page-header">
+
+    <h1> <a href="{% url 'problem_all' id_reaction %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Детали задачи  {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>
+
+    </div>
+	
+	
+		<div class="page-content">
+
+<div class="row">
+ <div class="col-xs-7">
+
+
+ 
+
+  
+    </div>
+
+        <div class=" col-xs-3">
+
+    {% include "chemical/problem_detail_menu.html" %}
+
+
+
+
+
+      </div>
+
+
+            </div>
+
+</div>
+{% endblock %}

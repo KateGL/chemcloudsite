@@ -60,6 +60,7 @@ urlpatterns = [
 
 #Задачи
     url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/all/$', views.problem_all, name='problem_all'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/(?P<id_problem>[0-9]+)/detail/$', views.problem_detail, name='problem_detail'),
 
 #Решения
    url(r'^calculation/all/$', views.calculation_all, name='calculation_all'),
