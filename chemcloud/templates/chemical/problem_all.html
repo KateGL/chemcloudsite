@@ -1,22 +1,86 @@
 {% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
-
-
+{% load render_table from django_tables2 %}
 
 {% block body_block %}
-   
-    <div class="page-header">
-
-    <h1> Задачи</h1>
-           
-            
-    </div>
-<div class="page-content">
+	<div class="page-header">
+		<h1>Задачи</h1>
+	</div>
+	
+	<div class="page-content">
+		{% if id_reaction %} 
+			 
+					
+				
+				<div class="well well-sm col-xs-10">
+                          <h4 align="center">Создать новую задачу</h4>  
+                          <div class="row">
+                              <div class="col-xs-6"> 
+                              <a class="btn btn-info btn-md col-xs-12" role="button" disabled="disabled">
+                            Выделение маршрутов механизма реакции
+                             </a><br><br>
+                            <a class="btn btn-info btn-md col-xs-12" role = "button" href = "{% url 'problem_new' id_reaction 1 %}">
+                            Прямая задача химической кинетики
+                             </a><br><br>
+                             <a class="btn btn-info btn-md col-xs-12" role="button" href = "{% url 'problem_new' id_reaction 2 %}">
+                           Обратная задача химической кинетики
+                             </a>
+                             </div>
+                              <div class="col-xs-6">
+                                  <a class="btn btn-info btn-md col-xs-12" role="button" disabled="disabled">
+                                  Анализ жесткости системы ОДУ
+                                  </a><br><br>
+                                  <a class="btn btn-info btn-md col-xs-12" role="button" href = "{% url 'problem_new' id_reaction 4 %}">
+                                  Анализ чувствительности
+                                  </a><br><br>
+                                  <a class="btn btn-info btn-md col-xs-12" role="button" href = "{% url 'problem_new' id_reaction 3 %}">
+                                  Анализ неопределенности
+                                  </a>
+                              </div>
+                              
+                          </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <hr style="width: 100%; color: gray; height: 1px; background-color:gray;"></div>
+                    </div>
+                    
+                    <div class="row">
+                    <div class="col-xs-6"> 
+                              <a class="btn btn-default btn-md col-xs-12" role="button" href = "{% url 'problem_new' id_reaction 7 %}">
+                            МНК для расчета энергий активаций
+                             </a>
+                        </div>
+                        <div class="col-xs-6"> 
+                              <a class="btn btn-default btn-md col-xs-12" role="button" href = "{% url 'problem_new' id_reaction 6 %}">
+                            Оптимизация условий
+                             </a>
+                        </div>
+                </div>
+			</div>
+			
+			{% render_table problems %}
+<!--
+            <div class="row">
+        <h2>Breadcrumb Rainbow</h2>
+        <div class="btn-group btn-breadcrumb">
+            <a href="#" class="btn btn-primary"><i class="glyphicon glyphicon-home"></i></a>
+            <a href="#" class="btn btn-info">Snippets</a>
+            <a href="#" class="btn btn-success">Breadcrumbs</a>
+            <a href="#" class="btn btn-warning">Rainbow</a>
         
-            
-
-</div>          
-
-            </div>
+        
+                <button type="button" class="btn btn-default btn-arrow-left">Default</button>
+<button type="button" class="btn btn-primary btn-arrow-left">Primary</button>
+<button type="button" class="btn btn-success btn-arrow-left">Success</button>
+<button type="button" class="btn btn-link">Link</button>
+<button type="button" class="btn btn-info btn-arrow-right">Info</button>
+<button type="button" class="btn btn-warning btn-arrow-right">Warning</button>
+<button type="button" class="btn btn-danger btn-arrow-right">Danger</button>
+</div>
+	</div>
+	-->			
+		{% endif %}
+	</div>
 {% endblock %}
+       			

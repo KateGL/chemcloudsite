@@ -12,19 +12,21 @@ from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
 
 from chemical.tables import AtomTable, SubstanceTable, ReactionTable
-from chemical.tables import ConsistTable, MechanizmTable, ReactionSubstTable, ExperimentTable
+from chemical.tables import ConsistTable, MechanizmTable, ReactionSubstTable, ExperimentTable, ProblemTable
 from chemical.tables import StepsTable, UserOfReactionTable
 
 
 from django.shortcuts import redirect
-from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm
+from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm, ProblemForm
 from .forms import ReacSchemeForm, ExperimentForm
+from .models import substance_get_isomer_count, substance_get_isomer
 
 
 
 from .models import owner_required
 
 # Вещество
+
 
 @login_required
 def substance_all(request):
@@ -34,7 +36,7 @@ def substance_all(request):
 
 
 @login_required
-def substance_all_search(request, searched):
+def substance_all_search(request, searched=''):
     substance_table = SubstanceTable(request.user.chemistry.substance_get_like(searched, 0))
     RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
     return render(request, 'chemical/substance_all.html',
@@ -42,12 +44,23 @@ def substance_all_search(request, searched):
 
 
 @login_required
+def substance_isomers(request, consist_string=''):
+    substance_table = SubstanceTable(substance_get_isomer(consist_string, 0))
+    RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
+    return render(request, 'chemical/substance_isomer.html',
+    {"substance": substance_table, "id_substance": 0, "formula_brutto": consist_string})
+
+
+@login_required
 def substance_detail(request, id_substance):
     substance = request.user.chemistry.substance_get(id_substance)
     consist_table = ConsistTable(substance.consist.all())
     is_substance_owner = request.user.chemistry.is_substance_owner
+    isomer_count = substance_get_isomer_count(substance.consist_as_string) - 1
     return render(request, 'chemical/substance_detail.html',
-    {"substance": substance,"substance_consist":consist_table, "is_owner":is_substance_owner})
+    {"substance": substance, "substance_consist": consist_table, "isomer_count": isomer_count,
+        "is_owner": is_substance_owner})
+
 
 @login_required
 def substance_new(request):
@@ -57,6 +70,7 @@ def substance_new(request):
             substance = form.save()
             substance.after_create()
             form.save()
+            #print(request.POST)
             if 'save_and_new_btn' in request.POST:
                 return redirect('substance_new')
             return redirect('substance_detail', substance.pk)
@@ -75,7 +89,7 @@ def calculation_all(request):
 def atoms_all(request):
     atom_table = AtomTable(request.user.chemistry.atom_all())
     RequestConfig(request, paginate={"per_page": 30}).configure(atom_table)
-    return render(request, 'chemical/atom_all.html',  {"atom": atom_table})
+    return render(request, 'chemical/atom_all.html', {"atom": atom_table})
 
 @login_required
 def atom_detail(request, atom_number):
@@ -328,7 +342,7 @@ def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
                 return []
                 #raise Http404("Ошибка ввода стехиометрического коэффициента: " + steh_koef_str)
         if steh_koef <= 0:
-            return []       
+            return []
         if is_left:
             steh_koef = -1.0*steh_koef
         subst_dict = request.user.chemistry.react_subst_filterbyAlias(id_reaction, alias)
@@ -385,7 +399,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         step.save()
         balance_mess = []
         balance_bool = step.check_step_balance(balance_mess)
-        if not balance_bool: 
+        if not balance_bool:
             mess = balance_mess[0]
     data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '"}'
     return data
@@ -581,10 +595,70 @@ def experiment_new(request, id_reaction):
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/experiment_new.html', context)
 
+
 #Задачи
 @login_required
 def problem_all(request, id_reaction):
-    return render(request, 'chemical/problem_all.html', {"id_reaction": id_reaction})
+    problem_table = ProblemTable(request.user.chemistry.problem_all(id_reaction))
+    RequestConfig(request, paginate={"per_page": 25}).configure(problem_table)
+    context = {'problems': problem_table, 'id_reaction': id_reaction}
+    return render(request, 'chemical/problem_all.html', context)
+
+
+@login_required
+def problem_detail(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_detail.html', context)
+
+
+@login_required
+@owner_required
+def problem_new(request, id_reaction, id_problem_type):
+    react = request.user.chemistry.reaction_get(id_reaction)
+    problem_type = request.user.chemistry.dict_problem_type_get(id_problem_type)
+    print(problem_type.name)
+
+    form = ProblemForm(request.POST or None, initial={'problem_type': problem_type})
+    if request.method == 'POST':
+        if form.is_valid():
+            problem = form.save(commit=False)
+            problem.reaction = react.reaction
+            form.save()
+            return redirect('problem_init', id_reaction, problem.pk)
+    context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
+    return render(request, 'chemical/problem_new.html', context)
+    #context = {'id_reaction': id_reaction, 'id_problem_type': id_problem_type}
+    #return render(request, 'chemical/problem_new.html', context)
+
+
+@login_required
+def problem_init(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_init.html', context)
+
+
+@login_required
+def problem_calc_options(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_calc_options.html', context)
+
+
+@login_required
+def problem_calc_state(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_calc_state.html', context)
+
+
+@login_required
+def problem_results(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_results.html', context)
+
 
 #Решения
 @login_required
@@ -596,7 +670,6 @@ def calc_all(request, id_reaction):
 @login_required
 def statistic(request, id_reaction):
     return render(request, 'chemical/statistic.html', {"id_reaction": id_reaction})
-
 
 
 #Журнал изменений

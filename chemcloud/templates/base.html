@@ -33,7 +33,7 @@
 <body>
 <header>
   
-  <div class="container">    
+  <div class="container col-xs-12">    
    {% if user.is_authenticated %}
      {% include "chemical/nav_cabinet_main.html" %} 
     {% else %}    
@@ -43,7 +43,7 @@
 </header>
    
 
-<div class="container">
+<div class="container col-xs-12">
    
   {% block body_block %}  {% endblock %}
 </div>

@@ -55,7 +55,7 @@ class Substance(models.Model):
 
     def consist_create(self):  # создает состав вещества на основе брутто-формулы
         self.consist.all().delete()  # clear consist
-        atoms_dict = self.get_atom_dict()  # ахтунг! говнокод
+        atoms_dict = get_atom_dict(self.formula_brutto)  # ахтунг! говнокод
         self.consist_as_string = consist_dict_to_string(atoms_dict)
 
         #atoms_dict = {'H':2, 'Oh':3}
@@ -69,45 +69,44 @@ class Substance(models.Model):
             except:
                 return -1
 
-    def get_atom_dict(self,):  # получение словаря с типа атомами
-        formula_s = self.formula_brutto.strip(' \t\n\r') + ' '
-        atom_name = ''
-        atom_count = ''
-        atoms_dict = {}
-        for s in formula_s:
-            if('A' <= s <= 'Z') or (s == ' '):  # начало названия элемента
-                if atom_name != '':
-                    atoms_dict.setdefault(atom_name, 0)
-                    if atom_count != '':
-                        atoms_dict[atom_name] += Decimal(atom_count)
-                    else:
-                        atoms_dict[atom_name] += Decimal(1)
-                atom_name = s
-                atom_count = ''
-            if('a' <= s <= 'z'):  # продолжение имени
-                atom_name += s
-                atom_count = ''
-            #кол-во
-            if(s in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']):
-                atom_count += s
-            if(s == ','):
-                atom_count += '.'
-        return atoms_dict
-
 
 # Состав вещества
-#def consist_to_string(subst):
-    #consist = subst.consist.all().order_by('atom__symbol')
-    #as_str = ''
-    #for sub_cons in consist:
-        #as_str += sub_cons.atom.symbol + str(sub_cons.atom_count.normalize())
-    #return as_str
+def get_atom_dict(formula_brutto):  # получение словаря с типа атомами
+    formula_s = formula_brutto.strip(' \t\n\r') + ' '
+    atom_name = ''
+    atom_count = ''
+    atoms_dict = {}
+    for s in formula_s:
+        if('A' <= s <= 'Z') or (s == ' '):  # начало названия элемента
+            if atom_name != '':
+                atoms_dict.setdefault(atom_name, 0)
+                if atom_count != '':
+                    atoms_dict[atom_name] += Decimal(atom_count)
+                else:
+                    atoms_dict[atom_name] += Decimal(1)
+            atom_name = s
+            atom_count = ''
+        if('a' <= s <= 'z'):  # продолжение имени
+            atom_name += s
+            atom_count = ''
+        #кол-во
+        if(s in ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '.']):
+            atom_count += s
+        if(s == ','):
+            atom_count += '.'
+    return atoms_dict
+
 
 def consist_dict_to_string(mydict):
     as_str = ''
     for key in sorted(mydict):
         as_str += key + str(mydict[key].normalize())
     return as_str
+
+
+def consist_to_string(formula_brutto):
+    atoms_dict = get_atom_dict(formula_brutto)
+    return consist_dict_to_string(atoms_dict)
 
 
 class Substance_consist(models.Model):
@@ -586,3 +585,30 @@ class Exper_point (models.Model):
     class Meta:
       verbose_name = ('Экспериментальные данные')
       verbose_name_plural = ('Экспериментальные данные')
+
+
+##Задачи
+class Dict_problem_type(models.Model):
+    id_problem_type = models.IntegerField(primary_key=True, verbose_name='ИД')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Тип задачи')
+
+    class Meta:
+        verbose_name = ('Вид задачи')
+        verbose_name_plural = ('Виды задач')
+
+    def __unicode__(self):
+        return self.name
+
+
+class Problem(models.Model):
+    id_problem = models.AutoField(primary_key=True, verbose_name='ИД')
+    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='problems')
+    problem_type = models.ForeignKey(Dict_problem_type, verbose_name='Вид задачи', null=False, on_delete=models.PROTECT, related_name='+')
+    description = models.TextField(blank=True, verbose_name='Описание')
+    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+
+    class Meta:
+        verbose_name = ('Задача')
+        verbose_name_plural = ('Задачи')
+
+

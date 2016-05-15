@@ -9,6 +9,7 @@ from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_t
 from chemical.chemical_models import User_reaction,Substance_consist,Exper_subst,Dict_subst_role
 from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exper_data,Exper_subst_data
 from chemical.chemical_models import Exper_point
+from chemical.chemical_models import Problem, Dict_problem_type
 from chemical.models import Chemistry
 
 
@@ -21,8 +22,8 @@ admin.site.register(Dict_atom, Dict_atomAdmin)
 
 class SubstanceAdmin(admin.ModelAdmin):
   #formula_brutto = BruttoFormulaField( label="Брутто-формула") надо в админке тоже добавить это поле!!!
-  fields = ['name', 'charge', 'is_radical', 'formula_brutto','note']
-  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto','note')
+  fields = ['name', 'charge', 'is_radical', 'formula_brutto','note', 'consist_as_string']
+  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto', 'consist_as_string','note')
 
 admin.site.register(Substance, SubstanceAdmin)
 
@@ -151,3 +152,7 @@ admin.site.register(Exper_subst_data,Exper_subst_dataAdmin)
 
 #Экспериментальные данные
 admin.site.register(Exper_point)
+
+#Задачи
+admin.site.register(Problem)
+admin.site.register(Dict_problem_type)

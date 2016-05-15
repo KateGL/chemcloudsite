@@ -12,6 +12,7 @@ from chemical.chemical_models import Dict_atom, Substance, Reaction, User_reacti
 from chemical.chemical_models import Reaction_subst, Experiment, Reaction_scheme
 from chemical.chemical_models import Scheme_step, Substance_synonym, Dict_feature
 from chemical.chemical_models import Reaction_feature
+from chemical.chemical_models import Problem, Dict_problem_type
 
 
 def owner_required(f):
@@ -36,6 +37,19 @@ def substance_owner_required(f):
     return decorator
 
 
+def substance_get_isomer(consist_as_string, top_count):
+    filter_search = Q(consist_as_string__exact=consist_as_string) #& ~Q(pk=id_substance)
+    if top_count > 0:
+        return Substance.objects.filter(filter_search)[:top_count]
+    else:
+        return Substance.objects.filter(filter_search)
+
+
+def substance_get_isomer_count(consist_as_string):
+    filter_search = Q(consist_as_string__exact=consist_as_string) #& ~Q(pk=id_substance)
+    return Substance.objects.filter(filter_search).count()
+
+
 #Объект для доступа к химии
 class Chemistry(models.Model):
     user = AutoOneToOneField(User, primary_key=True, null=False, on_delete=models.CASCADE)
@@ -55,10 +69,11 @@ class Chemistry(models.Model):
         return subst
 
     def substance_get_like(self, searched, top_count):
+        filter_search = Q(name__icontains=searched) | Q(formula_brutto__icontains=searched)
         if top_count > 0:
-            return Substance.objects.filter(Q(name__icontains=searched) | Q(formula_brutto__icontains=searched))[:top_count]
+            return Substance.objects.filter(filter_search)[:top_count]
         else:
-            return Substance.objects.filter(Q(name__icontains=searched) | Q(formula_brutto__icontains=searched))
+            return Substance.objects.filter(filter_search)
 
     def atom_all(self):
         return Dict_atom.objects.all()
@@ -196,16 +211,38 @@ class Chemistry(models.Model):
     # def subst_synonym_get(self,):
 
     #вернуть весь справочник характеристик
-    def dic_feature_all(self):
+    def dict_feature_all(self):
         return Dict_feature.objects.all()
 
     # вернуть характеристику по id характеристики
-    def dic_feature_get(self, id_feat):
+    def dict_feature_get(self, id_feat):
         try:
             dict_feature = Dict_feature.objects.get(pk=id_feat)
         except Dict_feature.DoesNotExist:
             raise Http404("Dict_feature does not exist")
         return dict_feature
+
+    def problem_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.problems.all()
+
+    def problem_get(self, id_reaction, id_problem):
+        react = self.reaction_get(id_reaction)
+        try:
+            problem = react.reaction.problems.get(pk=id_problem)
+        except Problem.DoesNotExist:
+            raise Http404("Problem does not exist")
+        problem_dict = {}
+        problem_dict['problem'] = problem
+        problem_dict['is_owner'] = react.is_owner
+        return problem_dict
+
+    def dict_problem_type_get(self, id):
+        try:
+            problem_type = Dict_problem_type.objects.get(pk=id)
+        except Dict_problem_type.DoesNotExist:
+            raise Http404("Dict_problem_type does not exist")
+        return problem_type
 
     # TODO
 

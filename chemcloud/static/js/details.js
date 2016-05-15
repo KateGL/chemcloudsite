@@ -44,6 +44,7 @@ function clone_rbox(rbox){
         if(rbox.hasClass('form-control')){
             //alert(rbox.val());
             clone.val(rbox.val());}
+        clone.show();
         return clone;
     }
 
@@ -73,8 +74,8 @@ function after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue){
         edt_td.hide();
         val_td.show();
         //alert('after hide');
-        btn_save.addClass('disabled');
-        btn_save.siblings(".detail_btn_edit").removeClass('disabled');
+        btn_save.hide();//addClass('disabled');
+        btn_save.siblings(".detail_btn_edit").show();//removeClass('disabled');
 
         return false;
     }
@@ -86,8 +87,10 @@ $(document).ready(function(){
     $('.detail_caption').addClass('text-right');
     $('.detail_edit').hide().addClass('text-left').css({ 'font-weight': "bold" });
     $('.detail_value').addClass('text-left').addClass('col-xs-12').css({ 'font-weight': "bold" });
+    $('.box_input').addClass('col-xs-12');
+    $('.form-control').addClass('col-xs-12');
     $('.detail_btn_edit').addClass('btn btn-lg btn-link').html('<span class="glyphicon glyphicon-edit"></span>');
-    $('.detail_btn_save').addClass('btn btn-lg btn-link disabled').html('<span class="glyphicon glyphicon-ok"></span>');
+    $('.detail_btn_save').addClass('btn btn-lg btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
 
 
     $('#detail_main').on("click", "button.detail_btn_edit", function(){
@@ -100,8 +103,8 @@ $(document).ready(function(){
         val_td.hide();
 
         clone.focus();
-        $(this).addClass('disabled');
-        $(this).siblings(".detail_btn_save").removeClass('disabled');
+        $(this).hide();//addClass('disabled');
+        $(this).siblings(".detail_btn_save").show();//removeClass('disabled');
 
 
         return false;
@@ -170,8 +173,8 @@ $(document).ready(function(){
             edt_td.html('');
             edt_td.hide();
             val_td.show();
-            btns.children('.detail_btn_save').addClass('disabled');
-            btns.children('.detail_btn_edit').removeClass('disabled');
+            btns.children('.detail_btn_save').hide();//addClass('disabled');
+            btns.children('.detail_btn_edit').show();//removeClass('disabled');
 
             return false;
         }, 500);
