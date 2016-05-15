@@ -1,0 +1,21 @@
+{% extends 'chemical/base_reaction.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+		<h1>Добавление новой задачи</h1>
+	</div>
+	<div class="page-content">
+
+        
+        <form method="POST" class="form" action="{% url 'problem_new' id_reaction id_problem_type %}">  
+            
+            {% include "chemical/form_body_new.html" %} 
+            
+            
+</form >
+  
+   </div>
+{% endblock %}

@@ -10,6 +10,7 @@ from django.utils.safestring import mark_safe
 from chemical.chemical_models import Dict_atom, Substance, Substance_consist, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Scheme_step_subst
 from chemical.chemical_models import Reaction_subst, User_reaction
+from chemical.chemical_models import Problem
 
 from .urls_utils import make_detail_link, make_name_link, make_isomer_link
 
@@ -206,3 +207,23 @@ class ExperimentTable(tables.Table):
         attrs = {"class": "paleblue"}
         fields = ("name", "description", "updated_date", "is_favorite")
         sequence = ("name", "description", "is_favorite", "updated_date")
+
+
+#Задачи
+class ProblemTable(tables.Table):
+    detail_link = tables.LinkColumn('problem_detail', orderable=False,  verbose_name='', empty_values=())
+    problem_type = tables.LinkColumn('problem_edit', orderable=True)
+
+    def render_detail_link(self, record):
+        link = reverse('chemical.views.problem_detail', args=[record.reaction.id_reaction,record.pk])
+        return make_detail_link(link)
+
+    def render_problem_type(self, record):
+        link = reverse('chemical.views.problem_init', args=[record.reaction.id_reaction, record.pk])
+        return make_name_link(link, record.problem_type.name)
+
+    class Meta:
+        model = Problem
+        attrs = {"class": "paleblue"}
+        fields = ("problem_type", "description", "created_date")
+        sequence = ("problem_type", "description", "created_date")

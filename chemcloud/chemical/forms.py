@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from .chemical_models import Reaction_scheme, Substance, Reaction, Experiment, Reaction_subst
+from .chemical_models import Reaction_scheme, Substance, Reaction, Experiment, Reaction_subst, Problem
 import re
 from .utils import check_blocks
 
@@ -11,7 +11,6 @@ class ReactionForm(forms.ModelForm):
         model = Reaction
         fields = ('name', 'description', 'is_favorite')
 #        fields = ('name', 'description', 'is_favorite', 'is_notstationary', 'is_isothermal')
-			
 
 
 #Поделиться реакцией
@@ -59,3 +58,10 @@ class ExperimentForm(forms.ModelForm):
     class Meta:
         model = Experiment
         fields = ('name', 'description', 'is_favorite',)
+
+
+#Задачи
+class ProblemForm(forms.ModelForm):
+    class Meta:
+        model = Problem
+        fields = ('problem_type', 'description', )

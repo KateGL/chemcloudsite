@@ -12,12 +12,12 @@ from django.contrib.auth.decorators import login_required
 from django_tables2 import RequestConfig
 
 from chemical.tables import AtomTable, SubstanceTable, ReactionTable
-from chemical.tables import ConsistTable, MechanizmTable, ReactionSubstTable, ExperimentTable
+from chemical.tables import ConsistTable, MechanizmTable, ReactionSubstTable, ExperimentTable, ProblemTable
 from chemical.tables import StepsTable, UserOfReactionTable
 
 
 from django.shortcuts import redirect
-from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm
+from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm, ProblemForm
 from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
 
@@ -70,7 +70,7 @@ def substance_new(request):
             substance = form.save()
             substance.after_create()
             form.save()
-            print(request.POST)
+            #print(request.POST)
             if 'save_and_new_btn' in request.POST:
                 return redirect('substance_new')
             return redirect('substance_detail', substance.pk)
@@ -599,7 +599,10 @@ def experiment_new(request, id_reaction):
 #Задачи
 @login_required
 def problem_all(request, id_reaction):
-    return render(request, 'chemical/problem_all.html', {"id_reaction": id_reaction})
+    problem_table = ProblemTable(request.user.chemistry.problem_all(id_reaction))
+    RequestConfig(request, paginate={"per_page": 25}).configure(problem_table)
+    context = {'problems': problem_table, 'id_reaction': id_reaction}
+    return render(request, 'chemical/problem_all.html', context)
 
 
 @login_required
@@ -612,8 +615,21 @@ def problem_detail(request, id_reaction, id_problem):
 @login_required
 @owner_required
 def problem_new(request, id_reaction, id_problem_type):
-    context = {'id_reaction': id_reaction}
+    react = request.user.chemistry.reaction_get(id_reaction)
+    problem_type = request.user.chemistry.dict_problem_type_get(id_problem_type)
+    print(problem_type.name)
+
+    form = ProblemForm(request.POST or None, initial={'problem_type': problem_type})
+    if request.method == 'POST':
+        if form.is_valid():
+            problem = form.save(commit=False)
+            problem.reaction = react.reaction
+            form.save()
+            return redirect('problem_init', id_reaction, problem.pk)
+    context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)
+    #context = {'id_reaction': id_reaction, 'id_problem_type': id_problem_type}
+    #return render(request, 'chemical/problem_new.html', context)
 
 
 @login_required
@@ -654,7 +670,6 @@ def calc_all(request, id_reaction):
 @login_required
 def statistic(request, id_reaction):
     return render(request, 'chemical/statistic.html', {"id_reaction": id_reaction})
-
 
 
 #Журнал изменений

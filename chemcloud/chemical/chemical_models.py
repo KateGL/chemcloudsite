@@ -588,23 +588,27 @@ class Exper_point (models.Model):
 
 
 ##Задачи
+class Dict_problem_type(models.Model):
+    id_problem_type = models.IntegerField(primary_key=True, verbose_name='ИД')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Тип задачи')
+
+    class Meta:
+        verbose_name = ('Вид задачи')
+        verbose_name_plural = ('Виды задач')
+
+    def __unicode__(self):
+        return self.name
+
+
 class Problem(models.Model):
     id_problem = models.AutoField(primary_key=True, verbose_name='ИД')
+    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='problems')
+    problem_type = models.ForeignKey(Dict_problem_type, verbose_name='Вид задачи', null=False, on_delete=models.PROTECT, related_name='+')
+    description = models.TextField(blank=True, verbose_name='Описание')
+    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
 
     class Meta:
         verbose_name = ('Задача')
         verbose_name_plural = ('Задачи')
-
-
-class Dict_problem_type(models.Model):
-    id_problem_type = models.IntegerField(primary_key = True, verbose_name='ИД')
-    name = models.CharField(max_length=250, unique=True, verbose_name='Тип задачи')
-
-    class Meta:
-        verbose_name = ('Тип задачи')
-        verbose_name_plural = ('Типы задач')
-
-    def __unicode__(self):
-        return self.name
 
 
