@@ -13,28 +13,33 @@ from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
 from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
-from chemical.chemical_models import Dict_subst_role
+from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data
 from django.contrib.auth.models import User
 
 def drop_all():
-     Experiment.objects.all().delete()
      Dict_atom.objects.all().delete()
      Dict_feature.objects.all().delete()
-     Dict_model_function.objects.all().delete()
-     Dict_model_argument.objects.all().delete()
-     Dict_measure_unit.objects.all().delete()
-     Reaction.objects.all().delete()
      User_reaction.objects.all().delete()
      Substance_synonym.objects.all().delete()
-     Substance.objects.all().delete()
+     Exper_subst_data.objects.all().delete()
+     Dict_exper_subst_param.objects.all().delete()
+     Exper_subst.objects.all().delete()
      Reaction_subst.objects.all().delete()
+     Substance.objects.all().delete()
+     Exper_data.objects.all().delete()
+     Experiment.objects.all().delete()
+     Reaction.objects.all().delete()
+     Dict_model_function.objects.all().delete()
+     Dict_model_argument.objects.all().delete()
      Reaction_scheme.objects.all().delete()
      Scheme_step.objects.all().delete()
      Scheme_step_subst.objects.all().delete()
      Substance_consist.objects.all().delete()
      Dict_exper_param.objects.all().delete()
-     Dict_exper_subst_param.objects.all().delete()
+
      Dict_subst_role.objects.all().delete()
+     Dict_measure_unit.objects.all().delete()
+
      print "dropped all data"
 
 def populate():
@@ -148,10 +153,13 @@ def populate():
    add_atom(atom_num=107, symb="Bh",  atom_m=262,  n = "Борий",   nl =  "Bohrium")
    add_atom(atom_num=108, symb="Hn",  atom_m=265,  n = "Хассий ",   nl =  "Hassium")
    add_atom(atom_num=109, symb="Mt",  atom_m=268,  n = "Мейтнерий",   nl =  "Meitnerium")
+   add_dict_feature(0,'Не задано')
    add_dict_feature(1,'Нестационарная')
    add_dict_feature(2,'Изотермическая')
    add_dict_feature(3,'Закрытая')
+   add_dict_model_function(0,'Не задано','')
    add_dict_model_function(1,'Концентрация','x')
+   add_dict_model_argument(0,'Не задано','')
    add_dict_model_argument(1,'Время','t')
    add_dict_model_argument(2,'Длина реактора','l')
    add_dict_measure_unit(1,'empty','Пусто',1,1,None)
@@ -170,14 +178,16 @@ def populate():
    b = Dict_measure_unit.objects.get(id_unit=1)
    add_dict_measure_unit(10,'%','Проценты',1,1,b)
    add_dict_measure_unit(11,'кг/(м2*сек)','Массовая скорость потока',1,1,b)
+   add_dict_exper_param(0,'Не задано')
    add_dict_exper_param(1,'Влажность смеси')
    add_dict_exper_param(2,'Скорость потока')
+   add_dict_exper_subst_param(0,'Не задано')
    add_dict_exper_subst_param(1,'Период индукции')
    add_dict_exper_subst_param(2,'Начальная скорость')
+   add_dict_subst_role(0,'Не задано')
    add_dict_subst_role(1,'Исходное')
    add_dict_subst_role(2,'Промежуточное')
    add_dict_subst_role(3,'Продукт')
-
 
     # тестовая реакция
    add_reaction(id_reac=1, nm='Паровая конверсия пропана', dscr='Низкотемпературная паровая конверсия пропана', is_f=1, cb='Admin', ub='Admin')
