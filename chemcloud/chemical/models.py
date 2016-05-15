@@ -36,6 +36,19 @@ def substance_owner_required(f):
     return decorator
 
 
+def substance_get_isomer(consist_as_string, top_count):
+    filter_search = Q(consist_as_string__exact=consist_as_string) #& ~Q(pk=id_substance)
+    if top_count > 0:
+        return Substance.objects.filter(filter_search)[:top_count]
+    else:
+        return Substance.objects.filter(filter_search)
+
+
+def substance_get_isomer_count(consist_as_string):
+    filter_search = Q(consist_as_string__exact=consist_as_string) #& ~Q(pk=id_substance)
+    return Substance.objects.filter(filter_search).count()
+
+
 #Объект для доступа к химии
 class Chemistry(models.Model):
     user = AutoOneToOneField(User, primary_key=True, null=False, on_delete=models.CASCADE)
@@ -55,10 +68,11 @@ class Chemistry(models.Model):
         return subst
 
     def substance_get_like(self, searched, top_count):
+        filter_search = Q(name__icontains=searched) | Q(formula_brutto__icontains=searched)
         if top_count > 0:
-            return Substance.objects.filter(Q(name__icontains=searched) | Q(formula_brutto__icontains=searched))[:top_count]
+            return Substance.objects.filter(filter_search)[:top_count]
         else:
-            return Substance.objects.filter(Q(name__icontains=searched) | Q(formula_brutto__icontains=searched))
+            return Substance.objects.filter(filter_search)
 
     def atom_all(self):
         return Dict_atom.objects.all()

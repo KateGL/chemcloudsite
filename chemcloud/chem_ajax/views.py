@@ -5,6 +5,7 @@ import json
 
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.core import serializers
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -13,7 +14,10 @@ from chemical.models import owner_required, substance_owner_required
 from chemical.urls_utils import make_name_link
 from chemical.urls_utils import get_subst_detail_link
 from chemical.utils import decorate_formula
+from chemical.models import substance_get_isomer, substance_get_isomer_count
+from chemical.chemical_models import consist_to_string
 # Create your views here.
+
 
 def set_field_and_value_from_request(request, my_model):
     data = '{"result":"True", "message":"ok"}'
@@ -31,12 +35,12 @@ def set_field_and_value_from_request(request, my_model):
             return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value}
 
     data = '{"result":"False", "message":"Request not Ajax or not POST"}'
-    return {"is_error": True,"err_msg": data}
+    return {"is_error": True, "err_msg": data}
 
 
 @login_required
-def substance_search_hint(request, searched):
-    subst = request.user.chemistry.substance_get_like(searched, 3)
+def substance_search_hint(request, searched='', top_count=0):
+    subst = request.user.chemistry.substance_get_like(searched, top_count)
     tmp = ''
     for value in subst.values():
         if tmp > '':
@@ -44,6 +48,28 @@ def substance_search_hint(request, searched):
         lnk = get_subst_detail_link(value['id_substance'])
         tmp = tmp + make_name_link(lnk, value['name']) + ' (' + value['formula_brutto_formatted'] + ')'
     return HttpResponse(tmp)
+
+
+@login_required
+def substance_check_isomer(request):
+    if request.method != 'GET':
+        return False
+    brutto_formula = request.GET['brutto_formula']
+    #top_count = request.GET['top_count']
+    consist_as_string = consist_to_string(brutto_formula)
+    #subst_dict = substance_get_isomer(consist_as_string, top_count)
+    isomers_cnt = substance_get_isomer_count(consist_as_string)
+
+    isomer_dict = {}
+    isomer_dict['isomer_count'] = isomers_cnt
+    isomer_dict['consist_as_string'] = consist_as_string
+    #print(isomer_dict)
+    #isomer_dict['values'] = serializers.serialize('json', subst_dict)
+    #isomer_dict['models'] = subst_dict
+    xml_bytes = json.dumps(isomer_dict)
+    #xml_bytes = serializers.serialize('json', subst_dict)
+    return HttpResponse(xml_bytes, 'application/json')
+
 
 @login_required
 @substance_owner_required

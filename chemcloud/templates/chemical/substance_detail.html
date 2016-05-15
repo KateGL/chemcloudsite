@@ -17,6 +17,7 @@
 <div class="page-content">
         <div class="row">
      <div class="col-xs-7">
+       
         <table class="table" >
     <tbody id="detail_main" model_name="Substance" url_edit="{% url 'substance_detail_edit' substance.pk %}" >
      <tr>
@@ -37,13 +38,14 @@
       </tr>
       
       <tr>
-        <td class="detail_caption">Брутто-формула:</td>
-        <td class="detail_value"><input class="box_input"  type="text" disabled="disabled" value="{{  substance.formula_brutto }}"/></td>
+        <td class="detail_caption" id="isomer_url" data-check-url="{% url 'substance_check_isomer' %}"
+        data-isomers-url="{% url 'substance_isomers' '___' %}">Брутто-формула:</td>
+        <td class="detail_value"><input class="box_input" id="id_formula_brutto" type="text" disabled="disabled" value="{{  substance.formula_brutto }}"/></td>
         {% if is_owner %}
         <td class="detail_edit"  ></td>         
          <td class="detail_btns" field_name="formula_brutto">
         <button type="button" class="detail_btn_edit"></button>
-        <button type="button" class="detail_btn_save" refresh_page="True"></button>
+        <button type="button" class="detail_btn_save" refresh_page="True" name="save_brutto_btn"></button>
         </td>
         {% endif %}
       </tr>
@@ -131,6 +133,25 @@
        <div class="col-xs-5">
            <h4>{{  substance.formula_brutto_formatted | safe}}</h4>
            <h5>Состав: {{  substance.consist_as_string}}</h5>
+           <h5>Изомеры: {% if isomer_count > 0 %}  
+           
+           
+
+           
+           <a type="button" class="btn btn-link"
+           {% if substance.consist_as_string > '' %} 
+           href = "{% url 'substance_isomers' substance.consist_as_string %}" 
+           {% else %}
+           href = "{% url 'substance_isomers'  %}" 
+           {% endif %}
+           target="_blank">
+           {{isomer_count}} шт.</a>
+           
+            {% else %}Нет{% endif %}</h5>
+            
+            
+            <a class = "btn btn-new" href = "{% url 'substance_new' %}" role = "button">Добавить вещество</a> 
+    <br><br>
             {% render_table substance_consist %}
         </div> 
         
@@ -145,4 +166,5 @@
 
 {% block footer_block %}
 <script src="{% static "js/details.js" %}"></script>
+<script src="{% static "js/subst_all.js" %}"></script>
 {% endblock %}

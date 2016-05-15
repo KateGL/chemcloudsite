@@ -33,7 +33,6 @@
     </div>
       	<div class="row" >
       <div class="col-xs-12">      
-    
            
             
           
@@ -41,7 +40,7 @@
                 <div class="input-group col-md-12">
                     <input type="text" id="search" class="form-control input-md" placeholder="Введите строку для поиска" 
                     data-search-url="{% url 'substance_all_search' '___' %}"
-                    data-hint-url="{% url 'substance_search_hint' '___' %}"
+                    data-hint-url="{% url 'substance_search_hint' '___' 3 %}"
                    value= {% if searched %} "{{searched}}"{% else %} ""{% endif %}
                     />
                     <span class="input-group-btn">
@@ -64,7 +63,7 @@
         
         
 	</div>
- </div>
+ 
 
   
 
@@ -75,7 +74,7 @@
          
             <div> {% render_table substance %}</div>
                       
-                      
+        </div>              
                       
                        
 {% endblock %}

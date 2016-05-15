@@ -7,6 +7,9 @@ from chemical import views
 urlpatterns = [
 #Вещества
     url(r'^substance/all/$', views.substance_all, name='substance_all'),
+    url(r'^substance/isomers/$', views.substance_isomers, name='substance_isomers'),
+    url(r'^substance/isomers/(?P<consist_string>[\w\-\.]+)/$', views.substance_isomers, name='substance_isomers'),
+    url(r'^substance/search/$', views.substance_all_search, name='substance_all_search'),
     url(r'^substance/search/(?P<searched>[\w\-]+)/$', views.substance_all_search, name='substance_all_search'),
     url(r'^substance/(?P<id_substance>[0-9]+)/detail/$', views.substance_detail, name='substance_detail'),
     url(r'^substance/new/$', views.substance_new, name='substance_new'),

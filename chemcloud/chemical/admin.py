@@ -21,8 +21,8 @@ admin.site.register(Dict_atom, Dict_atomAdmin)
 
 class SubstanceAdmin(admin.ModelAdmin):
   #formula_brutto = BruttoFormulaField( label="Брутто-формула") надо в админке тоже добавить это поле!!!
-  fields = ['name', 'charge', 'is_radical', 'formula_brutto','note']
-  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto','note')
+  fields = ['name', 'charge', 'is_radical', 'formula_brutto','note', 'consist_as_string']
+  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto', 'consist_as_string','note')
 
 admin.site.register(Substance, SubstanceAdmin)
 

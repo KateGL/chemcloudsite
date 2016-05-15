@@ -19,12 +19,14 @@ from chemical.tables import StepsTable, UserOfReactionTable
 from django.shortcuts import redirect
 from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm
 from .forms import ReacSchemeForm, ExperimentForm
+from .models import substance_get_isomer_count, substance_get_isomer
 
 
 
 from .models import owner_required
 
 # Вещество
+
 
 @login_required
 def substance_all(request):
@@ -34,7 +36,7 @@ def substance_all(request):
 
 
 @login_required
-def substance_all_search(request, searched):
+def substance_all_search(request, searched=''):
     substance_table = SubstanceTable(request.user.chemistry.substance_get_like(searched, 0))
     RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
     return render(request, 'chemical/substance_all.html',
@@ -42,12 +44,23 @@ def substance_all_search(request, searched):
 
 
 @login_required
+def substance_isomers(request, consist_string=''):
+    substance_table = SubstanceTable(substance_get_isomer(consist_string, 0))
+    RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
+    return render(request, 'chemical/substance_isomer.html',
+    {"substance": substance_table, "id_substance": 0, "formula_brutto": consist_string})
+
+
+@login_required
 def substance_detail(request, id_substance):
     substance = request.user.chemistry.substance_get(id_substance)
     consist_table = ConsistTable(substance.consist.all())
     is_substance_owner = request.user.chemistry.is_substance_owner
+    isomer_count = substance_get_isomer_count(substance.consist_as_string) - 1
     return render(request, 'chemical/substance_detail.html',
-    {"substance": substance,"substance_consist":consist_table, "is_owner":is_substance_owner})
+    {"substance": substance, "substance_consist": consist_table, "isomer_count": isomer_count,
+        "is_owner": is_substance_owner})
+
 
 @login_required
 def substance_new(request):
@@ -57,6 +70,7 @@ def substance_new(request):
             substance = form.save()
             substance.after_create()
             form.save()
+            print(request.POST)
             if 'save_and_new_btn' in request.POST:
                 return redirect('substance_new')
             return redirect('substance_detail', substance.pk)
@@ -75,7 +89,7 @@ def calculation_all(request):
 def atoms_all(request):
     atom_table = AtomTable(request.user.chemistry.atom_all())
     RequestConfig(request, paginate={"per_page": 30}).configure(atom_table)
-    return render(request, 'chemical/atom_all.html',  {"atom": atom_table})
+    return render(request, 'chemical/atom_all.html', {"atom": atom_table})
 
 @login_required
 def atom_detail(request, atom_number):

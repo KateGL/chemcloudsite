@@ -9,15 +9,60 @@
     <div class="page-header">
         <h1><a href="{% url 'substance_all' %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Добавление вещества</h1>
             </div>
-            <div class="page-content">
+            <div class="page-content" id="isomer_url" data-check-url="{% url 'substance_check_isomer' %}" data-isomers-url="{% url 'substance_isomers' '___' %}">
             
            
- <form method="POST" class="form" action="{% url 'substance_new' %}">  
+ <form method="POST" class="form" id="form_substance" data-isomer-ok="no" action="{% url 'substance_new' %}">  
             
             {% include "chemical/form_body_new.html" %} 
-            <button type="submit" class="save btn btn-success" name="save_and_new_btn">Сохранить и добавить новое</button>
+         <!--    <button type="submit" class="save btn btn-success" name="save_and_new_btn">Сохранить и добавить новое</button>-->
             
 </form >
 
             </div>
+            
+            
+            <!-- Modal -->
+  
+    <div class="modal fade" id="ModalCheckIsomer" tabindex="-1" role="dialog" 
+     aria-labelledby="ModalCheckIsomerLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close" 
+                   data-dismiss="modal">
+                       <span aria-hidden="true">&times;</span>
+                       <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="ModalReactionSubstDeleteLabel">
+                    Проверка на изомеры
+                </h4>
+            </div>           
+            <!-- Modal Body -->
+            <div class="modal-body">  
+             
+                        <div class="well well-lg">
+                        <h4> В базе найдено изомеров: <span id="isomer_count">N</span>  </h4><br>
+                         Вы действительно хотите добавить вещество?  <br>
+                         <a id="isomer_list_link" href="#" target="_blank">Посмотреть список изомеров</a>
+                        </div>                 
+                  
+                <div>
+               
+    <button type="button" class = "btn btn-primary" id="btn_isomer_ok" role = "button">
+                                    Да, добавить!</button>
+     <button type="button" class="btn btn-default" data-dismiss="modal">Нет, не добавлять</button> 
+                                     </div>                     
+            </div>     
+    </div>
+    </div>
+          
+     </div>
+            
+{% endblock %}
+
+
+{% block footer_block %}
+<script src="{% static "js/subst_all.js" %}"></script>
 {% endblock %}
