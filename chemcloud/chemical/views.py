@@ -595,16 +595,53 @@ def experiment_new(request, id_reaction):
     context = {'id_reaction': id_reaction, 'form': form}
     return render(request, 'chemical/experiment_new.html', context)
 
+
 #Задачи
 @login_required
 def problem_all(request, id_reaction):
     return render(request, 'chemical/problem_all.html', {"id_reaction": id_reaction})
 
 
+@login_required
 def problem_detail(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
     context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
     return render(request, 'chemical/problem_detail.html', context)
+
+
+@login_required
+@owner_required
+def problem_new(request, id_reaction, id_problem_type):
+    context = {'id_reaction': id_reaction}
+    return render(request, 'chemical/problem_new.html', context)
+
+
+@login_required
+def problem_init(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_init.html', context)
+
+
+@login_required
+def problem_calc_options(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_calc_options.html', context)
+
+
+@login_required
+def problem_calc_state(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_calc_state.html', context)
+
+
+@login_required
+def problem_results(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    return render(request, 'chemical/problem_results.html', context)
 
 
 #Решения

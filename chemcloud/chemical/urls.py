@@ -63,7 +63,12 @@ urlpatterns = [
 
 #Задачи
     url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/all/$', views.problem_all, name='problem_all'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/new/(?P<id_problem_type>[0-9]+)/$', views.problem_new, name='problem_new'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/(?P<id_problem>[0-9]+)/detail/$', views.problem_detail, name='problem_detail'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/(?P<id_problem>[0-9]+)/init/$', views.problem_init, name='problem_init'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/(?P<id_problem>[0-9]+)/calc_options/$', views.problem_calc_options, name='problem_calc_options'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/(?P<id_problem>[0-9]+)/calc_state/$', views.problem_calc_state, name='problem_calc_state'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/(?P<id_problem>[0-9]+)/results/$', views.problem_results, name='problem_results'),
 
 #Решения
    url(r'^calculation/all/$', views.calculation_all, name='calculation_all'),

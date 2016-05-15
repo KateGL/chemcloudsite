@@ -585,3 +585,26 @@ class Exper_point (models.Model):
     class Meta:
       verbose_name = ('Экспериментальные данные')
       verbose_name_plural = ('Экспериментальные данные')
+
+
+##Задачи
+class Problem(models.Model):
+    id_problem = models.AutoField(primary_key=True, verbose_name='ИД')
+
+    class Meta:
+        verbose_name = ('Задача')
+        verbose_name_plural = ('Задачи')
+
+
+class Dict_problem_type(models.Model):
+    id_problem_type = models.IntegerField(primary_key = True, verbose_name='ИД')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Тип задачи')
+
+    class Meta:
+        verbose_name = ('Тип задачи')
+        verbose_name_plural = ('Типы задач')
+
+    def __unicode__(self):
+        return self.name
+
+
