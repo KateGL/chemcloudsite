@@ -44,7 +44,11 @@ admin.site.register(Chemistry)
   #fields = ['name','reaction']
   #list_display = ('id_scheme', 'name','reaction')
 
-admin.site.register( Reaction_scheme)
+class Reaction_schemeAdmin(admin.ModelAdmin):
+  fields = ['id_scheme', 'reaction','name','description','is_possible']
+  list_display = ('id_scheme', 'reaction','name','description','is_possible')
+
+admin.site.register(Reaction_scheme,Reaction_schemeAdmin)
 
 admin.site.register( Scheme_step)
 
