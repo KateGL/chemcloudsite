@@ -11,7 +11,6 @@
 			{% if experiment %}
 				<table>
 					<tr>
-						<td>Название:</td>
 						<td>{{ experiment.name }}</td>
 					</tr>					
 					
@@ -19,6 +18,24 @@
 			{% else %}
 				<strong> Не удалось получить детали эксперимента </strong>
 			{% endif %}
+<h4> Исходные условия:</h4>
+Вид:
+<select>
+<option>Псевдонимы</option>
+<option>Формулы</option>
+</select>
+<div >
+<h4> Вещества реакции:</h4>
+</div>
+<div>
+<table>
+    {% for subst in reac_substs %}
+    <tr>
+        <td>{{ subst.alias }}</td>
+    </tr>		
+    {% endfor %}
+</table>
+</div>
 
             </div>
 {% endblock %}
