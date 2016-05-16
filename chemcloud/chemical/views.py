@@ -644,28 +644,44 @@ def problem_edit(request, id_reaction, id_problem):
 @login_required
 def problem_init(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
-    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    context = {}
+    context['problem'] = problem_dict['problem']
+    context['id_reaction'] = id_reaction
+    context["is_owner"] = problem_dict['is_owner']
+    context['step_name'] = 'problem_init'
     return render(request, 'chemical/problem_init.html', context)
 
 
 @login_required
 def problem_calc_options(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
-    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    context = {}
+    context['problem'] = problem_dict['problem']
+    context['id_reaction'] = id_reaction
+    context["is_owner"] = problem_dict['is_owner']
+    context['step_name'] = 'problem_calc_options'
     return render(request, 'chemical/problem_calc_options.html', context)
 
 
 @login_required
 def problem_calc_state(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
-    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    context = {}
+    context['problem'] = problem_dict['problem']
+    context['id_reaction'] = id_reaction
+    context["is_owner"] = problem_dict['is_owner']
+    context['step_name'] = 'problem_calc_state'
     return render(request, 'chemical/problem_calc_state.html', context)
 
 
 @login_required
 def problem_results(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
-    context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
+    context = {}
+    context['problem'] = problem_dict['problem']
+    context['id_reaction'] = id_reaction
+    context["is_owner"] = problem_dict['is_owner']
+    context['step_name'] = 'problem_results'
     return render(request, 'chemical/problem_results.html', context)
 
 

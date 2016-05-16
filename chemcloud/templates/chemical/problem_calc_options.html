@@ -1,0 +1,58 @@
+{% extends 'chemical/base_reaction.html' %}
+
+{% load staticfiles %}
+
+
+{% block body_block %}
+	<div class="page-header">
+	{% include "chemical/problem_edit_header.html" %} 
+		
+
+	
+	</div>
+		<div class="page-content">
+			
+				<div class="row">
+			    <div class="col-xs-12">
+			        
+			       
+
+  <div class="panel-group"> 
+      
+   
+    
+ {% if problem.problem_type.pk == 1 %} <!-- Прямая задача химической кинетики-->
+         {% include "chemical/problem_calc_options_1.html" %}
+     {% endif %}
+    
+{% if problem.problem_type.pk == 2 %} <!-- Обратная задача химической кинетики-->
+         {% include "chemical/problem_calc_options_2.html" %}
+     {% endif %}
+     
+     <!-- Анализ неопределенности кинетических параметров-->
+     {% if problem.problem_type.pk == 3 %} 
+         {% include "chemical/problem_calc_options_2.html" %}  <!-- настройки как в обратной задаче-->
+     {% endif %}
+     
+     <!-- Оптимизация условий проведения реакции-->
+     {% if problem.problem_type.pk == 6 %} 
+         {% include "chemical/problem_calc_options_2.html" %}  <!-- настройки как в обратной задаче-->
+     {% endif %}
+    
+				<div class="panel-body">
+					<a class = "btn btn-new" href = "#" role = "button">Запустить расчет</a> 
+				</div>
+			
+    
+  </div>
+
+			     
+			        
+			    </div>
+			    
+			    
+			</div>
+			
+
+            </div>
+{% endblock %}

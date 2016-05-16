@@ -5,20 +5,59 @@
 
 {% block body_block %}
 	<div class="page-header">
-	{% include "chemical/problem_edit_header.html" %} 
-		
+	{% include "chemical/problem_edit_header.html" %} 	
 
-	
 	</div>
 		<div class="page-content">
+			<div class="row">
+			    <div class="col-xs-12">
+			        
+			       
+
+  <div class="panel-group"> 
+     
+     
+     {% if problem.problem_type.pk == 1 %} <!-- Прямая задача химической кинетики-->
+         {% include "chemical/problem_init_1.html" %}
+     {% endif %}
+      
+     {% if problem.problem_type.pk == 2 %} <!-- Обратная задача химической кинетики-->
+         {% include "chemical/problem_init_2.html" %}
+     {% endif %}
+ 
+       {% if problem.problem_type.pk == 3 %} <!-- Анализ неопределенности кинетических параметров-->
+         {% include "chemical/problem_init_3.html" %}
+     {% endif %}
+     
+     {% if problem.problem_type.pk == 4 %} <!-- Анализ чувствительности кинетических параметров-->
+         {% include "chemical/problem_init_4.html" %}
+     {% endif %}
+     
+    <!-- Оптимизация условий проведения реакции-->
+    {% if problem.problem_type.pk == 6 %} 
+         {% include "chemical/problem_init_6.html" %}
+     {% endif %}
+    
+    <!-- Расчет энергий активаций с помощью МНК-->
+    {% if problem.problem_type.pk == 7 %} 
+         {% include "chemical/problem_init_7.html" %}
+     {% endif %}
+    
+    
+				<div class="panel-body">
+					<a class = "btn btn-new" href = "{% url 'problem_calc_options' id_reaction problem.pk %}" role = "button">Далее</a> 
+				</div>
 			
-				<table>
-					<tr>
-						<td>Название:</td>
-						<td>rere</td>
-					</tr>					
-					
-				</table>
+    
+  </div>
+
+			     
+			        
+			    </div>
+			    
+			    
+			</div>
+				
 			
 
             </div>

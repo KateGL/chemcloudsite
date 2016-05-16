@@ -1,13 +1,23 @@
 <h2>{{ problem.problem_type.name }} {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %}
 		
 		</h2> <a href="{% url 'problem_detail' id_reaction problem.pk%}" title="Вещества">(Детали)</a>
-		
+		<br><br>
 		<div class="btn-group btn-breadcrumb col-xs-12" >      
       
-<a type="button" id="problem_init" class="btn btn-primary btn-arrow-right col-xs-3 active"
+<a type="button" 
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_init' %} btn-primary {% else %}btn-default{% endif %}"
 href = "{% url 'problem_init' id_reaction problem.pk %}">1. Постановка задачи</a>
-<a type="button" id="problem_calc_options" class="btn btn-default btn-arrow-right col-xs-3" 
+
+<a type="button" 
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_calc_options' %} btn-primary {% else %}btn-default{% endif %}"
 href = "{% url 'problem_calc_options' id_reaction problem.pk %}">2. Настройка метода</a>
-<a type="button" id="problem_calc_state" class="btn btn-default btn-arrow-right col-xs-3">3. Состояние решения</a>
-<a type="button" id="problem_results" class="btn btn-default btn-arrow-right col-xs-3">4. Результат решения</a>
+
+<a type="button" id="problem_calc_state" 
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_calc_state' %} btn-primary {% else %}btn-default{% endif %}"
+href = "{% url 'problem_calc_state' id_reaction problem.pk %}">3. Состояние решения</a>
+
+<a type="button" id="problem_results" 
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_results' %} btn-primary {% else %}btn-default{% endif %}"
+href = "{% url 'problem_results' id_reaction problem.pk %}">4. Результат решения</a>
+<br><br>
 </div>
