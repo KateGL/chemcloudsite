@@ -409,7 +409,7 @@ class Dict_feature(models.Model):
     class Meta:
         verbose_name = ('Свойство')
         verbose_name_plural = ('Свойства')
-        ordering = ["name"]
+        ordering = ["id_feature"]
 
 
 #Свойства реакции
@@ -421,6 +421,7 @@ class Reaction_feature(models.Model):
     class Meta:
       verbose_name = ('Свойство реакции')
       verbose_name_plural = ('Свойства реакции')
+      ordering = ["id_reaction_feature"]
 
 
 # Функции модели
@@ -435,7 +436,7 @@ class Dict_model_function(models.Model):
     class Meta:
         verbose_name = ('Функция модели')
         verbose_name_plural = ('Функции модели')
-        ordering = ["name"]
+        ordering = ["id_func"]
 
 # Аргументы модели
 class Dict_model_argument(models.Model):
@@ -449,7 +450,7 @@ class Dict_model_argument(models.Model):
     class Meta:
         verbose_name = ('Аргумент модели')
         verbose_name_plural = ('Аргументы модели')
-        ordering = ["name"]
+        ordering = ["id_arg"]
 
 # Единицы измерения
 class Dict_measure_unit(models.Model):
@@ -467,19 +468,19 @@ class Dict_measure_unit(models.Model):
     class Meta:
         verbose_name = ('Единица измерения')
         verbose_name_plural = ('Единицы измерения')
-        ordering = ["name"]
+        ordering = ["id_unit"]
 
 
 #Эксперименты
 class Experiment (models.Model):
     id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
     reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='experiments' )
-    argument_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
-    function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
-    init_function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+' )
+    argument_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения аргумента')
+    function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения функции')
+    init_function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения начальных концентраций')
     description  = models.TextField (blank = True, verbose_name='Описание')
-    id_func = models.ForeignKey(Dict_model_function, null = True, on_delete=models.PROTECT, related_name='+' )
-    id_arg = models.ForeignKey(Dict_model_argument, null = True, on_delete=models.PROTECT, related_name='+' )
+    id_func = models.ForeignKey(Dict_model_function, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Функция')
+    id_arg = models.ForeignKey(Dict_model_argument, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Аргумент')
     exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
     updated_by   = models.TextField (verbose_name='Обновил(а)')
     updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
@@ -497,7 +498,7 @@ class Experiment (models.Model):
       verbose_name_plural = ('Эксперименты')
 
 class Dict_subst_role (models.Model):
-    id_role = models.AutoField (primary_key = True, verbose_name='ИД')
+    id_role = models.IntegerField (primary_key = True, verbose_name='ИД')
     name         = models.CharField (max_length = 250, verbose_name='Название')
 
     def __unicode__ (self):
@@ -509,7 +510,7 @@ class Dict_subst_role (models.Model):
       verbose_name_plural = ('Роли вещества в механизме')
 
 class Dict_exper_param (models.Model):
-    id_experparam = models.AutoField (primary_key = True, verbose_name='ИД')
+    id_experparam = models.IntegerField(primary_key = True, verbose_name='ИД')
     name         = models.CharField (max_length = 250, verbose_name='Название')
 
     def __unicode__ (self):
@@ -521,7 +522,7 @@ class Dict_exper_param (models.Model):
       verbose_name_plural = ('Дополнительные данные эксперимента')
 
 class Dict_exper_subst_param (models.Model):
-    id_expersubstparam = models.AutoField (primary_key = True, verbose_name='ИД')
+    id_expersubstparam = models.IntegerField (primary_key = True, verbose_name='ИД')
     name         = models.CharField (max_length = 250, verbose_name='Название')
 
     def __unicode__ (self):

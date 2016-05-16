@@ -9,7 +9,6 @@ from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_t
 from chemical.chemical_models import User_reaction,Substance_consist,Exper_subst,Dict_subst_role
 from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exper_data,Exper_subst_data
 from chemical.chemical_models import Exper_point
-from chemical.chemical_models import Problem, Dict_problem_type
 from chemical.models import Chemistry
 
 
@@ -22,8 +21,8 @@ admin.site.register(Dict_atom, Dict_atomAdmin)
 
 class SubstanceAdmin(admin.ModelAdmin):
   #formula_brutto = BruttoFormulaField( label="Брутто-формула") надо в админке тоже добавить это поле!!!
-  fields = ['name', 'charge', 'is_radical', 'formula_brutto','note', 'consist_as_string']
-  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto', 'consist_as_string','note')
+  fields = ['name', 'charge', 'is_radical', 'formula_brutto','note']
+  list_display = ('id_substance',  'name',  'charge', 'is_radical', 'formula_brutto','note')
 
 admin.site.register(Substance, SubstanceAdmin)
 
@@ -45,9 +44,17 @@ admin.site.register(Chemistry)
   #fields = ['name','reaction']
   #list_display = ('id_scheme', 'name','reaction')
 
-admin.site.register( Reaction_scheme)
+class Reaction_schemeAdmin(admin.ModelAdmin):
+  fields = ['id_scheme', 'reaction','name','description','is_possible']
+  list_display = ('id_scheme', 'reaction','name','description','is_possible')
 
-admin.site.register( Scheme_step)
+admin.site.register(Reaction_scheme,Reaction_schemeAdmin)
+
+class Scheme_stepAdmin(admin.ModelAdmin):
+  fields = ['id_step', 'scheme','name','order','is_revers','note','rate_equation']
+  list_display = ('id_step', 'scheme','name','order','is_revers','note','rate_equation')
+
+admin.site.register(Scheme_step,Scheme_stepAdmin)
 
 class Scheme_step_substAdmin(admin.ModelAdmin):
   fields = ['id_step', 'step','reac_substance','position','stoich_koef']
@@ -63,7 +70,11 @@ class Reaction_substAdmin(admin.ModelAdmin):
 admin.site.register(Reaction_subst,Reaction_substAdmin)
 
 #  Эксперименты
-admin.site.register(Experiment)#, ReactionSchemeAdmin)
+class ExperimentAdmin(admin.ModelAdmin):
+  fields = ['id_experiment', 'name','reaction','id_arg','argument_measure','id_func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date']
+  list_display = ('id_experiment', 'name','reaction','id_arg','argument_measure','id_func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date')
+
+admin.site.register(Experiment,ExperimentAdmin)
 
 #Состав вещества
 class Substance_consistAdmin(admin.ModelAdmin):
@@ -76,19 +87,39 @@ admin.site.register(Substance_consist,Substance_consistAdmin)
 admin.site.register(User_reaction)
 
 #Синонимы вещества
-admin.site.register(Substance_synonym)
+class Substance_synonymAdmin(admin.ModelAdmin):
+  fields = ['id_subst_synonym', 'substance','name']
+  list_display = ('id_subst_synonym', 'substance','name')
+
+admin.site.register(Substance_synonym,Substance_synonymAdmin)
 
 #Свойства (свойства реакции)
-admin.site.register(Dict_feature)
+class Dict_featureAdmin(admin.ModelAdmin):
+  fields = ['id_feature', 'name']
+  list_display = ('id_feature', 'name')
+
+admin.site.register(Dict_feature,Dict_featureAdmin)
 
 #Свойства реакции
-admin.site.register(Reaction_feature)
+class Reaction_featureAdmin(admin.ModelAdmin):
+  fields = ['id_reaction_feature', 'reaction','feature']
+  list_display = ('id_reaction_feature', 'reaction','feature')
+
+admin.site.register(Reaction_feature,Reaction_featureAdmin)
 
 #Тэги реакции
-admin.site.register(Reaction_tag)
+class Reaction_tagAdmin(admin.ModelAdmin):
+  fields = ['id_reaction_tag', 'reaction','tag']
+  list_display = ('id_reaction_tag', 'reaction','tag')
+
+admin.site.register(Reaction_tag,Reaction_tagAdmin)
 
 #Функции модели
-admin.site.register(Dict_model_function)
+class Dict_model_functionAdmin(admin.ModelAdmin):
+  fields = ['id_func', 'name','symbol']
+  list_display = ('id_func', 'name','symbol')
+
+admin.site.register(Dict_model_function,Dict_model_functionAdmin)
 
 #Аргументы модели
 class Dict_model_argumentAdmin(admin.ModelAdmin):
@@ -100,7 +131,7 @@ admin.site.register(Dict_model_argument,Dict_model_argumentAdmin)
 #Единицы
 class Dict_measure_unitAdmin(admin.ModelAdmin):
   fields = ['id_unit', 'code','name','is_si','multiplier','id_unit_si']
-  list_display = ('name','id_unit', 'code','is_si','multiplier','id_unit_si')
+  list_display = ('id_unit','name', 'code','is_si','multiplier','id_unit_si')
 
 admin.site.register(Dict_measure_unit,Dict_measure_unitAdmin)
 
@@ -147,8 +178,8 @@ class Exper_subst_dataAdmin(admin.ModelAdmin):
 admin.site.register(Exper_subst_data,Exper_subst_dataAdmin)
 
 #Экспериментальные данные
-admin.site.register(Exper_point)
+class Exper_pointAdmin(admin.ModelAdmin):
+  fields = ['id_point', 'exper_subst','arg_val','func_val','subst_param','unit']
+  list_display = ('id_point', 'exper_subst','arg_val','func_val','subst_param','unit')
 
-#Задачи
-admin.site.register(Problem)
-admin.site.register(Dict_problem_type)
+admin.site.register(Exper_point,Exper_pointAdmin)

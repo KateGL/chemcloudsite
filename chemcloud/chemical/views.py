@@ -558,7 +558,9 @@ def experiment_detail(request, id_reaction, id_experiment):
 @login_required
 def experiment_edit(request, id_reaction, id_experiment):
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
-    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner']}
+    # получаем список веществ реакции
+    reac_substs = request.user.chemistry.react_subst_all(id_reaction)
+    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'reac_substs': reac_substs}
     return render(request, 'chemical/experiment_edit.html', context)
 
 
