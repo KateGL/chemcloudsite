@@ -31,7 +31,7 @@ function check_isomers(ev){
         dataType: 'json',
         success: function(data){
               //alert(JSON.stringify(data));
-              alert(data.isomer_count);
+              //alert(data.isomer_count);
               isomer_count = data.isomer_count;
               consist = data.consist_as_string;
               return false;
