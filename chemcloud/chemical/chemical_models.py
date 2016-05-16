@@ -493,7 +493,7 @@ class Experiment (models.Model):
         return self.name
 
     class Meta:
-      ordering            = ["updated_date"]
+      ordering            = ["id_experiment"]
       verbose_name = ('Эксперимент')
       verbose_name_plural = ('Эксперименты')
 
@@ -555,7 +555,7 @@ class Exper_subst (models.Model):
     init_func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Начальное значение')
 
     def __unicode__ (self):
-        return self.experiment.name
+        return self.reaction_subst.substance.formula_brutto
 
     class Meta:
       ordering            = ["id_expersubst"]
@@ -573,19 +573,41 @@ class Exper_subst_data (models.Model):
       verbose_name = ('Дополнительные экспериментальные данные')
       verbose_name_plural = ('Дополнительные экспериментальные данные')
 
-###
 class Exper_point (models.Model):
     id_point = models.AutoField (primary_key = True, verbose_name='ИД')
-    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_point' )
+    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_point', verbose_name='Вещество эксперимента')
     arg_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение аргумента')
     func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение концентрации')
 
-    subst_param    = models.ForeignKey(Dict_exper_subst_param, null = False, on_delete=models.PROTECT, related_name='+' )
-    unit = models.ForeignKey(Dict_measure_unit, null = False, on_delete=models.PROTECT, related_name='+' )
+    def __unicode__ (self):
+        return self.exper_subst.reaction_subst.substance.formula_brutto
 
     class Meta:
       verbose_name = ('Экспериментальные данные')
       verbose_name_plural = ('Экспериментальные данные')
+
+class Exper_serie (models.Model):
+    id_serie = models.AutoField (primary_key = True, verbose_name='ИД')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Название')
+    description = models.TextField(blank=True, verbose_name='Описание')
+
+
+    class Meta:
+      verbose_name = ('Серия экспериментов')
+      verbose_name_plural = ('Серии экспериментов')
+
+    def __unicode__(self):
+        return self.name
+
+
+class Experserie_experiment (models.Model):
+    #id_serie = models.AutoField (primary_key = True, verbose_name='ИД')
+    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='experserie_experiment',verbose_name='Эксперимент')
+    exper_serie   = models.ForeignKey(Exper_serie, null = False, on_delete=models.PROTECT, related_name='exper_serie', verbose_name='Серия экспериментов')
+
+    class Meta:
+      verbose_name = ('Эксперимент в серии экспериментов')
+      verbose_name_plural = ('Эксперименты в серии экспериментов')
 
 
 ##Задачи
