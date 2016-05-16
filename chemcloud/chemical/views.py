@@ -633,6 +633,13 @@ def problem_new(request, id_reaction, id_problem_type):
 
 
 @login_required
+def problem_edit(request, id_reaction, id_problem):
+    #пока без учета типа задачи переадресовывает на  init
+    #но если понадобиться, то можно будет для разных типов задач редиректить на разные страницы
+    return redirect('problem_init', id_reaction, id_problem)
+
+
+@login_required
 def problem_init(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
     context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
@@ -658,6 +665,15 @@ def problem_results(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
     context = {'problem': problem_dict['problem'], 'id_reaction': id_reaction, "is_owner": problem_dict['is_owner']}
     return render(request, 'chemical/problem_results.html', context)
+
+
+@login_required
+@owner_required
+def problem_delete(request, id_reaction, id_problem):
+    #тут нужно добавить обработчик ошибок...
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    problem_dict['problem'].delete()
+    return redirect('problem_all', id_reaction)  # или лушче на сообщение - "?"
 
 
 #Решения

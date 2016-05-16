@@ -219,7 +219,7 @@ class ProblemTable(tables.Table):
         return make_detail_link(link)
 
     def render_problem_type(self, record):
-        link = reverse('chemical.views.problem_init', args=[record.reaction.id_reaction, record.pk])
+        link = reverse('chemical.views.problem_edit', args=[record.reaction.id_reaction, record.pk])
         return make_name_link(link, record.problem_type.name)
 
     class Meta:

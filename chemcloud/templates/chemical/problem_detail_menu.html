@@ -1,0 +1,47 @@
+<ul class="list-group">
+<li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'problem_edit' id_reaction problem.pk %}">Перейти к задаче</a></li>
+ 
+  <li class="list-group-item">
+   <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalProblemDelete"><span class="glyphicon glyphicon-remove"></span> Удалить   задачу</a>
+  </li>
+  <li class="list-group-item">Сформировать отчет</li>
+  <li class="list-group-item">Утвердить решение задачи</li>
+  <li class="list-group-item">Копировать настройки в новую задачу</li>
+
+</ul>
+
+<!-- Modal Delete -->   
+    <div class="modal fade" id="ModalProblemDelete" tabindex="-1" role="dialog" 
+     aria-labelledby="ModalProblemDeleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <button type="button" class="close" 
+                   data-dismiss="modal">
+                       <span aria-hidden="true">&times;</span>
+                       <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="ModalProblemDeleteLabel">
+                    Удаление задачи 
+                </h4>
+            </div>            
+            <!-- Modal Body -->
+            <div class="modal-body">  
+             
+                        <div class="well well-lg">
+                          Вы действительно хотите удалить задачу?  
+                        </div>                 
+                  
+                <div>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Нет, не удалять</button>             
+                                    <a class = "btn btn-danger" href = "{% url 'problem_delete' id_reaction problem.pk %}" role = "button">
+                                    Да, удалить!</a>
+                                     </div>                     
+            </div>     
+    </div>
+    </div>
+          
+     </div>
+
+
