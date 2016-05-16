@@ -13,7 +13,8 @@ from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
 from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
-from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data
+from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data,Exper_serie,Experserie_experiment
+from chemical.chemical_models import Exper_point
 from django.contrib.auth.models import User
 
 def drop_all():
@@ -23,10 +24,13 @@ def drop_all():
      Substance_synonym.objects.all().delete()
      Exper_subst_data.objects.all().delete()
      Dict_exper_subst_param.objects.all().delete()
+     Exper_point.objects.all().delete()
      Exper_subst.objects.all().delete()
      Reaction_subst.objects.all().delete()
      Substance.objects.all().delete()
      Exper_data.objects.all().delete()
+     Experserie_experiment.objects.all().delete()
+     Exper_serie.objects.all().delete()
      Experiment.objects.all().delete()
      Reaction.objects.all().delete()
      Dict_model_function.objects.all().delete()
@@ -44,6 +48,7 @@ def drop_all():
 
 def populate():
 
+   add_atom(atom_num=0, symb="",  atom_m=0,  n = "Не задано",   nl = "")
    add_atom(atom_num=1, symb="H",  atom_m=1.00800002,  n = "Водород",   nl = "Hydrogenium")
    add_atom(atom_num=2, symb="He",  atom_m=4.00299978,  n = "Гелий",   nl = "Helium")	
    add_atom(atom_num=3, symb="Li",  atom_m=6.94099998,  n = "Литий",   nl =  "Lithium")
@@ -162,22 +167,22 @@ def populate():
    add_dict_model_argument(0,'Не задано','')
    add_dict_model_argument(1,'Время','t')
    add_dict_model_argument(2,'Длина реактора','l')
-   add_dict_measure_unit(1,'empty','Пусто',1,1,None)
+   add_dict_measure_unit(0,'empty','Пусто',1,1,None)
+   b = Dict_measure_unit.objects.get(id_unit=0)
+   add_dict_measure_unit(1,'сек','Секунда',1,1,b)
    b = Dict_measure_unit.objects.get(id_unit=1)
-   add_dict_measure_unit(2,'сек','Секунда',1,1,b)
-   b = Dict_measure_unit.objects.get(id_unit=2)
-   add_dict_measure_unit(3,'мин','Минута',0,60,b)
-   add_dict_measure_unit(4,'ч','Час',0,3600,b)
-   b = Dict_measure_unit.objects.get(id_unit=1)
-   add_dict_measure_unit(5,'М','Моль/л',1,1,b)
-   add_dict_measure_unit(6,'doli','Мольные доли',1,1,b)
-   add_dict_measure_unit(7,'%','Процентные соотношения наблюдаемых веществ',1,1,b)
-   add_dict_measure_unit(8,'м','Метр',1,1,b)
-   b = Dict_measure_unit.objects.get(id_unit=8)
-   add_dict_measure_unit(9,'см','Сантиметр',0,100,b)
-   b = Dict_measure_unit.objects.get(id_unit=1)
-   add_dict_measure_unit(10,'%','Проценты',1,1,b)
-   add_dict_measure_unit(11,'кг/(м2*сек)','Массовая скорость потока',1,1,b)
+   add_dict_measure_unit(2,'мин','Минута',0,60,b)
+   add_dict_measure_unit(3,'ч','Час',0,3600,b)
+   b = Dict_measure_unit.objects.get(id_unit=0)
+   add_dict_measure_unit(4,'М','Моль/л',1,1,b)
+   add_dict_measure_unit(5,'doli','Мольные доли',1,1,b)
+   add_dict_measure_unit(6,'%','Процентные соотношения наблюдаемых веществ',1,1,b)
+   add_dict_measure_unit(7,'м','Метр',1,1,b)
+   b = Dict_measure_unit.objects.get(id_unit=7)
+   add_dict_measure_unit(8,'см','Сантиметр',0,100,b)
+   b = Dict_measure_unit.objects.get(id_unit=0)
+   add_dict_measure_unit(9,'%','Проценты',1,1,b)
+   add_dict_measure_unit(10,'кг/(м2*сек)','Массовая скорость потока',1,1,b)
    add_dict_exper_param(0,'Не задано')
    add_dict_exper_param(1,'Влажность смеси')
    add_dict_exper_param(2,'Скорость потока')
@@ -188,6 +193,7 @@ def populate():
    add_dict_subst_role(1,'Исходное')
    add_dict_subst_role(2,'Промежуточное')
    add_dict_subst_role(3,'Продукт')
+   add_dict_subst_role(4,'В реакцию не вступает')
 
     # тестовая реакция
    add_reaction(id_reac=1, nm='Паровая конверсия пропана', dscr='Низкотемпературная паровая конверсия пропана', is_f=1, cb='Admin', ub='Admin')
@@ -209,6 +215,7 @@ def populate():
    add_reac_subst(b,c,'x4','H2','')
    c = Substance.objects.get(id_substance=5)
    add_reac_subst(b,c,'x5','CH4','')
+
    add_reac_scheme(1,b,'Схема реакции паровой конверсии пропана','Схема реакции паровой конверсии пропана',1,'Admin','Admin')
    c = Reaction_scheme.objects.get(id_scheme=1)
    add_scheme_step(1,c,'Стадия № 1',1,0,'Первая стадия','')
@@ -275,15 +282,105 @@ def populate():
    add_substance_consist(c,d,4)
 
    # Добавление экспериментов
+   add_exper_serie(1,'Первая серия','Первая серия опытов реакции паровой конверсии пропана. Условия: Катализатор НИАП-12-05(з-15). 34% CH4, 17% C3H8, 49% H2O,   H2O/C(в пропане) = 1,    H2O/C = 0.58;  GHSV= 670 1/ч,    G(влаж.смеси)=0.17 мл/сек')
+   # Эксперимент 1
    d = Dict_measure_unit.objects.get(id_unit=8)
-   e = Dict_measure_unit.objects.get(id_unit=10)
+   e = Dict_measure_unit.objects.get(id_unit=6)
    f = Dict_model_function.objects.get(id_func=1)
    g = Dict_model_argument.objects.get(id_arg=2)
    h = date(2005,7,14)
    i = time(12,30)
    add_exper(1,b,d,e,e,'Эксперимент 1. Катализатор НИАП-12-05',f,g,datetime.combine(h,i),'Admin',1,'Эксперимент 1','Admin')
+   a = Experiment.objects.get(id_experiment=1)
+   b = Exper_serie.objects.get(id_serie=1)
+   add_experserie_experiment(a,b)
+   # Добавление вещест реакции в эксперименте
+   b = Reaction.objects.get(id_reaction=1)
+   # C3H8
+   c = Substance.objects.get(id_substance=1)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   e = Dict_subst_role.objects.get(id_role=1)
+   add_exper_subst(1,a,d,e,1,17)
+   # H2O
+   c = Substance.objects.get(id_substance=2)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   add_exper_subst(2,a,d,e,1,49)
+   # O2
+   c = Substance.objects.get(id_substance=3)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   e = Dict_subst_role.objects.get(id_role=3)
+   add_exper_subst(3,a,d,e,1,0)
+   # H2
+   c = Substance.objects.get(id_substance=4)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   add_exper_subst(4,a,d,e,1,0)
+   # CH4
+   c = Substance.objects.get(id_substance=5)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   e = Dict_subst_role.objects.get(id_role=1)
+   add_exper_subst(5,a,d,e,1,34)
 
-    # Print out what we have added to the user.
+   # данные Эксперимента 1
+   c = Exper_subst.objects.get(id_expersubst=1)
+   add_exper_point(1,c,0.02,0.04)
+   c = Exper_subst.objects.get(id_expersubst=3)
+   add_exper_point(2,c,0.02,10.09)
+   c = Exper_subst.objects.get(id_expersubst=4)
+   add_exper_point(3,c,0.02,5.18)
+   c = Exper_subst.objects.get(id_expersubst=5)
+   add_exper_point(4,c,0.02,83.26)
+
+   # Эксперимент 2
+   b = Reaction.objects.get(id_reaction=1)
+   d = Dict_measure_unit.objects.get(id_unit=8)
+   e = Dict_measure_unit.objects.get(id_unit=6)
+   f = Dict_model_function.objects.get(id_func=1)
+   g = Dict_model_argument.objects.get(id_arg=2)
+   h = date(2005,7,14)
+   i = time(12,30)
+
+   add_exper(2,b,d,e,e,'Эксперимент 2. Катализатор НИАП-12-05',f,g,datetime.combine(h,i),'Admin',1,'Эксперимент 2','Admin')
+   a = Experiment.objects.get(id_experiment=2)
+   b = Exper_serie.objects.get(id_serie=1)
+   add_experserie_experiment(a,b)
+   # Добавление вещест реакции в эксперименте
+   b = Reaction.objects.get(id_reaction=1)
+   # C3H8
+   c = Substance.objects.get(id_substance=1)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   e = Dict_subst_role.objects.get(id_role=1)
+   add_exper_subst(6,a,d,e,1,17)
+   # H2O
+   c = Substance.objects.get(id_substance=2)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   add_exper_subst(7,a,d,e,1,49)
+   # O2
+   c = Substance.objects.get(id_substance=3)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   e = Dict_subst_role.objects.get(id_role=3)
+   add_exper_subst(8,a,d,e,1,0)
+   # H2
+   c = Substance.objects.get(id_substance=4)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   add_exper_subst(9,a,d,e,1,0)
+   # CH4
+   c = Substance.objects.get(id_substance=5)
+   d = Reaction_subst.objects.get(reaction=b,substance=c)
+   e = Dict_subst_role.objects.get(id_role=1)
+   add_exper_subst(10,a,d,e,1,34)
+
+   # данные Эксперимента 2
+   c = Exper_subst.objects.get(id_expersubst=1)
+   add_exper_point(5,c,0.02,0.03)
+   c = Exper_subst.objects.get(id_expersubst=3)
+   add_exper_point(6,c,0.02,9.94)
+   c = Exper_subst.objects.get(id_expersubst=4)
+   add_exper_point(7,c,0.02,3.83)
+   c = Exper_subst.objects.get(id_expersubst=5)
+   add_exper_point(8,c,0.02,84.99)
+
+
+   # Print out what we have added to the user.
    #for a in Dict_atom.objects.all():
    #         print "{0}- {1} ".format(str(a), a.symbol)
    #for a in Dict_feature.objects.all():
@@ -377,6 +474,27 @@ def add_dict_subst_role(id_r,nm):
     a = Dict_subst_role.objects.get_or_create(id_role=id_r,name=nm)[0]
     a.save()
     return a
+
+def add_exper_subst(id_es,e,rs,dsr,io,ifv):
+    a = Exper_subst.objects.get_or_create(id_expersubst=id_es,experiment=e,reaction_subst=rs,dict_subst_role=dsr,is_observed=io,init_func_val=ifv)[0]
+    a.save()
+    return a
+
+def add_exper_serie(id_s,n,d):
+    a = Exper_serie.objects.get_or_create(id_serie=id_s,name=n,description=d)[0]
+    a.save()
+    return a
+
+def add_experserie_experiment(e,es):
+    a = Experserie_experiment.objects.get_or_create(experiment=e,exper_serie=es)[0]
+    a.save()
+    return a
+
+def add_exper_point(ip,es,av,fv):
+    a = Exper_point.objects.get_or_create(id_point=ip,exper_subst=es,arg_val=av,func_val=fv)[0]
+    a.save()
+    return a
+
 
 # Start execution here!
 if __name__ == '__main__':
