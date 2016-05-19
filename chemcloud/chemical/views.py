@@ -23,7 +23,7 @@ from .models import substance_get_isomer_count, substance_get_isomer
 
 
 
-from .models import owner_required
+from .models import owner_required, substance_owner_required
 
 # Вещество
 
@@ -63,6 +63,7 @@ def substance_detail(request, id_substance):
 
 
 @login_required
+@substance_owner_required
 def substance_new(request):
     form = SubstanceForm(request.POST or None)
     if request.method == 'POST':
