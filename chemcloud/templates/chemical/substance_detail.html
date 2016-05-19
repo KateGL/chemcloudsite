@@ -16,41 +16,38 @@
     </div>
 <div class="page-content">
         <div class="row">
-     <div class="col-xs-7">
+     <div class="col-xs-8">
        
         <table class="table" >
     <tbody id="detail_main" model_name="Substance" url_edit="{% url 'substance_detail_edit' substance.pk %}" >
-     <tr>
-        <td class="detail_caption">Название:</td>
-        <td class="detail_value"><input class="box_input" class="form-control"  type="text" disabled="disabled" value="{{  substance.name }}"/></td>
+     <tr >
+        <td class="detail_caption " >Название:</td>
+        <td class="detail_value" ><input class="box_input form-control"  type="text" disabled="disabled" value="{{  substance.name }}"/></td>
         {% if is_owner %}
-        <td class="detail_edit" > </td>         
-         <td class="detail_btns" field_name="name">
-        <button type="button" class="detail_btn_edit"></button>
-        <button type="button" class="detail_btn_save" ></button>
+        <td class="detail_edit " > </td>         
+        <td class="detail_btns " field_name="name">
         </td>
         {% endif %}
       </tr>
       
+      <!--
       <tr>
       <td class="detail_caption">Синонимы:</td>
       <td class="text-left">...</td>
-      </tr>
+      </tr> -->
       
       <tr>
-        <td class="detail_caption" id="isomer_url" data-check-url="{% url 'substance_check_isomer' %}"
+        <td class="detail_caption " id="isomer_url" data-check-url="{% url 'substance_check_isomer' %}"
         data-isomers-url="{% url 'substance_isomers' '___' %}">Брутто-формула:</td>
-        <td class="detail_value"><input class="box_input" id="id_formula_brutto" type="text" disabled="disabled" value="{{  substance.formula_brutto }}"/></td>
+        <td class="detail_value "><input class="box_input" id="id_formula_brutto" type="text" disabled="disabled" value="{{  substance.formula_brutto }}"/></td>
         {% if is_owner %}
-        <td class="detail_edit"  ></td>         
-         <td class="detail_btns" field_name="formula_brutto">
-        <button type="button" class="detail_btn_edit"></button>
-        <button type="button" class="detail_btn_save" refresh_page="True" name="save_brutto_btn"></button>
-        </td>
+        <td class="detail_edit "  ></td>         
+         <td class="detail_btns " field_name="formula_brutto" save_refresh_page="True">
+         </td>
         {% endif %}
       </tr>
       
-      <tr>
+     <tr>
         <td class="detail_caption">Формат *.mol:</td>
         <td class="text-left">...</td>
       </tr>
@@ -60,42 +57,36 @@
         <td class="text-left">...</td>
       </tr>
       
-            
       <tr>
-        <td class="detail_caption">Заряд:</td>
-        <td class="detail_value"><input type="number" id="replyNumber" min="-300" step="1" data-bind="value:replyNumber" value="{{  substance.charge }}"/></td>
+        <td class="detail_caption ">Заряд:</td>
+        <td class="detail_value "><input type="number" id="replyNumber" min="-300" step="1" data-bind="value:replyNumber" value="{{  substance.charge }}"/></td>
         {% if is_owner %}
-        <td class="detail_edit" ></td>         
-         <td class="detail_btns" field_name="charge">
-        <button type="button" class="detail_btn_edit"></button>
-        <button type="button" class="detail_btn_save"></button>
+        <td class="detail_edit " ></td>         
+         <td class="detail_btns " field_name="charge">
         </td>
         {% endif %}
       </tr>
       
-     
-      <tr>
-        <td class="detail_caption">Радикал:</td>
-        <td class="detail_value"><input  type="checkbox" disabled="disabled" value="{{  substance.is_radical }}"
+      
+       <tr>
+        <td class="detail_caption ">Радикал:</td>
+        <td class="detail_value "><input  type="checkbox" disabled="disabled" value="{{  substance.is_radical }}"
          {% if substance.is_radical %} checked="checked" {% endif %}/></td>
         {% if is_owner %}
-        <td class="detail_edit"  ></td>         
-         <td class="detail_btns" field_name="is_radical">
-        <button type="button" class="detail_btn_edit"></button>
-        <button type="button" class="detail_btn_save"></button>
+        <td class="detail_edit "  ></td>         
+         <td class="detail_btns " field_name="is_radical">
+ 
         </td>
         {% endif %}
       </tr>
       
-     
-      <tr>
+       <tr>
         <td class="detail_caption">Примечание:</td>
         <td class="detail_value"><textarea class="form-control col-xs-12"  rows="10" disabled="disabled">{{  substance.note }}</textarea></td>
         {% if is_owner %}
         <td class="detail_edit"  ></td>         
          <td class="detail_btns" field_name="note">
-        <button type="button" class="detail_btn_edit"></button>
-        <button type="button" class="detail_btn_save"></button>
+
         </td>
         {% endif %}
       </tr>
@@ -130,7 +121,7 @@
 </div>
 
         
-       <div class="col-xs-5">
+       <div class="col-xs-4">
            <h4>{{  substance.formula_brutto_formatted | safe}}</h4>
            <h5>Состав: {{  substance.consist_as_string}}</h5>
            <h5>Изомеры: {% if isomer_count > 0 %}  

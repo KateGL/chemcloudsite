@@ -126,3 +126,16 @@ def scheme_detail_edit(request, id_reaction, id_scheme):
 
     xml_bytes = json.dumps(fv_dict['err_msg'])
     return HttpResponse(xml_bytes, 'application/json')
+
+@login_required
+@owner_required
+def experiment_detail_edit(request, id_reaction, id_experiment):
+    exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
+    exper = exper_dict['experiment']
+    fv_dict = set_field_and_value_from_request(request, exper)
+
+    if (fv_dict['is_error'] is False):
+        exper.save()
+
+    xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')

@@ -20,6 +20,7 @@ function get_editbox_value(ebox){
     if (ebox.attr('type') == 'checkbox'){
         if( ebox.is(':checked')){return "True";}else{return "False";}
         }
+    //alert(ebox.val());
     return ebox.val();
     }
 
@@ -27,7 +28,7 @@ function set_readbox_value(rbox, value){
     if (rbox.attr('type') == 'checkbox'){
 
         if(value == 'True'){
-            rbox.prop('checked', true);}//attr("checked","checked");}
+            rbox.prop('checked', true);}
         else{
             rbox.prop('checked', false);}
         rbox.val(value);
@@ -40,7 +41,7 @@ function set_readbox_value(rbox, value){
 function clone_rbox(rbox){
         clone = rbox.clone();
         clone.removeAttr('disabled');
-        clone.attr('id','editbox');
+        clone.addClass('data_edit');
         if(rbox.hasClass('form-control')){
             //alert(rbox.val());
             clone.val(rbox.val());}
@@ -57,7 +58,8 @@ function csrfSafeMethod(method) {
 function after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue){
         //call refresh method
         //alert('call refresh');
-        if(btn_save.attr("refresh_page") == "True")
+        //save_refresh_page
+        if(btn_save.parent().attr("save_refresh_page") == "True")
         {location.reload(); return false;}
         //alert('after call refresh');
        // try {
@@ -68,14 +70,13 @@ function after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue){
 
         //hide input
         set_readbox_value(val_td.children(":first"),evalue);
-        //alert('after call set_readbox_value');
-        ebox.removeAttr('id');
         edt_td.html('');
         edt_td.hide();
         val_td.show();
-        //alert('after hide');
-        btn_save.hide();//addClass('disabled');
-        btn_save.siblings(".detail_btn_edit").show();//removeClass('disabled');
+
+        btn_save.hide();
+        btn_save.siblings(".detail_btn_cancel").hide();
+        btn_save.siblings(".detail_btn_edit").show();
 
         return false;
     }
@@ -84,13 +85,19 @@ function after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue){
 
 
 $(document).ready(function(){
-    $('.detail_caption').addClass('text-right');
-    $('.detail_edit').hide().addClass('text-left').css({ 'font-weight': "bold" });
-    $('.detail_value').addClass('text-left').addClass('col-xs-12').css({ 'font-weight': "bold" });
+    $('.detail_caption').addClass('text-right').addClass('col-md-2');
+    $('.detail_btns').addClass('col-md-2')
+        .append('<button type="button" class="detail_btn_edit"></button>')
+        .append('<button type="button" class="detail_btn_save"></button>')
+        .append('<button type="button" class="detail_btn_cancel"></button>');
+
+    $('.detail_edit').hide().addClass('text-left').addClass('col-md-4').css({ 'font-weight': "bold" });
+    $('.detail_value').addClass('text-left').addClass('col-md-4').css({ 'font-weight': "bold" });
     $('.box_input').addClass('col-xs-12');
     $('.form-control').addClass('col-xs-12');
-    $('.detail_btn_edit').addClass('btn btn-lg btn-link').html('<span class="glyphicon glyphicon-edit"></span>');
-    $('.detail_btn_save').addClass('btn btn-lg btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
+    $('.detail_btn_edit').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-edit"></span>');
+    $('.detail_btn_save').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
+    $('.detail_btn_cancel').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-remove"></span>').hide();
 
 
     $('#detail_main').on("click", "button.detail_btn_edit", function(){
@@ -103,30 +110,28 @@ $(document).ready(function(){
         val_td.hide();
 
         clone.focus();
-        $(this).hide();//addClass('disabled');
-        $(this).siblings(".detail_btn_save").show();//removeClass('disabled');
+        $(this).hide();
+        $(this).siblings(".detail_btn_save").show();
+        $(this).siblings(".detail_btn_cancel").show();
 
 
         return false;
         }
     );
 
+
     $('#detail_main').on("click", "button.detail_btn_save", function(){
         //send ajax json
         var url_str  = $('#detail_main').attr('url_edit');
         var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
 
-        //alert(url_str);
-        //alert(csrftoken);
         var parnt = $(this).parent('td');
         var edt_td = parnt.siblings(".detail_edit");
         var val_td = parnt.siblings(".detail_value");
-        var ebox = $('#editbox');
+        var ebox = edt_td.find('.data_edit');
         var evalue = get_editbox_value(ebox);
         var btn_save = $(this);
         var fldname = parnt.attr('field_name');
-        //alert(evalue);
-        //alert(fldname);
         var data_to_edit = {
             field_name: fldname,
             value: evalue
@@ -160,7 +165,26 @@ $(document).ready(function(){
         }
     );
 
+    $('#detail_main').on("click", "button.detail_btn_cancel", function(){
+        var parnt = $(this).parent('td');
+        var edt_td = parnt.siblings(".detail_edit");
+        var val_td = parnt.siblings(".detail_value");
+        var btns = edt_td.siblings('.detail_btns');
+        edt_td.show();
+        val_td.hide();
 
+        edt_td.html('');
+        edt_td.hide();
+        val_td.show();
+        btns.children('.detail_btn_save').hide();
+        btns.children('.detail_btn_cancel').hide();
+        btns.children('.detail_btn_edit').show();
+
+        return false;
+        }
+    );
+
+/*remove to snippet!
     $(document.body).on("focusout", '#editbox', function(event){
         var edt_td = $(this).parent('td');
         var val_td = edt_td.siblings(".detail_value");
@@ -181,6 +205,7 @@ $(document).ready(function(){
 
         }
     );
+*/
 
 
 });

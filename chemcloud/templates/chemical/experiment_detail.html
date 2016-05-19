@@ -13,72 +13,99 @@
     </div>
 	
 	
-		<div class="page-content">
-
-<div class="row">
+	<div class="page-content"> 
+  <div class="row">          
  <div class="col-xs-7">
-
-
-  <table class="table col-xs-6">
-     <tbody>
+ <div>
+ 
+  <table class="table ">
+    <tbody id="detail_main" model_name="Experiment" url_edit="{% url 'experiment_detail_edit' id_reaction experiment.pk %}" >
+      
+				
 					<tr>
-						<td>Название:</td>
-						<td>{{ experiment.name }}</td>
-					</tr>
+        <td class="detail_caption">Название:</td>
+        <td class="detail_value"><input class="box_input"  type="text" disabled="disabled" value="{{  experiment.name }}"/></td>
+        {% if is_owner %}
+        <td class="detail_edit" > </td>         
+         <td class="detail_btns" field_name="name">
+     
+        </td>
+        {% endif %}
+      </tr>
+					
+					
 					<tr>
 						<td>Дата проведения:</td>
 						<td>{{ experiment.exper_date }}</td>
 					</tr>
+					
+    <tr>
+        <td class="detail_caption">Описание:</td>
+        <td class="detail_value"><textarea class="form-control"  rows="10" disabled="disabled">{{  experiment.description }}</textarea></td>
+        {% if is_owner %}
+        <td class="detail_edit"  ></td>         
+         <td class="detail_btns" field_name="description">
+      
+        </td>
+        {% endif %}
+      </tr>
+      
+      <tr>
+        <td class="detail_caption ">Избранное:</td>
+        <td class="detail_value "><input  type="checkbox" disabled="disabled" value="{{  experiment.is_favorite }}"
+         {% if experiment.is_favorite %} checked="checked" {% endif %}/></td>
+        {% if is_owner %}
+        <td class="detail_edit "  ></td>         
+         <td class="detail_btns " field_name="is_favorite">
+ 
+        </td>
+        {% endif %}
+      </tr>
+					
+					
 					<tr>
-						<td>Описание:</td>
-						<td>{{ experiment.description }}</td>
+						<td class="detail_caption">Функция:</td>
+						<td class="detail_value">{{ experiment.id_func }}</td>
 					</tr>
 					<tr>
-						<td>Функция:</td>
-						<td>{{ experiment.id_func }}</td>
+						<td class="detail_caption">Единица измерения:</td>
+						<td class="detail_value">{{ experiment.function_measure }}</td>
 					</tr>
 					<tr>
-						<td>Единица измерения:</td>
-						<td>{{ experiment.function_measure }}</td>
+						<td class="detail_caption">Аргумент:</td>
+						<td class="detail_value">{{ experiment.id_arg }}</td>
 					</tr>
 					<tr>
-						<td>Аргумент:</td>
-						<td>{{ experiment.id_arg }}</td>
+						<td class="detail_caption">Единица измерения:</td>
+						<td class="detail_value">{{ experiment.argument_measure }}</td>
 					</tr>
 					<tr>
-						<td>Единица измерения:</td>
-						<td>{{ experiment.argument_measure }}</td>
+						<td class="detail_caption">Единица измерения начальных концентраций:</td>
+						<td class="detail_value">{{ experiment.init_function_measure }}</td>
+					</tr>
+				
+					<tr>
+						<td class="detail_caption">Дата последних изменений:</td>
+						<td class="detail_value">{{experiment.updated_date}}</td>
 					</tr>
 					<tr>
-						<td>Единица измерения начальных концентраций:</td>
-						<td>{{ experiment.init_function_measure }}</td>
+						<td class="detail_caption">Изменения внес(ла):</td>
+						<td class="detail_value">{{experiment.updated_by}}</td>
 					</tr>
 					<tr>
-						<td>Избранное:</td>
-						<td><input type="checkbox" {% if experiment.is_favorite %}checked {% endif %} ></td>
+						<td class="detail_caption">Дата создания:</td>
+						<td class="detail_value">{{experiment.created_date}}</td>
 					</tr>
 					<tr>
-						<td>Дата последних изменений:</td>
-						<td>{{experiment.updated_date}}</td>
-					</tr>
-					<tr>
-						<td>Изменения внес(ла):</td>
-						<td>{{experiment.updated_by}}</td>
-					</tr>
-					<tr>
-						<td>Дата создания:</td>
-						<td>{{experiment.created_date}}</td>
-					</tr>
-					<tr>
-						<td>Эксперимент создал(а):</td>
-						<td>{{experiment.created_by}}</td>
+						<td class="detail_caption">Эксперимент создал(а):</td>
+						<td class="detail_value">{{experiment.created_by}}</td>
 					</tr>
 				</tbody>
   </table>
 
   ДОПОЛНИТЕЛЬНЫЕ СВОЙСТВА:
     </div>
-
+ </div>
         <div class=" col-xs-3">
 
     {% include "chemical/experiment_detail_menu.html" %}
@@ -90,7 +117,11 @@
       </div>
 
 
-            </div>
+           
 
 </div>
+{% endblock %}
+
+{% block footer_block %}
+<script src="{% static "js/details.js" %}"></script>
 {% endblock %}
