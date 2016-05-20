@@ -35,7 +35,7 @@ def drop_all():
      Scheme_step_subst.objects.all().delete()
      Substance_consist.objects.all().delete()
 
-     print "dropped all data"
+     print "dropped test reactions data"
 
 def populate():
 

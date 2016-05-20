@@ -43,7 +43,7 @@ def drop_all():
      Dict_subst_role.objects.all().delete()
      Dict_measure_unit.objects.all().delete()
 
-     print "dropped all data"
+     print "dropped all dictionaries data"
 
 def populate():
 
