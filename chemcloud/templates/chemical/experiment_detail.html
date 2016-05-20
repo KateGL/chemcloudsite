@@ -16,7 +16,7 @@
 	<div class="page-content"> 
   <div class="row">          
  <div class="col-xs-7">
- <div>
+ 
  
   <table class="table ">
     <tbody id="detail_main" model_name="Experiment" url_edit="{% url 'experiment_detail_edit' id_reaction experiment.pk %}" >
@@ -65,23 +65,52 @@
 					
 					<tr>
 						<td class="detail_caption">Функция:</td>
-						<td class="detail_value">{{ experiment.id_func }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.id_func.pk }}" data-model="Dict_model_function" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>         
+                        <td class="detail_btns" field_name="id_func"> 
+                        </td>
+                        {% endif %}
 					</tr>
-					<tr>
+					<tr>				
+						
 						<td class="detail_caption">Единица измерения:</td>
-						<td class="detail_value">{{ experiment.function_measure }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.function_measure.pk }}" data-model="Dict_measure_unit" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>         
+                        <td class="detail_btns" field_name="function_measure"> 
+                        </td>
+                        {% endif %}
 					</tr>
 					<tr>
+						
 						<td class="detail_caption">Аргумент:</td>
-						<td class="detail_value">{{ experiment.id_arg }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.id_arg.pk }}" data-model="Dict_model_argument" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>         
+                        <td class="detail_btns" field_name="id_arg"> 
+                        </td>
+                        {% endif %}
 					</tr>
 					<tr>
+				
 						<td class="detail_caption">Единица измерения:</td>
-						<td class="detail_value">{{ experiment.argument_measure }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.argument_measure.pk }}" data-model="Dict_measure_unit" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>         
+                        <td class="detail_btns" field_name="argument_measure"> 
+                        </td>
+                        {% endif %}
 					</tr>
-					<tr>
+					<tr>						
 						<td class="detail_caption">Единица измерения начальных концентраций:</td>
-						<td class="detail_value">{{ experiment.init_function_measure }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.init_function_measure.pk }}" data-model="Dict_measure_unit" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>         
+                        <td class="detail_btns" field_name="init_function_measure"> 
+                        </td>
+                        {% endif %}
+						
 					</tr>
 				
 					<tr>
@@ -103,8 +132,7 @@
 				</tbody>
   </table>
 
-  ДОПОЛНИТЕЛЬНЫЕ СВОЙСТВА:
-    </div>
+
  </div>
         <div class=" col-xs-3">
 
@@ -123,5 +151,6 @@
 {% endblock %}
 
 {% block footer_block %}
+<script src="{% static "js/populate_dict_select.js" %}"></script>
 <script src="{% static "js/details.js" %}"></script>
 {% endblock %}

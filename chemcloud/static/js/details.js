@@ -45,6 +45,10 @@ function clone_rbox(rbox){
         if(rbox.hasClass('form-control')){
             //alert(rbox.val());
             clone.val(rbox.val());}
+
+        if(rbox.is('select')){
+            clone.val(rbox.val());}
+
         clone.show();
         return clone;
     }

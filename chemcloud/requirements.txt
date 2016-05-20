@@ -11,5 +11,6 @@ PyMySQL==0.7.2
 six==1.10.0
 South==1.0.2
 sqlparse==0.1.19
+swapper==0.3.0
 Unidecode==0.4.19
 urllib3==1.14
