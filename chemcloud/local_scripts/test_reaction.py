@@ -270,7 +270,7 @@ def add_scheme_step_subst(id_s,s,rs,p,sk):
     return a
 
 def add_exper(id_e,r,am,fm,ifm,des,id_f,id_a,ed,ub,is_f,nm,cb):
-    a = Experiment.objects.get_or_create(id_experiment=id_e,reaction=r,argument_measure=am,function_measure=fm,init_function_measure=ifm,description=des,id_func=id_f,id_arg=id_a,exper_date=ed,updated_by=ub,is_favorite=is_f,name=nm,created_by=cb)[0]
+    a = Experiment.objects.get_or_create(id_experiment=id_e,reaction=r,argument_measure=am,function_measure=fm,init_function_measure=ifm,description=des,func=id_f,arg=id_a,exper_date=ed,updated_by=ub,is_favorite=is_f,name=nm,created_by=cb)[0]
     a.save()
     return a
 

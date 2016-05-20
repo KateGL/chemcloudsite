@@ -221,8 +221,8 @@ def add_dict_model_argument(id_arg_,name_,symbol_):
     a.save()
     return a
 
-def add_dict_measure_unit(id_unit_,code_,name_,is_si_,multiplier_,id_unit_si_):
-    a = Dict_measure_unit.objects.get_or_create(id_unit=id_unit_,code=code_, name=name_,is_si=is_si_,multiplier=multiplier_,id_unit_si=id_unit_si_)[0]
+def add_dict_measure_unit(id_unit_,code_,name_,is_si_,multiplier_,unit_si_):
+    a = Dict_measure_unit.objects.get_or_create(id_unit=id_unit_,code=code_, name=name_,is_si=is_si_,multiplier=multiplier_,unit_si=unit_si_)[0]
     a.save()
     return a
 

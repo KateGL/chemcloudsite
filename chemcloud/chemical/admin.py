@@ -72,8 +72,8 @@ admin.site.register(Reaction_subst,Reaction_substAdmin)
 
 #  Эксперименты
 class ExperimentAdmin(admin.ModelAdmin):
-  fields = ['name','reaction','id_arg','argument_measure','id_func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date']
-  list_display = ('name','reaction','id_arg','argument_measure','id_func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date')
+  fields = ['name','reaction','arg','argument_measure','func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date']
+  list_display = ('name','reaction','arg','argument_measure','func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date')
 
 admin.site.register(Experiment,ExperimentAdmin)
 
@@ -131,8 +131,8 @@ admin.site.register(Dict_model_argument,Dict_model_argumentAdmin)
 
 #Единицы
 class Dict_measure_unitAdmin(admin.ModelAdmin):
-  fields = ['id_unit', 'code','name','is_si','multiplier','id_unit_si']
-  list_display = ('id_unit','name', 'code','is_si','multiplier','id_unit_si')
+  fields = ['id_unit', 'code','name','is_si','multiplier','unit_si']
+  list_display = ('id_unit','name', 'code','is_si','multiplier','unit_si')
 
 admin.site.register(Dict_measure_unit,Dict_measure_unitAdmin)
 
