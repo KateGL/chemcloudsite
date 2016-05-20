@@ -65,23 +65,53 @@
 					
 					<tr>
 						<td class="detail_caption">Функция:</td>
-						<td class="detail_value">{{ experiment.func }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.func.pk }}" data-model="Dict_model_function" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>
+                        <td class="detail_btns" field_name="func">
+                        </td>
+                        {% endif %}
 					</tr>
-					<tr>
+					<tr>				
+						
 						<td class="detail_caption">Единица измерения:</td>
-						<td class="detail_value">{{ experiment.function_measure }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.function_measure.pk }}" data-model="Dict_measure_unit" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>
+                        <td class="detail_btns" field_name="function_measure">
+                        </td>
+                        {% endif %}
 					</tr>
 					<tr>
+						
 						<td class="detail_caption">Аргумент:</td>
-						<td class="detail_value">{{ experiment.arg }}</td>
+						
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.arg.pk }}" data-model="Dict_model_argument" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>
+                        <td class="detail_btns" field_name="arg">
+                        </td>
+                        {% endif %}
 					</tr>
 					<tr>
+				
 						<td class="detail_caption">Единица измерения:</td>
-						<td class="detail_value">{{ experiment.argument_measure }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.argument_measure.pk }}" data-model="Dict_measure_unit" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>
+                        <td class="detail_btns" field_name="argument_measure">
+                        </td>
+                        {% endif %}
 					</tr>
-					<tr>
+					<tr>						
 						<td class="detail_caption">Единица измерения начальных концентраций:</td>
-						<td class="detail_value">{{ experiment.init_function_measure }}</td>
+						<td class="detail_value dict_selector" data-init-value="{{ experiment.init_function_measure.pk }}" data-model="Dict_measure_unit" data-url="{% url 'dictionary_get' %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>
+                        <td class="detail_btns" field_name="init_function_measure">
+                        </td>
+                        {% endif %}
+						
 					</tr>
 				
 					<tr>
@@ -103,8 +133,7 @@
 				</tbody>
   </table>
 
-  ДОПОЛНИТЕЛЬНЫЕ СВОЙСТВА:
-    </div>
+
  </div>
         <div class=" col-xs-3">
 
@@ -123,5 +152,6 @@
 {% endblock %}
 
 {% block footer_block %}
+<script src="{% static "js/populate_dict_select.js" %}"></script>
 <script src="{% static "js/details.js" %}"></script>
 {% endblock %}

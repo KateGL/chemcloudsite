@@ -9,6 +9,7 @@ from django.core import serializers
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
+import swapper
 
 from chemical.models import owner_required, substance_owner_required
 from chemical.urls_utils import make_name_link
@@ -28,9 +29,18 @@ def set_field_and_value_from_request(request, my_model):
             field_name = body['field_name']
             value = body['value']
 
-            if isinstance(my_model._meta.get_field(field_name), models.BooleanField):
-                value = (value.lower() == 'true')
-            #print(my_model._meta.get_field(field_name).get_internal_type())
+            field_object = my_model._meta.get_field(field_name)
+            #если это ссылка на класс
+            if isinstance(field_object, models.ForeignKey):
+                #print('HIIIIIIIIIIIIIIII')
+                #print(field_object.rel.to)
+                rel_model = field_object.rel.to
+                value = rel_model.objects.get(pk=value)
+            else:
+                 #если это булево поле
+                if isinstance(field_object, models.BooleanField):
+                    value = (value.lower() == 'true')
+
             setattr(my_model, field_name, value)
             return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value}
 
@@ -127,6 +137,7 @@ def scheme_detail_edit(request, id_reaction, id_scheme):
     xml_bytes = json.dumps(fv_dict['err_msg'])
     return HttpResponse(xml_bytes, 'application/json')
 
+
 @login_required
 @owner_required
 def experiment_detail_edit(request, id_reaction, id_experiment):
@@ -138,4 +149,23 @@ def experiment_detail_edit(request, id_reaction, id_experiment):
         exper.save()
 
     xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')
+
+
+@login_required
+def dictionary_get(request):
+    if request.method != 'GET':
+        return False
+    #print('start view')
+    model_name = request.GET['model_name']
+    #print(model_name)
+    my_model = swapper.load_model('chemical', model_name)
+    model_dict = {}
+
+    for mdl in my_model.objects.all():
+        model_dict[mdl.pk] = mdl.name
+
+    xml_bytes = json.dumps(model_dict)
+    #print(xml_bytes)
+    #print('end eiw')
     return HttpResponse(xml_bytes, 'application/json')

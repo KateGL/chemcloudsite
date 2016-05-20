@@ -15,4 +15,6 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/detail_edit/$', views.react_substance_detail_edit, name='react_substance_detail_edit'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/scheme/(?P<id_scheme>[0-9]+)/detail_edit/$', views.scheme_detail_edit, name='scheme_detail_edit'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail_edit/$', views.experiment_detail_edit, name='experiment_detail_edit'),
+
+    url(r'^dictionary/get/$', views.dictionary_get, name='dictionary_get'),
     ]
