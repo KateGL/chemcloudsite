@@ -1,5 +1,6 @@
 $(document).ready(function(){
 	$('#add_step').click(function(){
+console.log('tut add_step');
 		/*
 		способы вставить строку:
 		1) $('<tr id="new_id_id"><td>more content ' + n + '</td><td>more content</td></tr>').insertAfter($('tr:last'));
@@ -36,6 +37,7 @@ $(document).ready(function(){
 	});
 
 	$('#steps_body').on("click", "button.step_delete", function(){
+console.log('tut button.step_delete');
 		if (!$(this).hasClass('step_delete')) //чтобы не реагировало на кнопки изменения порядка
 			return false;
 		var stepid   = $(this).attr("data-stepid");
@@ -67,6 +69,7 @@ $(document).ready(function(){
 
 	//$('.changeorder').click(function(){
 	$('#steps_body').on("click", "button.changeorder", function(){//делегированная обработка события, так как обработчик к новым добавляемым строкам не прикрепляется, а дублировать код обработчика через метод bind не хочется
+console.log('tut button.changeorder');
 if (!$(this).hasClass('changeorder')) //чтобы не реагировало на кнопку удаления стадии
 			return false;	
 		var stepid   = $(this).attr("data-stepid");

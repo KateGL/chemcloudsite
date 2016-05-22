@@ -43,17 +43,18 @@ String.prototype.UrlEncode = function() {
 
 	//$('button.editbtn').click(function(){ 
    $('tbody').on("click", "button.editbtn", function(){
-      console.log('tut');
+      console.log('button.editbtn');
 		ptd = $(this).parent('td');
-		$('.ajax').html($('.ajax input').val());
+        arr = ptd.attr('class').split( " " );
+        var id  = arr[1]+arr[2];
+		$('.ajax'+id).html($('.ajax'+id+' input').val());
 		//удаляем все классы ajax
-		$('.ajax').removeClass('ajax');
-		ptd.addClass('ajax');
-console.log(ptd);
+		//$('.ajax'+id).removeClass('ajax');
+		ptd.addClass('ajax'+id);
 		//внутри ячейки создаём input и вставляем текст из ячейки в него
-		ptd.html('<input id="editbox" size="'+ ptd.text().length+'" type="text" value="' + ptd.text() + '" /> <button type="button" class="save step 123"  ><span class="glyphicon glyphicon-floppy-disk"></span></button> <button type="button" class="delete step 123"  ><span class="glyphicon glyphicon-remove"></span></button>');
+		ptd.html('<input id="editbox'+id+'" size="'+ ptd.text().length+'" type="text" value="' + ptd.text() + '" /> <button type="button" class="save step"  ><span class="glyphicon glyphicon-floppy-disk"></span></button> <button type="button" class="delete step"  ><span class="glyphicon glyphicon-remove"></span></button>');
 		//устанавливаем фокус на созданном элементе
-		$('#editbox').focus();
+		$('#editbox'+id).focus();
 		});
 
    $('tbody').on("click", "button.save", function(){
@@ -62,10 +63,14 @@ console.log(ptd);
 		//в итоге получаем такой массив - arr[0] = edit, arr[1] = наименование столбца, arr[2] = id строки
 		ptd = $(this).parent('td');
 		arr = ptd.attr('class').split( " " );
+        arr = ptd.attr('class').split( " " );
+        var id  = arr[1]+arr[2];
 		//получаем наименование таблицы, в которую будем вносить изменения
 		var table_str = $('table').attr('id');
-        var value = $('.ajax input').val();
-        value = value.toUTF8().UrlEncode();//кодируем передаваемое значение, иначе символ + не передается
+        var value = $('.ajax'+id + ' input').val();
+        value=value.replace(new RegExp("\\+",'g'),"<plus>") // заменяем плюс, иначе не передается знак плюс
+        //value = value.toUTF8().UrlEncode();//кодируем передаваемое значение, иначе символ + не передается
+
 		//выполняем ajax запрос методом POST
 		//в файл update_cell.php
 		//создаём строку для отправки запроса
@@ -85,9 +90,9 @@ console.log(ptd);
                 var messageText = arr.messageText;
 				if (result == 'success')		
 				{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
-				 	$('.ajax').html($('.ajax input').val() + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
+				 	$('.ajax'+id).html($('.ajax'+id+' input').val() + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
 					//удаялем класс ajax
-				 	$('.ajax').removeClass('ajax');
+				 	$('.ajax'+id).removeClass('ajax'+id);
                     if (messageText.length !=0)
                         alert(messageText);
 				}
@@ -110,7 +115,7 @@ console.log(ptd);
       console.log('tut_delete');
 			td_el = $(this).parent('td');				
 			arr = td_el.attr('class').split( " " );
-console.log(arr);
+            var id  = arr[1]+arr[2];
 			var table_str = $('table').attr('id');
 			var url_str  = "/chemical/cell_value/";
 			var csrftoken = getCookie('csrftoken');
@@ -118,9 +123,9 @@ console.log(arr);
 					var arr   = JSON.parse(data);
 					old_val = arr.value;
 					//находим input внутри элемента с классом ajax и вставляем вместо input его значение
-					 $('.ajax').html(old_val + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
+					 $('.ajax'+id).html(old_val + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
 					//удаялем класс ajax
-					 $('.ajax').removeClass('ajax');
+					 $('.ajax'+id).removeClass('ajax'+id);
 console.log('old_val='+old_val);	
 
 			 }, 'JSON');

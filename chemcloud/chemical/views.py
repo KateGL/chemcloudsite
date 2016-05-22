@@ -301,7 +301,10 @@ def cell_update(request):
     id_str    = request.POST['id']
     field_str = request.POST['field']
     value_str = request.POST['value']
-
+    #value_str = value_str.encode()
+    print(value_str)
+    value_str = value_str.replace('<plus>', '+')
+    print(value_str)
     data = '';
     #таблица стадий механизма
     pos = table_str.find('all-steps');
@@ -399,7 +402,9 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
     if result == 'success':
         step.save()
         balance_mess = []
-        balance_bool = step.check_step_balance(balance_mess)
+        balance_bool = True
+        if field_str == 'step':
+            balance_bool = step.check_step_balance(balance_mess)
         if not balance_bool:
             mess = balance_mess[0]
     data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '"}'
