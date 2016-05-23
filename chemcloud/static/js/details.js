@@ -126,6 +126,7 @@ $(document).ready(function(){
 
     $('#detail_main').on("click", "button.detail_btn_save", function(){
         //send ajax json
+console.log('trtrtrt');
         var url_str  = $('#detail_main').attr('url_edit');
         var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
 
@@ -134,6 +135,7 @@ $(document).ready(function(){
         var val_td = parnt.siblings(".detail_value");
         var ebox = edt_td.find('.data_edit');
         var evalue = get_editbox_value(ebox);
+        console.log(evalue);
         var btn_save = $(this);
         var fldname = parnt.attr('field_name');
         var data_to_edit = {

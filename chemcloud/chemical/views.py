@@ -5,6 +5,7 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.core import serializers
+from django.core.urlresolvers import reverse
 
 # Create your views here.
 from django.contrib.auth.decorators import login_required
@@ -20,9 +21,6 @@ from django.shortcuts import redirect
 from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm, ProblemForm
 from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
-
-
-
 from .models import owner_required, substance_owner_required
 
 # Вещество
@@ -251,43 +249,6 @@ def scheme_new(request, id_reaction):
     return render(request, 'chemical/scheme_new.html', context)
 
 @login_required
-def get_cell_value(request): #взятие старого значения ячейки
-    if not request.is_ajax():
-        return HttpResponse(status=400)
-    table_str = ''
-    id_str = ''
-    field_str = ''
-    if request.method != 'POST':
-        return HttpResponse(status=400)
-    table_str = request.POST['table']
-    id_str    = request.POST['id']
-    field_str = request.POST['field']
-    #взятие значения ячейки из базы
-    arr = table_str.split('_');
-    #таблица стадий механизма
-    pos = arr[0].find('all-steps');
-    if pos != -1:
-        id_reaction = int(arr[1])
-        id_scheme   = int(arr[2])
-        step_id = int(id_str)
-        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
-        step = step_dict['step']
-        value = ''
-        if field_str == 'name':
-            value = step.name
-        if field_str == 'step':
-            value = 'kuku'
-        data = '{"value": "' +value + '"}'
-        xml_bytes = json.dumps(data)
-        return HttpResponse(xml_bytes,'application/json')
-
-    #сюда для других таблиц вставлять свои проверки названия таблицы и соответствующие обработчики
-    return HttpResponse(
-            json.dumps({"nothing to see": "this isn't happening"}),
-            content_type="application/json"
-        )
-
-@login_required
 def cell_update(request):
     if not request.is_ajax():
         return HttpResponse(status=400)
@@ -297,14 +258,13 @@ def cell_update(request):
     value_str = ''
     if request.method != 'POST':
         return HttpResponse(status=400)
-    table_str = request.POST['table']
-    id_str    = request.POST['id']
-    field_str = request.POST['field']
-    value_str = request.POST['value']
-    #value_str = value_str.encode()
-    print(value_str)
-    value_str = value_str.replace('<plus>', '+')
-    print(value_str)
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    table_str = body['table']
+    id_str    = body['id']
+    field_str = body['field']
+    value_str = body['value']
+
     data = '';
     #таблица стадий механизма
     pos = table_str.find('all-steps');
@@ -442,8 +402,14 @@ def step_new(request, id_reaction, id_scheme):
     new_step = scheme.create_new_emptystep();
     if new_step == -1:
         return HttpResponse(status=400)
-    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'"}'
+    link_detail = reverse('step_detail', args=[id_reaction, id_scheme, new_step.id_step ])
+    link_changeorder = reverse('change_step_order', args=[id_reaction, id_scheme ])
+    link_delete = reverse('step_delete', args=[id_reaction, id_scheme ])
+
+    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'", "url_detail": "'+ link_detail+'", "url_changeorder": "' + link_changeorder+'"}'
+    #fv_dict = {"id_step": new_step.id_step, "order":new_step.order, "name": new_step.name, "url_detail": link_detail, "url_changeorder": link_changeorder}    
     xml_bytes = json.dumps(data)
+    print (xml_bytes)
     return HttpResponse(xml_bytes,'application/json')
 
 

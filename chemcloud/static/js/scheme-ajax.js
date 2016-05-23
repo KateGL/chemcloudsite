@@ -1,6 +1,5 @@
 $(document).ready(function(){
 	$('#add_step').click(function(){
-console.log('tut add_step');
 		/*
 		способы вставить строку:
 		1) $('<tr id="new_id_id"><td>more content ' + n + '</td><td>more content</td></tr>').insertAfter($('tr:last'));
@@ -12,24 +11,25 @@ console.log('tut add_step');
 		var n = $('#all-steps tr').length; //текущее число строк, включая строку заголовков. Для определения порядка новой стадии по умолчанию
 		*/
 
-		var reac_id  = $(this).attr("data-reacid");
-		var schem_id = $(this).attr("data-schemeid");
-
-		var url = '/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/step/new/';
+		var url = $(this).attr("data-url-addstep");
+        
 		$.getJSON(url, {}, function(data){
-
 			var arr   = JSON.parse(data);
 			var step_order = arr.order;
 			var step_name = arr.name;
 			var id_step = arr.id_step;
+            var url_detail = arr.url_detail;
+            var url_changeorder = arr.url_changeorder;
+            var url_delete = arr.url_delete;
+
 			var tr_str = '<tr class="even">';
-			tr_str = tr_str + '<td><button id="btn_' + id_step + 'up" class="changeorder" data-stepid="' + id_step + '" data-direction="up"  type="button" data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button"  data-reacid="'+reac_id+'" data-schemeid="'+schem_id+'">&#9660</button></td>';
+			tr_str = tr_str + '<td data-url-order="'+url_changeorder+'"><button id="btn_' + id_step + 'up" class="changeorder" data-stepid="' + id_step + '" data-direction="up"  type="button">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button">&#9660</button></td>';
 
 			tr_str = tr_str + '<td id="order_' + id_step + '"> '+step_order+' </td>';
-			tr_str = tr_str + '<td class="edit name '+id_step + '">'+step_name+'<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></td>';
+			tr_str = tr_str + '<td class="edit name '+id_step + '">'+step_name+'<button type="button" class="editbtn"><span class="glyphicon glyphicon-pencil"></span></button></td>';
 			tr_str = tr_str + '<td class="edit step '+id_step + '"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></td>';//сама стадия пока пустая
-			tr_str = tr_str + '<td><button id="btn_' + id_step + 'del" class="step_delete" type="button" class="btn btn-default"  data-reacid="' + reac_id + '" data-schemeid="' + schem_id + '" data-stepid="' + id_step + '" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>';
-			tr_str = tr_str + '<td><a href="/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/step/'+id_step + '/detail/"> Детали</a> </td>';
+			tr_str = tr_str + '<td><button id="btn_' + id_step + 'del" class="step_delete" type="button" class="btn btn-default"  data-stepid="' + id_step + '" data-url-delete="' + url_delete+ '" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>';
+			tr_str = tr_str + '<td> <a href="'+url_detail+'">Детали </a></td>';
 			tr_str = tr_str + '</tr>';
 			$(tr_str).insertAfter($('tr:last'));
 			return true;	
@@ -37,15 +37,12 @@ console.log('tut add_step');
 	});
 
 	$('#steps_body').on("click", "button.step_delete", function(){
-console.log('tut button.step_delete');
 		if (!$(this).hasClass('step_delete')) //чтобы не реагировало на кнопки изменения порядка
 			return false;
 		var stepid   = $(this).attr("data-stepid");
-		var reac_id  = $(this).attr("data-reacid");
-		var schem_id = $(this).attr("data-schemeid");
+		var url     = $(this).attr("data-url-delete");
+//console.log(url);
 		var id_name = 'btn_'+stepid+'del';		
-		var url = '/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/step_delete/';
-
 		$.getJSON(url, {step_id: stepid}, function(data){
 			var arr   = JSON.parse(data);
 			var cur_order = arr.deleted_step_order;
@@ -53,31 +50,30 @@ console.log('tut button.step_delete');
 			var pel = btn_cur.parent('td');
 			pel = pel.parent('tr');
          //этот элемент удалим, а последующим понизим порядок. Раз сюда зашли, значит во вью порядок успешно всем последующим стадиям понизился 
-		  var b=true;
-        pel_next = pel.next('tr');
-        var new_order = parseInt(cur_order, 10);
-        while (pel_next.length==1)
-        { 
-          tdorder = pel_next.children().eq(1); //завязались на последовательность столбцов
-			 tdorder.text(new_order);
-          new_order = new_order+1;
- 		    pel_next = pel_next.next('tr');
-		   }
-			pel.remove();
+		    var b=true;
+            pel_next = pel.next('tr');
+            var new_order = parseInt(cur_order, 10);
+            while (pel_next.length==1)
+            { 
+              tdorder = pel_next.children().eq(1); //завязались на последовательность столбцов
+			     tdorder.text(new_order);
+              new_order = new_order+1;
+     		  pel_next = pel_next.next('tr');
+		    }
+		    pel.remove();
 		});
 	});
 
 	//$('.changeorder').click(function(){
 	$('#steps_body').on("click", "button.changeorder", function(){//делегированная обработка события, так как обработчик к новым добавляемым строкам не прикрепляется, а дублировать код обработчика через метод bind не хочется
-console.log('tut button.changeorder');
-if (!$(this).hasClass('changeorder')) //чтобы не реагировало на кнопку удаления стадии
-			return false;	
-		var stepid   = $(this).attr("data-stepid");
-		var direct   = $(this).attr("data-direction");
-		var me       = $(this);
-		var reac_id  = $(this).attr("data-reacid");
-		var schem_id = $(this).attr("data-schemeid");
-		var url = '/chemical/reaction/'+reac_id+'/scheme/'+ schem_id +'/change_order/';
+        if (!$(this).hasClass('changeorder')) //чтобы не реагировало на кнопку удаления стадии
+			    return false;	
+	    var stepid   = $(this).attr("data-stepid");
+	    var direct   = $(this).attr("data-direction");
+	    var me       = $(this);
+
+        ptd = $(this).parent('td');
+        var url = ptd.attr("data-url-order");
 		var id_name = 'btn_'+stepid+direct;
 
 		$.getJSON(url, {step_id: stepid, direction: direct}, function(data){

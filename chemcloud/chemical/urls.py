@@ -45,7 +45,6 @@ urlpatterns = [
 
 #Урл для обновления данных при редактировании ячейки какой-либо таблицы. Универсальныйй
     url(r'^cell_update/$', views.cell_update, name='cell_update'),
-    url(r'^cell_value/$', views.get_cell_value, name='get_cell_value'),
 
 #Вещества реакции
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/all/$', views.react_substance_all, name='react_substance_all'),

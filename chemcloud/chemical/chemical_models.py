@@ -180,6 +180,20 @@ class Reaction_scheme (models.Model):
             return -1
         return empty_step
 
+    def get_scheme_subst_all(self):
+        try:
+            steps = self.steps.all()
+            substs_list = []
+            for step_i in steps:
+                substs_list = substs_list + step_i.scheme_step_substs.all()     
+      
+            #удаляем дубликаты в списке атомов
+            substs_list = list(set(atoms_list))
+            print (substs_list)
+        except:
+            return -1
+        return 1 
+
     class Meta:
         ordering            = ["updated_date"]
         verbose_name        = ('Механизм')

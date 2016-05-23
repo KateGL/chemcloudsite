@@ -99,3 +99,8 @@ color: #FEC63D;
 .btn-arrow-left:after { /* hide arrow tails background */
     background-color: white;
 }
+
+.div-right {
+	clear: both;
+    float:right;
+}
