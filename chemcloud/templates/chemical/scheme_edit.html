@@ -40,7 +40,7 @@
 	    			<tbody id="steps_body">
 {% if steps %}	
 						{% for step in steps %}
-						<tr class="even">
+						<tr class="{% if not step.is_good_balance %} danger {% endif %}">
 							<td data-url-order="{% url 'change_step_order' id_reaction id_scheme %}"><button id="btn_{{step.id_step}}up" class="changeorder" data-stepid="{{step.id_step}}" data-direction="up"  type="button" >&#9650</button><br>
 <button id="btn_{{step.id_step}}down" class="changeorder" data-stepid="{{step.id_step}}" data-direction="down"  type="button" >&#9660</button></td>
 							<td id="order_{{step.id_step}}"> {{ step.order }} </td>

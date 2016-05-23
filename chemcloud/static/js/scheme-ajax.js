@@ -1,12 +1,19 @@
 $(document).ready(function(){
 	$('#check_balance').click(function(){
+        var n = $('button.save').length;
+        console.log(n);
+        if (n>0)
+        {
+            alert("В таблице механизма имеются несохраненные данные. Пожалуйста, сохраните все изменения и повторите проверку баланса.");       
+            return false;
+        }  
+console.log('tut');
 		var url = $(this).attr("data-url-checkbalance");
-        console.log(url);
 		$.getJSON(url, {}, function(data){
+            
 			var arr   = JSON.parse(data);
             console.log(arr);
 			var result = arr.result;			
-			var errorText = arr.errorText;
             var messageText = arr.messageText;
 			if (result == 'True')		
 			{
@@ -14,6 +21,19 @@ $(document).ready(function(){
 			} 
             else
                 alert(messageText);
+           /* //раскраска
+            var n = $('#all-steps tr').length; 
+            for (var i = 0; i < n; i++) {
+            old_class = ptr.attr('class');
+		 	$('.ajax'+id).removeClass('ajax'+id);
+            if (messageText.length !=0)
+                alert(messageText);
+            if (tr_class.length !=0)
+                ptr.addClass(tr_class);
+            else
+                ptr.removeClass(old_class);
+                } 
+*/
 
 			return true;	
 		});
@@ -42,7 +62,7 @@ $(document).ready(function(){
             var url_changeorder = arr.url_changeorder;
             var url_delete = arr.url_delete;
 
-			var tr_str = '<tr class="even">';
+			var tr_str = '<tr class="danger">';
 			tr_str = tr_str + '<td data-url-order="'+url_changeorder+'"><button id="btn_' + id_step + 'up" class="changeorder" data-stepid="' + id_step + '" data-direction="up"  type="button">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button">&#9660</button></td>';
 
 			tr_str = tr_str + '<td id="order_' + id_step + '"> '+step_order+' </td>';

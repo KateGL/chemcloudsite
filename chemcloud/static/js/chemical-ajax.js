@@ -32,7 +32,6 @@ function csrfSafeMethod(method) {
       console.log('button.editbtn');
 		ptd = $(this).parent('div');
         ptd = ptd .parent('td');
-        console.log(ptd);
         arr = ptd.attr('class').split( " " );
         var id  = arr[1]+arr[2];
 		$('.ajax'+id).html($('.ajax'+id+' input').val());
@@ -46,7 +45,6 @@ function csrfSafeMethod(method) {
 		});
 
    $('tbody').on("click", "button.save", function(){
-      console.log('tut_save');
 		//получаем значение класса и разбиваем на массив
 		//в итоге получаем такой массив - arr[0] = edit, arr[1] = наименование столбца, arr[2] = id строки
 		ptd = $(this).parent('div');
@@ -93,13 +91,23 @@ function csrfSafeMethod(method) {
 				var result = arr.result;			
 				var errorText = arr.errorText;
                 var messageText = arr.messageText;
+                var messageText = arr.messageText;
+                var tr_class = arr.tr_class;
+                console.log(tr_class)
 				if (result == 'success')		
 				{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
 				 	$('.ajax'+id).html($('.ajax'+id+' input').val() + '<div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div>');
 					//удаялем класс ajax
+                    var ptr = $('.ajax'+id).parent('tr');
+                    old_class = ptr.attr('class');
 				 	$('.ajax'+id).removeClass('ajax'+id);
                     if (messageText.length !=0)
                         alert(messageText);
+                    if (tr_class.length !=0)
+                        ptr.addClass(tr_class);
+                    else
+                        ptr.removeClass(old_class);
+               
 				}
 				else
 				{

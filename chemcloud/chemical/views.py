@@ -223,13 +223,16 @@ def scheme_check_balance(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     scheme = scheme_dict['scheme'];
     balance_mess = []
+    bad_steps = []
     result = 'True'
-    balance_bool = scheme.check_scheme_balance(balance_mess)
+    balance_bool = scheme.check_scheme_balance(balance_mes)
     mess = ''
+    tr_class=''
     if not balance_bool:
         mess = balance_mess[0]
         result = 'False'
-    data = '{"result":"' + result  +'", "messageText": "' + mess + '"}'  
+        tr_class = 'danger'
+    data = '{"result":"' + result  +'", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'"}'  
     xml_bytes = json.dumps(data)
     return HttpResponse(xml_bytes,'application/json')
 
@@ -379,11 +382,13 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         step.save()
         balance_mess = []
         balance_bool = True
+        tr_class = ''
         if field_str == 'step':
             balance_bool = step.check_step_balance(balance_mess)
         if not balance_bool:
             mess = balance_mess[0]
-    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '"}'
+            tr_class = 'danger'
+    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'" }'
     return data
 
 

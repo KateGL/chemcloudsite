@@ -65,8 +65,8 @@ def populate():
 
    add_reac_scheme(1,b,'Схема реакции паровой конверсии пропана','Схема реакции паровой конверсии пропана',1,'Admin','Admin')
    c = Reaction_scheme.objects.get(id_scheme=1)
-   add_scheme_step(1,c,'Стадия № 1',1,0,'Первая стадия','')
-   add_scheme_step(2,c,'Стадия № 2',2,1,'Вторая стадия','')
+   add_scheme_step(1,c,'Стадия № 1',1,0,'Первая стадия','', True)
+   add_scheme_step(2,c,'Стадия № 2',2,1,'Вторая стадия','', True)
    c = Scheme_step.objects.get(id_step=1)
    d = Substance.objects.get(id_substance=1)
    f = Reaction_subst.objects.get(reaction=b,substance=d)
@@ -262,8 +262,8 @@ def add_reac_scheme(id_s,r,nm,descr,is_p,cb,ub):
     a.save()
     return a
 
-def add_scheme_step(id_s,s,nm,od,is_r,nt,re):
-    a = Scheme_step.objects.get_or_create(id_step=id_s,scheme=s,name=nm,order=od,is_revers=is_r,note=nt,rate_equation=re)[0]
+def add_scheme_step(id_s,s,nm,od,is_r,nt,re, bl):
+    a = Scheme_step.objects.get_or_create(id_step=id_s,scheme=s,name=nm,order=od,is_revers=is_r,note=nt,rate_equation=re, is_good_balance = bl)[0]
     a.save()
     return a
 

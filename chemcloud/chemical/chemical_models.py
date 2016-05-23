@@ -173,7 +173,7 @@ class Reaction_scheme (models.Model):
         try:
             steps = self.steps
             new_order = steps.count() + 1
-            empty_step = Scheme_step.objects.get_or_create( scheme = self, order = new_order, is_revers = False )[0]
+            empty_step = Scheme_step.objects.get_or_create( scheme = self, order = new_order, is_revers = False, is_good_balance = False )[0]
             empty_step.save()
             self.steps.add(empty_step)
         except:
@@ -208,6 +208,7 @@ class Reaction_scheme (models.Model):
                 while i < stage_count:
                     error_str_temp = 'Стадия ' + str(steps[i])
                     k = 0
+                    bool_temp = True
                     j = 0
                     error_str_temp = error_str_temp + '. Не соблюдается баланс по элементу(-ам): '
                     while j < elem_count:
@@ -221,6 +222,9 @@ class Reaction_scheme (models.Model):
                     i = i+1
                     if k!=0:
                         error_str = error_str+error_str_temp + '. '
+                        bool_temp = False  
+                    #steps[i].is_good_balance = bool_temp по идее перезапись состояния баланса осуществляется при сохранении стадии
+                    #steps_list[i].save()
                 error_list.append(error_str)
             return b
         except:
@@ -323,6 +327,7 @@ class Scheme_step(models.Model):
     name          = models.CharField (max_length = 250, blank = True, verbose_name='Обозначение')
     order         = models.IntegerField (verbose_name='№ п/п')
     is_revers     = models.BooleanField (verbose_name='Обратимая')
+    is_good_balance   = models.BooleanField (verbose_name='Баланс', null = False, default = False)
     note            = models.CharField (max_length = 250, blank = True, verbose_name='Примечание')
     rate_equation = models.TextField (blank= True, verbose_name='Выражение для скорости')#todo data type
     def __unicode__ (self):
@@ -433,9 +438,11 @@ class Scheme_step(models.Model):
                         if k != 0:
                             error_str = error_str + ', '
                         error_str = error_str + str(atoms_list[i])
-                        k = k+1
+                        k = 1
                     i = i+1
                 error_list.append(error_str)
+            self.is_good_balance = b
+            self.save()
             return b
         except:
             error_str = 'Неизвестная ошибка по исключению'
