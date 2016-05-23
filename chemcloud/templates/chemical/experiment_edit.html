@@ -27,15 +27,51 @@
 <div >
 <h4> Вещества реакции:</h4>
 </div>
+
 <div>
-<table>
-    {% for subst in reac_substs %}
+<table class="paleblue">
     <tr>
-        <td>{{ subst.alias }}</td>
-    </tr>		
-    {% endfor %}
+       <th>Усл/парметр</th>
+       {% for exp_subst in exp_substs %}
+          <th> {{ exp_subst.reaction_subst.brutto_formula_short }} ({{ exp_subst.reaction_subst.alias }})</th>
+       {% endfor %}
+    </tr>
+    <tr>
+       <td>Роль вещества</td>
+       {% for exp_subst in exp_substs %}
+          <td> {{ exp_subst.dict_subst_role.name }} </td>
+       {% endfor %}
+    </tr>
+    <tr>
+       <td>Погрешность, %</td>
+       {% for exp_subst in exp_substs %}
+          <td> Добавить поле в БД </td>
+       {% endfor %}
+    </tr>
+    <tr>
+       <td>Начальная концентрация (где в БД хранится ед.изм.?)</td>
+       {% for exp_subst in exp_substs %}
+          <td> {{ exp_subst.init_func_val }} </td>
+       {% endfor %}
+    </tr>
+    <tr>
+       <td>Наблюдаемое</td>
+       {% for exp_subst in exp_substs %}
+          <td><input  type="checkbox"  value="{{  exp_subst.is_observed }}"
+         {% if exp_subst.is_observed %} checked="checked" {% endif %}/></td>
+
+       {% endfor %}
+    </tr>
 </table>
 </div>
+
+<div >
+<h4> Данные эксперимента:</h4>
+</div>
+Вид:
+
+<input type="radio" checked>Таблица
+<input type="radio">График
 
             </div>
 {% endblock %}

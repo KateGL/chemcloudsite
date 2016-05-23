@@ -191,13 +191,17 @@ class Chemistry(models.Model):
     def experiment_get(self, id_reaction, id_experiment):
         react = self.reaction_get(id_reaction)
         try:
-            exp = react.reaction.experiments.get(pk=id_experiment)
+            exp = self.experiment_all(id_reaction).get(pk=id_experiment)
         except Experiment.DoesNotExist:
             raise Http404("Experiment does not exist")
         exp_dict = {}
         exp_dict['experiment'] = exp
         exp_dict['is_owner'] = react.is_owner
         return exp_dict
+
+    def exper_subst_all(self, id_reaction,id_experiment):
+        exper_dict = self.experiment_get(id_reaction,id_experiment)
+        return exper_dict['experiment'].exper_substs.all()
 
     # по id вещества
     def subst_synonym_all(self, id_substance):
