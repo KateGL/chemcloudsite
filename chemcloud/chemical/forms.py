@@ -57,7 +57,7 @@ class ReactionSubstForm(forms.ModelForm):
 class ExperimentForm(forms.ModelForm):
     class Meta:
         model = Experiment
-        fields = ('name', 'exper_date','description', 'is_favorite','id_func','function_measure','id_arg','argument_measure','init_function_measure')
+        fields = ('name', 'exper_date','description', 'is_favorite','func','function_measure','arg','argument_measure','init_function_measure')
 
 
 #Задачи

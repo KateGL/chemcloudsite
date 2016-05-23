@@ -459,7 +459,7 @@ class Dict_measure_unit(models.Model):
     name = models.CharField(max_length=250, unique=True, verbose_name='Название единицы измерения')
     is_si = models.BooleanField(default = True, verbose_name='СИ')
     multiplier = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Множитель')
-    id_unit_si = models.ForeignKey('self', null = True, blank=True, related_name='+' )
+    unit_si = models.ForeignKey('self', null = True, blank=True, related_name='+' )
 
 
     def __unicode__ (self):
@@ -479,8 +479,8 @@ class Experiment (models.Model):
     function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения функции',default=0)
     init_function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения начальных концентраций',default=0)
     description  = models.TextField (blank = True, verbose_name='Описание')
-    id_func = models.ForeignKey(Dict_model_function, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Функция',default=0)
-    id_arg = models.ForeignKey(Dict_model_argument, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Аргумент',default=0)
+    func = models.ForeignKey(Dict_model_function, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Функция',default=0)
+    arg = models.ForeignKey(Dict_model_argument, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Аргумент',default=0)
     exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
     updated_by   = models.TextField (verbose_name='Обновил(а)')
     updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
