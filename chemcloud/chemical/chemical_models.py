@@ -180,20 +180,6 @@ class Reaction_scheme (models.Model):
             return -1
         return empty_step
 
-    def get_scheme_subst_all(self):
-        try:
-            steps = self.steps.all()
-            substs_list = []
-            for step_i in steps:
-                substs_list = substs_list + step_i.scheme_step_substs.all()     
-      
-            #удаляем дубликаты в списке атомов
-            substs_list = list(set(atoms_list))
-            print (substs_list)
-        except:
-            return -1
-        return 1 
-
     class Meta:
         ordering            = ["updated_date"]
         verbose_name        = ('Механизм')
@@ -429,8 +415,8 @@ class Dict_feature(models.Model):
 #Свойства реакции
 class Reaction_feature(models.Model):
     id_reaction_feature = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
-    feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+',default=0)
+    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='reac_features', verbose_name='Реакция')
+    feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+',default=0, verbose_name='Свойство')
 
     class Meta:
       verbose_name = ('Свойство реакции')

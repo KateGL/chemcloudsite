@@ -199,9 +199,16 @@ class Chemistry(models.Model):
         exp_dict['is_owner'] = react.is_owner
         return exp_dict
 
+    # получить вещества эксперимента
     def exper_subst_all(self, id_reaction,id_experiment):
         exper_dict = self.experiment_get(id_reaction,id_experiment)
         return exper_dict['experiment'].exper_substs.all()
+
+    # по id реакции вернуть все характеристики реакции
+    def react_feature_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.reac_features.all()
+
 
     # по id вещества
     def subst_synonym_all(self, id_substance):
@@ -211,8 +218,6 @@ class Chemistry(models.Model):
             raise Http404("Substance does not exist")
         return subst
 
-    # по id синонима (возможно не нужен)
-    # def subst_synonym_get(self,):
 
     #вернуть весь справочник характеристик
     def dict_feature_all(self):
@@ -250,8 +255,8 @@ class Chemistry(models.Model):
 
     # TODO
 
-    # по id реакции вернуть все характеристики реакции
-    #def react_feature_all(self, id_reac):
+    # по id синонима (возможно не нужен)
+    # def subst_synonym_get(self,):
 
     # по id реакции
     #def react_tag_all
@@ -259,7 +264,7 @@ class Chemistry(models.Model):
     # по id реакции и id тэга
     #def react_tag_get
 
-    #* exper_subst_all(..), exper_subst_get(по id вещества эксперимента)
+    #exper_subst_get(по id вещества эксперимента)
     #* dict_model_funct_all(..), //
     #dict_model_funct_get(по id фукнции)
     #* dict_model_arg_all(..),
