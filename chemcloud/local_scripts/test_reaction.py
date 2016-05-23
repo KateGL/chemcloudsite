@@ -14,7 +14,7 @@ from chemical.chemical_models import Reaction, User_reaction,Substance,Substance
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
 from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
 from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data,Exper_serie,Experserie_experiment
-from chemical.chemical_models import Exper_point
+from chemical.chemical_models import Exper_point,Reaction_feature
 from django.contrib.auth.models import User
 
 def drop_all():
@@ -29,6 +29,7 @@ def drop_all():
      Experserie_experiment.objects.all().delete()
      Exper_serie.objects.all().delete()
      Experiment.objects.all().delete()
+     Reaction_feature.objects.all().delete()
      Reaction.objects.all().delete()
      Reaction_scheme.objects.all().delete()
      Scheme_step.objects.all().delete()
@@ -44,6 +45,8 @@ def populate():
    b = Reaction.objects.get(id_reaction=1)
    c = User.objects.get(id=1)
    add_user_reaction(b,c,1)
+   c = Dict_feature.objects.get(id_feature=0)
+   add_reaction_feature(1,b,c)
    add_substance(1,'пропан',0,0,'C3H8','пропан')
    add_substance(2,'вода',0,0,'H2O','вода')
    add_substance(3,'оксид углерода (IV)',0,0,'CO2','углекислый газ')
@@ -138,7 +141,7 @@ def populate():
    a = Experiment.objects.get(id_experiment=1)
    b = Exper_serie.objects.get(id_serie=1)
    add_experserie_experiment(a,b)
-   # Добавление вещест реакции в эксперименте
+   # Добавление веществ реакции в эксперименте
    b = Reaction.objects.get(id_reaction=1)
    # C3H8
    c = Substance.objects.get(id_substance=1)
@@ -299,6 +302,10 @@ def add_exper_point(ip,es,av,fv):
     a.save()
     return a
 
+def add_reaction_feature(irf,r,f):
+    a = Reaction_feature.objects.get_or_create(id_reaction_feature=irf,reaction=r,feature=f)[0]
+    a.save()
+    return a
 
 # Start execution here!
 if __name__ == '__main__':

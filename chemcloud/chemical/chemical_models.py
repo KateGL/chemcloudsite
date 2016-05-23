@@ -504,7 +504,7 @@ class User_reaction(models.Model):
 #Синонимы вещества
 class Substance_synonym (models.Model):
     id_subst_synonym = models.AutoField (primary_key = True, verbose_name='ИД')
-    substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='synonyms' )
+    substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='synonyms', verbose_name='Вещество')
     name = models.CharField (max_length = 250, verbose_name='Название')
 
     def __unicode__ (self):
@@ -519,7 +519,7 @@ class Substance_synonym (models.Model):
 #Тэги реакции
 class Reaction_tag(models.Model):
     id_reaction_tag = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
+    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='reac_tags', verbose_name='Реакция')
     tag = models.CharField (max_length = 250, verbose_name='Тэг')
 
     def __unicode__ (self):
@@ -548,8 +548,8 @@ class Dict_feature(models.Model):
 #Свойства реакции
 class Reaction_feature(models.Model):
     id_reaction_feature = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='+' )
-    feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+',default=0)
+    reaction = models.ForeignKey(Reaction, null = True, on_delete=models.PROTECT, related_name='reac_features', verbose_name='Реакция')
+    feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+',default=0, verbose_name='Свойство')
 
     class Meta:
       verbose_name = ('Свойство реакции')
@@ -679,7 +679,7 @@ class Exper_data (models.Model):
 
 class Exper_subst (models.Model):
     id_expersubst = models.AutoField (primary_key = True, verbose_name='ИД')
-    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_substs' )
+    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_substs')
     reaction_subst = models.ForeignKey(Reaction_subst, null = False, on_delete=models.PROTECT, related_name='+' )
     dict_subst_role = models.ForeignKey(Dict_subst_role, null = False, on_delete=models.PROTECT, related_name='+',default=0)
     is_observed  = models.BooleanField(default = False, verbose_name='Наблюдаемое')
