@@ -21,7 +21,7 @@
     <div class="btn-toolbar" role="toolbar">
       <div class="btn-group">
         <button type="button" id="add_step" class="btn btn-default" data-reacid="{{id_reaction}}" data-schemeid="{{id_scheme}}" data-url-addstep="{% url 'step_new' id_reaction id_scheme %}" data-toggle="tooltip" data-placement="top" title="Добавить стадию"><span class="glyphicon glyphicon-plus"></span></button>
-        <button type="button" id="check_balance" class="btn btn-default" data-url-balance="{% url 'change_step_order' id_reaction id_scheme %}" data-toggle="tooltip" data-placement="top" title="Проверить баланс стадии"><span class="glyphicon glyphicon-check"></span></button>
+        <button type="button" id="check_balance" class="btn btn-default" data-url-checkbalance="{% url 'scheme_check_balance' id_reaction id_scheme %}" data-toggle="tooltip" data-placement="top" title="Проверить баланс схемы"><span class="glyphicon glyphicon-check"></span></button>
       </div>
 </div>	
 

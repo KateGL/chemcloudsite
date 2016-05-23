@@ -180,19 +180,136 @@ class Reaction_scheme (models.Model):
             return -1
         return empty_step
 
+    def check_scheme_balance(self, error_list):
+        try:
+            error_str=''
+            G_mtrx = self.get_scheme_G_mtrx()
+            if G_mtrx == []:
+                error_str = 'Ошибка в получении матрицы G'
+                error_list.append(error_str)
+                return False
+            A_mtrx_dict = self.get_scheme_A_mtrx()
+            if A_mtrx_dict == []:
+                error_str = 'Ошибка в получении матрицы A'
+                error_list.append(error_str)
+                return False
+            A_mtrx = A_mtrx_dict[0]
+            atoms_list = A_mtrx_dict[1]
+            elem_count = len(atoms_list)
+            stage_count = len(G_mtrx)
+            GA = np.dot(G_mtrx, A_mtrx)
+            GA_zero = np.zeros((stage_count, elem_count))
+            b = np.array_equal(GA, GA_zero)
+            #b = not b
+            if not b:
+                i = 0
+                steps = self.steps.all()
+                error_str = ''; 
+                while i < stage_count:
+                    error_str_temp = 'Стадия ' + str(steps[i])
+                    k = 0
+                    j = 0
+                    error_str_temp = error_str_temp + '. Не соблюдается баланс по элементу(-ам): '
+                    while j < elem_count:
+                        elem = GA[i][j]
+                        if elem!=0.0:
+                            if k != 0:
+                                error_str_temp = error_str_temp + ', '
+                            error_str_temp = error_str_temp + str(atoms_list[j])
+                            k = 1
+                        j = j+1
+                    i = i+1
+                    if k!=0:
+                        error_str = error_str+error_str_temp + '. '
+                error_list.append(error_str)
+            return b
+        except:
+            error_str = 'Неизвестная ошибка по исключению'
+            error_list.append(error_str)
+            return False
+
     def get_scheme_subst_all(self):
         try:
             steps = self.steps.all()
             substs_list = []
             for step_i in steps:
-                substs_list = substs_list + step_i.scheme_step_substs.all()     
-      
+                substs = step_i.scheme_step_substs.all()
+                for subst_j in substs:
+                    substs_list = substs_list + [subst_j.reac_substance]
             #удаляем дубликаты в списке атомов
-            substs_list = list(set(atoms_list))
-            print (substs_list)
+            substs_list = list(set(substs_list))
+            return substs_list
         except:
-            return -1
-        return 1 
+            return []
+
+    def get_scheme_G_mtrx(self):
+        try:
+            steps = self.steps.all()
+            substs_list = self.get_scheme_subst_all()
+            subst_count = len(substs_list)
+            stage_count = steps.count()
+            if subst_count == 0 or stage_count == 0:
+                return []
+            G_mtrx = np.zeros((stage_count,subst_count))
+            i = -1
+            for step_i in steps:
+                i = i+1
+                j = -1
+                substs = step_i.scheme_step_substs.all()
+                for subst_j in substs:
+                    j = j+1
+                    pos_subst = substs_list.index(subst_j.reac_substance)
+                    if pos_subst < 0:
+                        error_str = 'Этого не может быть, потому что этого быть не может'
+                        return -1
+                    G_mtrx[i][pos_subst] =  subst_j.stoich_koef
+            return G_mtrx
+        except:
+            print('except')
+            return []
+
+    def get_scheme_A_mtrx(self):
+        try:
+            substs_list = self.get_scheme_subst_all()
+            subst_count = len(substs_list)
+            if subst_count == 0:
+                return []
+            atoms_list = []
+            atoms_count_list = []
+            i = 0
+            for subst_i in substs_list:
+                subst_consist_list = subst_i.substance.consist.all()
+                list_temp = []
+                for subst_consist in subst_consist_list:
+                    atom_j = subst_consist.atom
+                    atoms_list = atoms_list + [atom_j.symbol]
+                    list_temp2 = [atom_j.symbol, subst_consist.atom_count]
+                    list_temp = list_temp + [list_temp2]
+                atoms_count_list = atoms_count_list + [list_temp]
+                i = i+1
+            #удаляем дубликаты в списке атомов
+            atoms_list = list(set(atoms_list))
+            elem_count = len(atoms_list)
+            if subst_count == 0:
+                return []
+            #строки - число атомов хим элемента в веществе, стоблцы - хим.элементы
+            A_mtrx = np.zeros((subst_count, elem_count))
+            i = 0
+            for elem_i in atoms_count_list : #бежим по веществам
+                for elem_j in elem_i: #бежим по атомам
+                    symbol = elem_j[0]
+                    atom_cnt = elem_j[1]
+                    pos_symbol = atoms_list.index(symbol)
+                    if pos_symbol < 0:
+                        error_str = 'Этого не может быть, потому что этого быть не может'
+                        return false
+                    A_mtrx[i][pos_symbol] = A_mtrx[i][pos_symbol] + float(atom_cnt)
+                i = i+1
+            result_dict = [A_mtrx, atoms_list]
+            return result_dict
+        except:
+            print('except')
+            return []
 
     class Meta:
         ordering            = ["updated_date"]
@@ -203,13 +320,17 @@ class Reaction_scheme (models.Model):
 class Scheme_step(models.Model):
     id_step       = models.AutoField (primary_key = True, verbose_name='ИД')
     scheme        = models.ForeignKey(Reaction_scheme, null = False, on_delete=models.CASCADE, related_name='steps')
-    name          = models.CharField (max_length = 250, verbose_name='Обозначение')
+    name          = models.CharField (max_length = 250, blank = True, verbose_name='Обозначение')
     order         = models.IntegerField (verbose_name='№ п/п')
     is_revers     = models.BooleanField (verbose_name='Обратимая')
     note            = models.CharField (max_length = 250, blank = True, verbose_name='Примечание')
     rate_equation = models.TextField (blank= True, verbose_name='Выражение для скорости')#todo data type
     def __unicode__ (self):
-        return self.name
+        title = str(self.order)
+        if self.name:
+            str_name = self.name.strip(' ')  
+            title = title + '{'+str_name+'}'        
+        return title
 
     def get_leftPart_of_step(self):
         s_substs_arr = self.scheme_step_substs.all()
@@ -316,12 +437,10 @@ class Scheme_step(models.Model):
                     i = i+1
                 error_list.append(error_str)
             return b
-
         except:
             error_str = 'Неизвестная ошибка по исключению'
             error_list.append(error_str)
             return False
-        return True
 
     class Meta:
         ordering            = ["order"]

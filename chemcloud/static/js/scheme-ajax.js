@@ -1,4 +1,24 @@
 $(document).ready(function(){
+	$('#check_balance').click(function(){
+		var url = $(this).attr("data-url-checkbalance");
+        console.log(url);
+		$.getJSON(url, {}, function(data){
+			var arr   = JSON.parse(data);
+            console.log(arr);
+			var result = arr.result;			
+			var errorText = arr.errorText;
+            var messageText = arr.messageText;
+			if (result == 'True')		
+			{
+                alert("Баланс соблюдается.");
+			} 
+            else
+                alert(messageText);
+
+			return true;	
+		});
+	});
+
 	$('#add_step').click(function(){
 		/*
 		способы вставить строку:
@@ -26,8 +46,8 @@ $(document).ready(function(){
 			tr_str = tr_str + '<td data-url-order="'+url_changeorder+'"><button id="btn_' + id_step + 'up" class="changeorder" data-stepid="' + id_step + '" data-direction="up"  type="button">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button">&#9660</button></td>';
 
 			tr_str = tr_str + '<td id="order_' + id_step + '"> '+step_order+' </td>';
-			tr_str = tr_str + '<td class="edit name '+id_step + '">'+step_name+'<button type="button" class="editbtn"><span class="glyphicon glyphicon-pencil"></span></button></td>';
-			tr_str = tr_str + '<td class="edit step '+id_step + '"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></td>';//сама стадия пока пустая
+			tr_str = tr_str + '<td class="edit name '+id_step + '">'+step_name+'<div class="div-right"><button type="button" class="editbtn"><span class="glyphicon glyphicon-pencil"></span></button></div></td>';
+			tr_str = tr_str + '<td class="edit step '+id_step + '"><div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div></td>';//сама стадия пока пустая
 			tr_str = tr_str + '<td><button id="btn_' + id_step + 'del" class="step_delete" type="button" class="btn btn-default"  data-stepid="' + id_step + '" data-url-delete="' + url_delete+ '" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>';
 			tr_str = tr_str + '<td> <a href="'+url_detail+'">Детали </a></td>';
 			tr_str = tr_str + '</tr>';

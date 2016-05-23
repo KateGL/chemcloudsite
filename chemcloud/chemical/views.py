@@ -217,6 +217,20 @@ def scheme_report(request, id_reaction, id_scheme):
     #empty now TODO
     return redirect('scheme_detail', id_reaction, id_scheme)
 
+@login_required
+def scheme_check_balance(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    scheme = scheme_dict['scheme'];
+    balance_mess = []
+    result = 'True'
+    balance_bool = scheme.check_scheme_balance(balance_mess)
+    mess = ''
+    if not balance_bool:
+        mess = balance_mess[0]
+        result = 'False'
+    data = '{"result":"' + result  +'", "messageText": "' + mess + '"}'  
+    xml_bytes = json.dumps(data)
+    return HttpResponse(xml_bytes,'application/json')
 
 @login_required
 def step_detail(request, id_reaction, id_scheme, id_step):
@@ -327,9 +341,9 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
     result = 'success'
     errorText = ''
     if field_str == 'name':
-        step.name = value_str
+        step.name = value_str.strip(' ')
     if field_str == 'step':
-        step_str = value_str
+        step_str = value_str.strip(' ')
         left_str = ''
         right_str = ''
         pos=step_str.find('->')
