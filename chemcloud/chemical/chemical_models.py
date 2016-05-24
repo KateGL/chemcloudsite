@@ -204,7 +204,7 @@ class Reaction_scheme (models.Model):
             if not b:
                 i = 0
                 steps = self.steps.all()
-                error_str = ''; 
+                error_str = '';
                 while i < stage_count:
                     error_str_temp = 'Стадия ' + str(steps[i])
                     k = 0
@@ -222,7 +222,7 @@ class Reaction_scheme (models.Model):
                     i = i+1
                     if k!=0:
                         error_str = error_str+error_str_temp + '. '
-                        bool_temp = False  
+                        bool_temp = False
                     #steps[i].is_good_balance = bool_temp по идее перезапись состояния баланса осуществляется при сохранении стадии
                     #steps_list[i].save()
                 error_list.append(error_str)
@@ -333,8 +333,8 @@ class Scheme_step(models.Model):
     def __unicode__ (self):
         title = str(self.order)
         if self.name:
-            str_name = self.name.strip(' ')  
-            title = title + '{'+str_name+'}'        
+            str_name = self.name.strip(' ')
+            title = title + '{'+str_name+'}'
         return title
 
     def get_leftPart_of_step(self):
@@ -714,7 +714,7 @@ class Exper_subst_data (models.Model):
 
 class Exper_point (models.Model):
     id_point = models.AutoField (primary_key = True, verbose_name='ИД')
-    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_point', verbose_name='Вещество эксперимента')
+    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_points', verbose_name='Вещество эксперимента')
     arg_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение аргумента')
     func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение концентрации')
 

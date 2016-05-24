@@ -232,7 +232,7 @@ def scheme_check_balance(request, id_reaction, id_scheme):
         mess = balance_mess[0]
         result = 'False'
         tr_class = 'danger'
-    data = '{"result":"' + result  +'", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'"}'  
+    data = '{"result":"' + result  +'", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'"}'
     xml_bytes = json.dumps(data)
     return HttpResponse(xml_bytes,'application/json')
 
@@ -428,7 +428,7 @@ def step_new(request, id_reaction, id_scheme):
     link_delete = reverse('step_delete', args=[id_reaction, id_scheme ])
 
     data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'", "url_detail": "'+ link_detail+'", "url_changeorder": "' + link_changeorder+'"}'
-    #fv_dict = {"id_step": new_step.id_step, "order":new_step.order, "name": new_step.name, "url_detail": link_detail, "url_changeorder": link_changeorder}    
+    #fv_dict = {"id_step": new_step.id_step, "order":new_step.order, "name": new_step.name, "url_detail": link_detail, "url_changeorder": link_changeorder}
     xml_bytes = json.dumps(data)
     print (xml_bytes)
     return HttpResponse(xml_bytes,'application/json')
@@ -552,9 +552,11 @@ def experiment_detail(request, id_reaction, id_experiment):
 def experiment_edit(request, id_reaction, id_experiment):
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
     # получаем список веществ реакции
-    reac_substs = request.user.chemistry.react_subst_all(id_reaction)
+    # reac_substs = request.user.chemistry.react_subst_all(id_reaction)
+    # получаем список веществ эксперимента
     exp_substs = request.user.chemistry.exper_subst_all(id_reaction,id_experiment)
-    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'reac_substs': reac_substs,'exp_substs': exp_substs}
+    exp_points = request.user.chemistry.exper_points_all(id_reaction,id_experiment)
+    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'exp_substs': exp_substs,'exp_points':exp_points}
     return render(request, 'chemical/experiment_edit.html', context)
 
 

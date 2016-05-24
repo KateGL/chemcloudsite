@@ -49,7 +49,7 @@
        {% endfor %}
     </tr>
     <tr>
-       <td>Начальная концентрация (где в БД хранится ед.изм.?)</td>
+       <td>Начальная концентрация, {{ experiment.init_function_measure.code }}</td>
        {% for exp_subst in exp_substs %}
           <td> {{ exp_subst.init_func_val }} </td>
        {% endfor %}
@@ -70,10 +70,34 @@
 </div>
 Вид:
 
-
-
 <input type="radio" checked>Таблица
 <input type="radio">График
+
+<div>
+<table class="paleblue">
+    <tr>
+       <th>{{ experiment.arg.name }} ({{experiment.argument_measure.code }})/{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
+       {% for exp_subst in exp_substs %}
+          <th> {{ exp_subst.reaction_subst.brutto_formula_short }} ({{ exp_subst.reaction_subst.alias }})</th>
+       {% endfor %}
+    </tr>
+    {% if experiment %}
+        {% for exp_point in exp_points %}
+        <tr>
+            <td>{{exp_point.arg_val}} </td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% endfor %}
+
+    {% else %}
+        <strong> Не удалось получить точки эксперимента </strong>
+    {% endif %}
+			
+
+
+</table>
+</div>
 
             </div>
 {% endblock %}

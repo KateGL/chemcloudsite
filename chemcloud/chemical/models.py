@@ -204,13 +204,31 @@ class Chemistry(models.Model):
         exper_dict = self.experiment_get(id_reaction,id_experiment)
         return exper_dict['experiment'].exper_substs.all()
 
-    #по id вещества эксперимента
+    #по id вещества эксперимента получить вещество эксперимента
     def exper_subst_get(self, id_expersubst):
         try:
             exper_subst = Exper_subst.objects.get(pk=id_expersubst)
         except Exper_subst.DoesNotExist:
             raise Http404("Experiment substance does not exist or access denied")
         return exper_subst
+
+    #по id вещества эксперимента получить экспериментальные точки
+    def exper_points(self, id_expersubst):
+        exp_subst = self.exper_subst_get(id_expersubst)
+        return exp_subst.exper_points.all()
+
+    # получить все экспериментальные точки по id эксперимента и id реакции
+    def exper_points_all(self,id_reaction,id_experiment):
+        exp_substs = self.exper_subst_all(id_reaction,id_experiment)
+        i = 0
+        exp_point_all = []
+        for exp_subst in exp_substs:
+            exp_point_all.insert(0,self.exper_points(exp_subst.id_expersubst))
+            #print(self.exper_points(exp_subst.id_expersubst))
+            i= i+1
+        return exp_point_all
+
+
 
     def dict_model_funct_all(self):
         return Dict_model_function.objects.all()
