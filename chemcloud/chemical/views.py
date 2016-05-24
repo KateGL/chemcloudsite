@@ -114,6 +114,7 @@ def reaction_all(request):
 def reaction_detail(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
     user_reacts = UserOfReactionTable(react.reaction.users.all())
+    react_features = request.user.chemistry.react_feature_all(id_reaction)
     form = ReactionShareForm(request.POST or None)
     rights = 'cc'
     if request.method == 'POST':
@@ -127,7 +128,7 @@ def reaction_detail(request, id_reaction):
             #form.cleaned_data['message'])  , 'text': str(form.cleaned_data['rights']
     return render(request, 'chemical/reaction_detail.html',
          {"reaction": react.reaction, "id_reaction": id_reaction, "is_owner": react.is_owner,
-              'form': form, 'user_reacts': user_reacts})
+              'form': form, 'user_reacts': user_reacts, 'react_features':react_features})
 
 
 @login_required
@@ -567,8 +568,7 @@ def experiment_edit(request, id_reaction, id_experiment):
     # получаем список веществ реакции
     reac_substs = request.user.chemistry.react_subst_all(id_reaction)
     exp_substs = request.user.chemistry.exper_subst_all(id_reaction,id_experiment)
-    react_features = request.user.chemistry.react_feature_all(id_reaction)
-    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'reac_substs': reac_substs,'exp_substs': exp_substs,'react_features':react_features}
+    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'reac_substs': reac_substs,'exp_substs': exp_substs}
     return render(request, 'chemical/experiment_edit.html', context)
 
 
