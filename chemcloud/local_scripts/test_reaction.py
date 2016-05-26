@@ -151,7 +151,7 @@ def populate():
    # H2O
    c = Substance.objects.get(id_substance=2)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(2,a,d,e,1,49)
+   add_exper_subst(2,a,d,e,0,49)
    # O2
    c = Substance.objects.get(id_substance=3)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
@@ -200,8 +200,8 @@ def populate():
    # H2O
    c = Substance.objects.get(id_substance=2)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(7,a,d,e,1,49)
-   # O2
+   add_exper_subst(7,a,d,e,0,49)
+   # CO2
    c = Substance.objects.get(id_substance=3)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
    e = Dict_subst_role.objects.get(id_role=3)
@@ -217,14 +217,17 @@ def populate():
    add_exper_subst(10,a,d,e,1,34)
 
    # данные Эксперимента 2
-   c = Exper_subst.objects.get(id_expersubst=1)
+   c = Exper_subst.objects.get(id_expersubst=6)
    add_exper_point(5,c,0.02,0.03)
-   c = Exper_subst.objects.get(id_expersubst=3)
-   add_exper_point(6,c,0.02,9.94)
-   c = Exper_subst.objects.get(id_expersubst=4)
-   add_exper_point(7,c,0.02,3.83)
-   c = Exper_subst.objects.get(id_expersubst=5)
-   add_exper_point(8,c,0.02,84.99)
+   add_exper_point(6,c,0.03,0.04)
+   c = Exper_subst.objects.get(id_expersubst=8)
+   add_exper_point(7,c,0.02,9.94)
+   add_exper_point(8,c,0.03,10.94)
+   c = Exper_subst.objects.get(id_expersubst=9)
+   add_exper_point(9,c,0.02,3.83)
+   c = Exper_subst.objects.get(id_expersubst=10)
+   add_exper_point(10,c,0.02,84.99)
+   add_exper_point(11,c,0.03,89.94)
 
 
    # Print out what we have added to the user.

@@ -223,9 +223,9 @@ class Chemistry(models.Model):
         i = 0
         exp_point_all = []
         for exp_subst in exp_substs:
-            exp_point_all.insert(0,self.exper_points(exp_subst.id_expersubst))
-            #print(self.exper_points(exp_subst.id_expersubst))
-            i= i+1
+            if exp_subst.is_observed:
+                exp_point_all.insert(i,self.exper_points(exp_subst.id_expersubst))
+                i= i+1
         return exp_point_all
 
 

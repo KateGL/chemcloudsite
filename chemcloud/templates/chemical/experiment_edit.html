@@ -76,17 +76,15 @@
 <div>
 <table class="paleblue">
     <tr>
-       <th>{{ experiment.arg.name }} ({{experiment.argument_measure.code }})/{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
-       {% for exp_subst in exp_substs %}
-          <th> {{ exp_subst.reaction_subst.brutto_formula_short }} ({{ exp_subst.reaction_subst.alias }})</th>
-       {% endfor %}
-    </tr>
-    {% if experiment %}
+       <th>{{ experiment.arg.name }} ({{experiment.argument_measure.code }})</th>
+          <th> вещество</th> <th>{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
+           </tr>
+    {% if exp_points %}
         {% for exp_point in exp_points %}
         <tr>
             <td>{{exp_point.arg_val}} </td>
-            <td></td>
-            <td></td>
+            <td>{{exp_point.exper_subst.reaction_subst.brutto_formula_short}}</td>
+            <td>{{exp_point.func_val}} </td>
         </tr>
         {% endfor %}
 
