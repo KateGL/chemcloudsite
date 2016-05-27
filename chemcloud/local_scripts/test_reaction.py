@@ -14,7 +14,7 @@ from chemical.chemical_models import Reaction, User_reaction,Substance,Substance
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
 from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
 from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data,Exper_serie,Experserie_experiment
-from chemical.chemical_models import Exper_point
+from chemical.chemical_models import Exper_point,Reaction_feature
 from django.contrib.auth.models import User
 
 def drop_all():
@@ -29,6 +29,7 @@ def drop_all():
      Experserie_experiment.objects.all().delete()
      Exper_serie.objects.all().delete()
      Experiment.objects.all().delete()
+     Reaction_feature.objects.all().delete()
      Reaction.objects.all().delete()
      Reaction_scheme.objects.all().delete()
      Scheme_step.objects.all().delete()
@@ -44,6 +45,8 @@ def populate():
    b = Reaction.objects.get(id_reaction=1)
    c = User.objects.get(id=1)
    add_user_reaction(b,c,1)
+   c = Dict_feature.objects.get(id_feature=0)
+   add_reaction_feature(1,b,c)
    add_substance(1,'пропан',0,0,'C3H8','пропан')
    add_substance(2,'вода',0,0,'H2O','вода')
    add_substance(3,'оксид углерода (IV)',0,0,'CO2','углекислый газ')
@@ -62,8 +65,8 @@ def populate():
 
    add_reac_scheme(1,b,'Схема реакции паровой конверсии пропана','Схема реакции паровой конверсии пропана',1,'Admin','Admin')
    c = Reaction_scheme.objects.get(id_scheme=1)
-   add_scheme_step(1,c,'Стадия № 1',1,0,'Первая стадия','')
-   add_scheme_step(2,c,'Стадия № 2',2,1,'Вторая стадия','')
+   add_scheme_step(1,c,'Стадия № 1',1,0,'Первая стадия','', True)
+   add_scheme_step(2,c,'Стадия № 2',2,1,'Вторая стадия','', True)
    c = Scheme_step.objects.get(id_step=1)
    d = Substance.objects.get(id_substance=1)
    f = Reaction_subst.objects.get(reaction=b,substance=d)
@@ -138,7 +141,7 @@ def populate():
    a = Experiment.objects.get(id_experiment=1)
    b = Exper_serie.objects.get(id_serie=1)
    add_experserie_experiment(a,b)
-   # Добавление вещест реакции в эксперименте
+   # Добавление веществ реакции в эксперименте
    b = Reaction.objects.get(id_reaction=1)
    # C3H8
    c = Substance.objects.get(id_substance=1)
@@ -148,7 +151,7 @@ def populate():
    # H2O
    c = Substance.objects.get(id_substance=2)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(2,a,d,e,1,49)
+   add_exper_subst(2,a,d,e,0,49)
    # O2
    c = Substance.objects.get(id_substance=3)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
@@ -197,8 +200,8 @@ def populate():
    # H2O
    c = Substance.objects.get(id_substance=2)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(7,a,d,e,1,49)
-   # O2
+   add_exper_subst(7,a,d,e,0,49)
+   # CO2
    c = Substance.objects.get(id_substance=3)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
    e = Dict_subst_role.objects.get(id_role=3)
@@ -214,14 +217,17 @@ def populate():
    add_exper_subst(10,a,d,e,1,34)
 
    # данные Эксперимента 2
-   c = Exper_subst.objects.get(id_expersubst=1)
+   c = Exper_subst.objects.get(id_expersubst=6)
    add_exper_point(5,c,0.02,0.03)
-   c = Exper_subst.objects.get(id_expersubst=3)
-   add_exper_point(6,c,0.02,9.94)
-   c = Exper_subst.objects.get(id_expersubst=4)
-   add_exper_point(7,c,0.02,3.83)
-   c = Exper_subst.objects.get(id_expersubst=5)
-   add_exper_point(8,c,0.02,84.99)
+   add_exper_point(6,c,0.03,0.04)
+   c = Exper_subst.objects.get(id_expersubst=8)
+   add_exper_point(7,c,0.02,9.94)
+   add_exper_point(8,c,0.03,10.94)
+   c = Exper_subst.objects.get(id_expersubst=9)
+   add_exper_point(9,c,0.02,3.83)
+   c = Exper_subst.objects.get(id_expersubst=10)
+   add_exper_point(10,c,0.02,84.99)
+   add_exper_point(11,c,0.03,89.94)
 
 
    # Print out what we have added to the user.
@@ -259,8 +265,8 @@ def add_reac_scheme(id_s,r,nm,descr,is_p,cb,ub):
     a.save()
     return a
 
-def add_scheme_step(id_s,s,nm,od,is_r,nt,re):
-    a = Scheme_step.objects.get_or_create(id_step=id_s,scheme=s,name=nm,order=od,is_revers=is_r,note=nt,rate_equation=re)[0]
+def add_scheme_step(id_s,s,nm,od,is_r,nt,re, bl):
+    a = Scheme_step.objects.get_or_create(id_step=id_s,scheme=s,name=nm,order=od,is_revers=is_r,note=nt,rate_equation=re, is_good_balance = bl)[0]
     a.save()
     return a
 
@@ -299,6 +305,10 @@ def add_exper_point(ip,es,av,fv):
     a.save()
     return a
 
+def add_reaction_feature(irf,r,f):
+    a = Reaction_feature.objects.get_or_create(id_reaction_feature=irf,reaction=r,feature=f)[0]
+    a.save()
+    return a
 
 # Start execution here!
 if __name__ == '__main__':

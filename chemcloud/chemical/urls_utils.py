@@ -17,3 +17,5 @@ def make_name_link(link, name):
 
 def get_subst_detail_link(id_subst):
     return '/chemical/substance/' + str(id_subst) + '/detail/'
+
+

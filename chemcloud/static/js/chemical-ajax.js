@@ -16,24 +16,10 @@ function getCookie(name) {
     return cookieValue;
 }
 
-String.prototype.toUTF8 = function() {
-    var n, s = '';
-    for (var i = 0, iTextLen = this.length; i < iTextLen; i++) {
-        n = this.charCodeAt(i);
-        if (n < 128) s += String.fromCharCode(n);
-        else if (n < 2048) s += String.fromCharCode(192 | n >> 6) + String.fromCharCode(128 | n & 63);
-        else if (n < 65536) s += String.fromCharCode(224 | n >> 12) + String.fromCharCode(128 | n >> 6 & 63) + String.fromCharCode(128 | n & 63);
-        else s += String.fromCharCode(240 | n >> 18) + String.fromCharCode(128 | n >> 12 & 63) + String.fromCharCode(128 | n >> 6 & 63) + String.fromCharCode(128 | n & 63);
-    };
-    return s;
-};
-String.prototype.UrlEncode = function() {
-    return this.toUTF8().replace( /[^-_\.!~*'\(\)\da-zA-Z]/g , function(ch) {
-        var c = ch.charCodeAt(0).toString(16);
-        if (c.length == 1) c = '0' + c;
-        return '%' + c;
-    });
-};
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
 
 //=====================================================================
 //=== УНИВЕРСАЛЬНЫЙ ОБРАБОТЧИК РЕДАКТИРОВАНИЯ ЯЧЕЕК ТАБЛИЦ ============
@@ -44,7 +30,8 @@ String.prototype.UrlEncode = function() {
 	//$('button.editbtn').click(function(){ 
    $('tbody').on("click", "button.editbtn", function(){
       console.log('button.editbtn');
-		ptd = $(this).parent('td');
+		ptd = $(this).parent('div');
+        ptd = ptd .parent('td');
         arr = ptd.attr('class').split( " " );
         var id  = arr[1]+arr[2];
 		$('.ajax'+id).html($('.ajax'+id+' input').val());
@@ -52,24 +39,22 @@ String.prototype.UrlEncode = function() {
 		//$('.ajax'+id).removeClass('ajax');
 		ptd.addClass('ajax'+id);
 		//внутри ячейки создаём input и вставляем текст из ячейки в него
-		ptd.html('<input id="editbox'+id+'" size="'+ ptd.text().length+'" type="text" value="' + ptd.text() + '" /> <button type="button" class="save step"  ><span class="glyphicon glyphicon-floppy-disk"></span></button> <button type="button" class="delete step"  ><span class="glyphicon glyphicon-remove"></span></button>');
+		ptd.html('<span hidden>'+ptd.text()+' </span> <input id="editbox'+id+'" size="'+ ptd.text().length+'" type="text" value="' + ptd.text() + '" /> <div class="div-right"><button type="button" class="save"  ><span class="glyphicon glyphicon-floppy-disk"></span></button> <button type="button" class="revert"  ><span class="glyphicon glyphicon-remove"></span></button></div');
 		//устанавливаем фокус на созданном элементе
 		$('#editbox'+id).focus();
 		});
 
    $('tbody').on("click", "button.save", function(){
-      console.log('tut_save');
 		//получаем значение класса и разбиваем на массив
 		//в итоге получаем такой массив - arr[0] = edit, arr[1] = наименование столбца, arr[2] = id строки
-		ptd = $(this).parent('td');
+		ptd = $(this).parent('div');
+        ptd = ptd .parent('td');
 		arr = ptd.attr('class').split( " " );
         arr = ptd.attr('class').split( " " );
         var id  = arr[1]+arr[2];
 		//получаем наименование таблицы, в которую будем вносить изменения
 		var table_str = $('table').attr('id');
-        var value = $('.ajax'+id + ' input').val();
-        value=value.replace(new RegExp("\\+",'g'),"<plus>") // заменяем плюс, иначе не передается знак плюс
-        //value = value.toUTF8().UrlEncode();//кодируем передаваемое значение, иначе символ + не передается
+        var evalue = $('.ajax'+id + ' input').val();
 
 		//выполняем ajax запрос методом POST
 		//в файл update_cell.php
@@ -78,23 +63,51 @@ String.prototype.UrlEncode = function() {
 		//id = номер строки
 		//field = название столбца
 		//table = название таблицы - в названии таблицы поместить через _ нужные ид
-		var url_str  = "/chemical/cell_update/";
+		var url_str  = $('table').attr("data-url-cellupdate");
 		var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
-		var data_str = "value="+value+"&id="+arr[2]+"&field="+arr[1]+"&table="+table_str+"&csrfmiddlewaretoken="+csrftoken;
-		 $.ajax({ type: "POST", url: url_str, data: data_str,
+        var data_to_edit = {
+            value: evalue,
+            id: arr[2],
+            field: arr[1],
+            table: table_str
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+
+		 $.ajax({ type: "POST", url: url_str, 
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify(data_to_edit),
+            dataType: 'json',
 			//при удачном выполнении скрипта, производим действия
 			 success: function(data){
 				var arr   = JSON.parse(data);
 				var result = arr.result;			
 				var errorText = arr.errorText;
                 var messageText = arr.messageText;
+                var messageText = arr.messageText;
+                var tr_class = arr.tr_class;
+                console.log(tr_class)
 				if (result == 'success')		
 				{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
-				 	$('.ajax'+id).html($('.ajax'+id+' input').val() + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
+				 	$('.ajax'+id).html($('.ajax'+id+' input').val() + '<div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div>');
 					//удаялем класс ajax
+                    var ptr = $('.ajax'+id).parent('tr');
+                    old_class = ptr.attr('class');
 				 	$('.ajax'+id).removeClass('ajax'+id);
                     if (messageText.length !=0)
                         alert(messageText);
+                    if (tr_class.length !=0)
+                        ptr.addClass(tr_class);
+                    else
+                        ptr.removeClass(old_class);
+               
 				}
 				else
 				{
@@ -111,24 +124,17 @@ String.prototype.UrlEncode = function() {
 		 });
 		});
 
-   $('tbody').on("click", "button.delete", function(){
+   $('tbody').on("click", "button.revert", function(){
       console.log('tut_delete');
-			td_el = $(this).parent('td');				
-			arr = td_el.attr('class').split( " " );
-            var id  = arr[1]+arr[2];
-			var table_str = $('table').attr('id');
-			var url_str  = "/chemical/cell_value/";
-			var csrftoken = getCookie('csrftoken');
- 		 $.post(url_str, {id: arr[2], field: arr[1], table: table_str, csrfmiddlewaretoken:  csrftoken},function(data){
-					var arr   = JSON.parse(data);
-					old_val = arr.value;
-					//находим input внутри элемента с классом ajax и вставляем вместо input его значение
-					 $('.ajax'+id).html(old_val + '<button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button>');
-					//удаялем класс ajax
-					 $('.ajax'+id).removeClass('ajax'+id);
-console.log('old_val='+old_val);	
-
-			 }, 'JSON');
+		ptd = $(this).parent('div');
+    	td_el = ptd.parent('td');				
+		arr = td_el.attr('class').split( " " );
+        var id  = arr[1]+arr[2];
+		var csrftoken = getCookie('csrftoken');
+        var old_val = $('.ajax'+id+' span').text();
+        $('.ajax'+id).html(old_val + '<div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div>');
+		//удаялем класс ajax
+		 $('.ajax'+id).removeClass('ajax'+id);
 		});
 
 	//при нажатии на ячейку таблицы с классом edit	
@@ -196,8 +202,9 @@ console.log('old_val='+old_val);
 	 	}
 	});
 
+
 	//убираем input при нажатии вне поля ввода, если не хотим сохранять введенную информацию
-	/*$(document).on('blur', '#editbox', function(){			
+	$(document).on('blur', '#editbox', function(){			
 			td_el = $(this).parent();				
 			arr = td_el.attr('class').split( " " );
 			var table_str = $('table').attr('id');
@@ -215,6 +222,5 @@ console.log('old_val='+old_val);
 			 }, 'JSON');
 	});
 */
-
-//=====================================================================
+//====================================================================
 

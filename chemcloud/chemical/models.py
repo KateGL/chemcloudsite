@@ -11,8 +11,8 @@ from django.contrib.auth.models import User
 from chemical.chemical_models import Dict_atom, Substance, Reaction, User_reaction
 from chemical.chemical_models import Reaction_subst, Experiment, Reaction_scheme
 from chemical.chemical_models import Scheme_step, Substance_synonym, Dict_feature
-from chemical.chemical_models import Reaction_feature
-from chemical.chemical_models import Problem, Dict_problem_type
+from chemical.chemical_models import Reaction_feature,Exper_subst,Dict_model_function
+from chemical.chemical_models import Problem, Dict_problem_type,Dict_model_argument,Dict_measure_unit
 
 
 def owner_required(f):
@@ -191,13 +191,65 @@ class Chemistry(models.Model):
     def experiment_get(self, id_reaction, id_experiment):
         react = self.reaction_get(id_reaction)
         try:
-            exp = react.reaction.experiments.get(pk=id_experiment)
+            exp = self.experiment_all(id_reaction).get(pk=id_experiment)
         except Experiment.DoesNotExist:
             raise Http404("Experiment does not exist")
         exp_dict = {}
         exp_dict['experiment'] = exp
         exp_dict['is_owner'] = react.is_owner
         return exp_dict
+
+    # получить вещества эксперимента
+    def exper_subst_all(self, id_reaction,id_experiment):
+        exper_dict = self.experiment_get(id_reaction,id_experiment)
+        return exper_dict['experiment'].exper_substs.all()
+
+    #по id вещества эксперимента получить вещество эксперимента
+    def exper_subst_get(self, id_expersubst):
+        try:
+            exper_subst = Exper_subst.objects.get(pk=id_expersubst)
+        except Exper_subst.DoesNotExist:
+            raise Http404("Experiment substance does not exist or access denied")
+        return exper_subst
+
+    #по id вещества эксперимента получить экспериментальные точки
+    def exper_points(self, id_expersubst):
+        exp_subst = self.exper_subst_get(id_expersubst)
+        return exp_subst.exper_points.all()
+
+    # получить все экспериментальные точки по id эксперимента и id реакции
+    def exper_points_all(self,id_reaction,id_experiment):
+        exp_substs = self.exper_subst_all(id_reaction,id_experiment)
+        i = 0
+        exp_point_all = []
+        for exp_subst in exp_substs:
+            if exp_subst.is_observed:
+                exp_point_all.insert(i,self.exper_points(exp_subst.id_expersubst))
+                i= i+1
+        return exp_point_all
+
+
+
+    def dict_model_funct_all(self):
+        return Dict_model_function.objects.all()
+
+    # по id функции модели
+    def dict_model_funct_get(self, id_func):
+        try:
+            dict_model_funct = Dict_model_function.objects.get(pk=id_func)
+        except Dict_model_function.DoesNotExist:
+            raise Http404("Dict_model_function does not exist or access denied")
+        return dict_model_funct
+
+    # по id реакции вернуть все характеристики реакции
+    def react_feature_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.reac_features.all()
+
+    # по id реакции вернуть все тэги реакции
+    def react_tag_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.reac_tags.all()
 
     # по id вещества
     def subst_synonym_all(self, id_substance):
@@ -207,8 +259,13 @@ class Chemistry(models.Model):
             raise Http404("Substance does not exist")
         return subst
 
-    # по id синонима (возможно не нужен)
-    # def subst_synonym_get(self,):
+    # по id синонима вернуть синоним вещества
+    def subst_synonym_get(self, id_subst_synonym):
+        try:
+            subst_synonym = Substance_synonym.objects.get(pk=id_subst_synonym)
+        except Substance_synonym.DoesNotExist:
+            raise Http404("Substance_synonym does not exist")
+        return subst_synonym
 
     #вернуть весь справочник характеристик
     def dict_feature_all(self):
@@ -221,6 +278,31 @@ class Chemistry(models.Model):
         except Dict_feature.DoesNotExist:
             raise Http404("Dict_feature does not exist")
         return dict_feature
+
+    # все аргументы модели
+    def dict_model_arg_all(self):
+        return Dict_model_argument.objects.all()
+
+    # вернуть аргумент по id аргумента
+    def dict_model_arg_get(self, id_arg):
+        try:
+            dict_model_arg = Dict_model_argument.objects.get(pk=id_arg)
+        except Dict_model_argument.DoesNotExist:
+            raise Http404("Dict_model_argument does not exist")
+        return dict_model_arg
+
+    # вернуть все единицы измерения
+    def dict_unit_all(self):
+        return Dict_measure_unit.objects.all()
+
+    # вернуть ед.изм. по id ед.изм.
+    def dict_unit_get(self, id_unit):
+        try:
+            dict_unit = Dict_measure_unit.objects.get(pk=id_unit)
+        except Dict_measure_unit.DoesNotExist:
+            raise Http404("Dict_measure_unit does not exist")
+        return dict_unit
+
 
     def problem_all(self, id_reaction):
         react = self.reaction_get(id_reaction)
@@ -243,25 +325,6 @@ class Chemistry(models.Model):
         except Dict_problem_type.DoesNotExist:
             raise Http404("Dict_problem_type does not exist")
         return problem_type
-
-    # TODO
-
-    # по id реакции вернуть все характеристики реакции
-    #def react_feature_all(self, id_reac):
-
-    # по id реакции
-    #def react_tag_all
-
-    # по id реакции и id тэга
-    #def react_tag_get
-
-    #* exper_subst_all(..), exper_subst_get(по id вещества эксперимента)
-    #* dict_model_funct_all(..), //
-    #dict_model_funct_get(по id фукнции)
-    #* dict_model_arg_all(..),
-    #dict_model_arg_get(по id аргумента)
-    #* dict_unit_all(..),
-    #dict_unit_get(.по id ед.изм.)
 
     class Meta:
         verbose_name = ('Доступ к Химии')

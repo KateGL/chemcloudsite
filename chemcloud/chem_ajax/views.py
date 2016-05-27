@@ -108,6 +108,7 @@ def substance_detail_edit(request, id_substance):
 @login_required
 @owner_required
 def reaction_detail_edit(request, id_reaction):
+    print(request)
     ureact = request.user.chemistry.reaction_get(id_reaction)
     react = ureact.reaction
     fv_dict = set_field_and_value_from_request(request, react)

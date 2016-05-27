@@ -6,99 +6,96 @@
 
 
 {% block body_block %}
-   
+
     <div class="page-header">
 
     <h1> <a href="{% url 'reaction_all' %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span>
           </a>   Детали реакции {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>
-      
-    </div>         
-           
 
-  <div class="page-content"> 
-  <div class="row">          
+    </div>
+
+
+  <div class="page-content">
+  <div class="row">
  <div class="col-xs-7">
  <div>
- 
+
   <table class="table ">
     <tbody id="detail_main" model_name="Reaction" url_edit="{% url 'reaction_detail_edit' reaction.pk %}" >
-      
+
       <tr>
         <td class="detail_caption">Название:</td>
         <td class="detail_value"><input class="box_input"  type="text" disabled="disabled" value="{{  reaction.name }}"/></td>
         {% if is_owner %}
-        <td class="detail_edit" > </td>         
+        <td class="detail_edit" > </td>
          <td class="detail_btns" field_name="name">
-     
+
         </td>
         {% endif %}
       </tr>
-      
- 
-      
+
+
+
       <tr>
         <td class="detail_caption">Описание:</td>
         <td class="detail_value"><textarea class="form-control"  rows="10" disabled="disabled">{{  reaction.description }}</textarea></td>
         {% if is_owner %}
-        <td class="detail_edit"  ></td>         
+        <td class="detail_edit"  ></td>
          <td class="detail_btns" field_name="description">
-      
+
         </td>
         {% endif %}
       </tr>
-      
+
       <tr>
         <td class="detail_caption">Тип реакции</td>
         <td class="detail_value">
          <div class="well well-sm">
-      
-            <div >
-  <label>Нестационарная</label> <!--{{  reaction.is_notstationary }}-->
-</div>
-                   <div >
-  <label>Изотермическая</label> <!--{{  reaction.is_isothermal }}-->
-</div>
+
+        {% for react_feature in react_features %}
+            <div ><label>{{ react_feature.feature.name }} </label></div>
+        {% endfor %}
 
          </div>
-         
-      
+
+
         </td>
       </tr>
-      
+
       <tr>
         <td class="detail_caption">Дата создания:</td>
         <td class="detail_value">{{  reaction.created_date }}</td>
       </tr>
-      
+
       <tr>
         <td class="detail_caption">Создал(ла):</td>
         <td class="detail_value">{{  reaction.created_by }}</td>
       </tr>
-      
-       
-      
+
+
+
     </tbody>
   </table> </div>
-  
+
    <div><h4>Права на Реакцию</h4><a name="reaction_rights"></a>
-      
+
       {% render_table user_reacts %}
-    
-     
-     
-      
+
+
+
+
       </div>
-       
-        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalReactionShare">Поделиться Реакцией</button>  
-        
+
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ModalReactionShare">Поделиться Реакцией</button>
+
          <!-- Modal Share Reaction-->
-<div class="modal fade" id="ModalReactionShare" tabindex="-1" role="dialog" 
+<div class="modal fade" id="ModalReactionShare" tabindex="-1" role="dialog"
      aria-labelledby="ModalReactionShareLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <!-- Modal Header -->
             <div class="modal-header">
-                <button type="button" class="close" 
+                <button type="button" class="close"
                    data-dismiss="modal">
                        <span aria-hidden="true">&times;</span>
                        <span class="sr-only">Close</span>
@@ -106,32 +103,32 @@
                 <h4 class="modal-title" id="ModalReactionShareLabel">
                     Поделиться реакцией с пользователем
                 </h4>
-            </div>            
+            </div>
             <!-- Modal Body -->
-            <div class="modal-body">  
-             
-                                         
-               <form method="POST" class="form" >  
-            
-            {% include "chemical/form_body_new.html" %}    </form >                       
-            </div>     
+            <div class="modal-body">
+
+
+               <form method="POST" class="form" >
+
+            {% include "chemical/form_body_new.html" %}    </form >
+            </div>
     </div>
     </div>
      </div>
-             
-        
+
+
       </div>
         <div class=" col-xs-3">
-    
-    {% include "chemical/reaction_detail_menu.html" %} 
-    
-     
-    
-    
-     
-      </div>     
-       
-    
+
+    {% include "chemical/reaction_detail_menu.html" %}
+
+
+
+
+
+      </div>
+
+
 
 </div>
 </div>

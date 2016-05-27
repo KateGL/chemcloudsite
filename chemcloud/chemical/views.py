@@ -5,6 +5,7 @@ import json
 from django.shortcuts import render
 from django.http import HttpResponse, Http404
 from django.core import serializers
+from django.core.urlresolvers import reverse
 
 # Create your views here.
 from django.contrib.auth.decorators import login_required
@@ -20,9 +21,6 @@ from django.shortcuts import redirect
 from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm, ProblemForm
 from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
-
-
-
 from .models import owner_required, substance_owner_required
 
 # Вещество
@@ -114,6 +112,7 @@ def reaction_all(request):
 def reaction_detail(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
     user_reacts = UserOfReactionTable(react.reaction.users.all())
+    react_features = request.user.chemistry.react_feature_all(id_reaction)
     form = ReactionShareForm(request.POST or None)
     rights = 'cc'
     if request.method == 'POST':
@@ -127,7 +126,7 @@ def reaction_detail(request, id_reaction):
             #form.cleaned_data['message'])  , 'text': str(form.cleaned_data['rights']
     return render(request, 'chemical/reaction_detail.html',
          {"reaction": react.reaction, "id_reaction": id_reaction, "is_owner": react.is_owner,
-              'form': form, 'user_reacts': user_reacts})
+              'form': form, 'user_reacts': user_reacts, 'react_features':react_features})
 
 
 @login_required
@@ -219,6 +218,23 @@ def scheme_report(request, id_reaction, id_scheme):
     #empty now TODO
     return redirect('scheme_detail', id_reaction, id_scheme)
 
+@login_required
+def scheme_check_balance(request, id_reaction, id_scheme):
+    scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
+    scheme = scheme_dict['scheme'];
+    balance_mess = []
+    bad_steps = []
+    result = 'True'
+    balance_bool = scheme.check_scheme_balance(balance_mes)
+    mess = ''
+    tr_class=''
+    if not balance_bool:
+        mess = balance_mess[0]
+        result = 'False'
+        tr_class = 'danger'
+    data = '{"result":"' + result  +'", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'"}'
+    xml_bytes = json.dumps(data)
+    return HttpResponse(xml_bytes,'application/json')
 
 @login_required
 def step_detail(request, id_reaction, id_scheme, id_step):
@@ -251,43 +267,6 @@ def scheme_new(request, id_reaction):
     return render(request, 'chemical/scheme_new.html', context)
 
 @login_required
-def get_cell_value(request): #взятие старого значения ячейки
-    if not request.is_ajax():
-        return HttpResponse(status=400)
-    table_str = ''
-    id_str = ''
-    field_str = ''
-    if request.method != 'POST':
-        return HttpResponse(status=400)
-    table_str = request.POST['table']
-    id_str    = request.POST['id']
-    field_str = request.POST['field']
-    #взятие значения ячейки из базы
-    arr = table_str.split('_');
-    #таблица стадий механизма
-    pos = arr[0].find('all-steps');
-    if pos != -1:
-        id_reaction = int(arr[1])
-        id_scheme   = int(arr[2])
-        step_id = int(id_str)
-        step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, int(step_id))
-        step = step_dict['step']
-        value = ''
-        if field_str == 'name':
-            value = step.name
-        if field_str == 'step':
-            value = 'kuku'
-        data = '{"value": "' +value + '"}'
-        xml_bytes = json.dumps(data)
-        return HttpResponse(xml_bytes,'application/json')
-
-    #сюда для других таблиц вставлять свои проверки названия таблицы и соответствующие обработчики
-    return HttpResponse(
-            json.dumps({"nothing to see": "this isn't happening"}),
-            content_type="application/json"
-        )
-
-@login_required
 def cell_update(request):
     if not request.is_ajax():
         return HttpResponse(status=400)
@@ -297,14 +276,13 @@ def cell_update(request):
     value_str = ''
     if request.method != 'POST':
         return HttpResponse(status=400)
-    table_str = request.POST['table']
-    id_str    = request.POST['id']
-    field_str = request.POST['field']
-    value_str = request.POST['value']
-    #value_str = value_str.encode()
-    print(value_str)
-    value_str = value_str.replace('<plus>', '+')
-    print(value_str)
+    body_unicode = request.body.decode('utf-8')
+    body = json.loads(body_unicode)
+    table_str = body['table']
+    id_str    = body['id']
+    field_str = body['field']
+    value_str = body['value']
+
     data = '';
     #таблица стадий механизма
     pos = table_str.find('all-steps');
@@ -321,6 +299,7 @@ def cell_update(request):
             json.dumps('{"result": "error", "errorText": "unknown error"}'),
             content_type="application/json"
         )
+
 
 def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
     arr2 = part_str.split('+')
@@ -367,9 +346,9 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
     result = 'success'
     errorText = ''
     if field_str == 'name':
-        step.name = value_str
+        step.name = value_str.strip(' ')
     if field_str == 'step':
-        step_str = value_str
+        step_str = value_str.strip(' ')
         left_str = ''
         right_str = ''
         pos=step_str.find('->')
@@ -403,11 +382,13 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         step.save()
         balance_mess = []
         balance_bool = True
+        tr_class = ''
         if field_str == 'step':
             balance_bool = step.check_step_balance(balance_mess)
         if not balance_bool:
             mess = balance_mess[0]
-    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '"}'
+            tr_class = 'danger'
+    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'" }'
     return data
 
 
@@ -442,8 +423,14 @@ def step_new(request, id_reaction, id_scheme):
     new_step = scheme.create_new_emptystep();
     if new_step == -1:
         return HttpResponse(status=400)
-    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'"}'
+    link_detail = reverse('step_detail', args=[id_reaction, id_scheme, new_step.id_step ])
+    link_changeorder = reverse('change_step_order', args=[id_reaction, id_scheme ])
+    link_delete = reverse('step_delete', args=[id_reaction, id_scheme ])
+
+    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'", "url_detail": "'+ link_detail+'", "url_changeorder": "' + link_changeorder+'"}'
+    #fv_dict = {"id_step": new_step.id_step, "order":new_step.order, "name": new_step.name, "url_detail": link_detail, "url_changeorder": link_changeorder}
     xml_bytes = json.dumps(data)
+    print (xml_bytes)
     return HttpResponse(xml_bytes,'application/json')
 
 
@@ -565,8 +552,11 @@ def experiment_detail(request, id_reaction, id_experiment):
 def experiment_edit(request, id_reaction, id_experiment):
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
     # получаем список веществ реакции
-    reac_substs = request.user.chemistry.react_subst_all(id_reaction)
-    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'reac_substs': reac_substs}
+    # reac_substs = request.user.chemistry.react_subst_all(id_reaction)
+    # получаем список веществ эксперимента
+    exp_substs = request.user.chemistry.exper_subst_all(id_reaction,id_experiment)
+    exp_points = request.user.chemistry.exper_points_all(id_reaction,id_experiment)
+    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'exp_substs': exp_substs,'exp_points':exp_points}
     return render(request, 'chemical/experiment_edit.html', context)
 
 

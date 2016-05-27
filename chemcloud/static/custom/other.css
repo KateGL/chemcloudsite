@@ -99,3 +99,30 @@ color: #FEC63D;
 .btn-arrow-left:after { /* hide arrow tails background */
     background-color: white;
 }
+
+.div-right {
+	clear: both;
+    float:right;
+}
+
+.paleblue > thead > tr > td.danger,
+.paleblue > tbody > tr > td.danger,
+.paleblue > tfoot > tr > td.danger,
+.paleblue > thead > tr > th.danger,
+.paleblue > tbody > tr > th.danger,
+.paleblue > tfoot > tr > th.danger,
+.paleblue > thead > tr.danger > td,
+.paleblue > tbody > tr.danger > td,
+.paleblue > tfoot > tr.danger > td,
+.paleblue > thead > tr.danger > th,
+.paleblue > tbody > tr.danger > th,
+.paleblue > tfoot > tr.danger > th {
+  background-color: #f2dede;
+}
+.paleblue-hover > tbody > tr > td.danger:hover,
+.paleblue-hover > tbody > tr > th.danger:hover,
+.paleblue-hover > tbody > tr.danger:hover > td,
+.paleblue-hover > tbody > tr:hover > .danger,
+.paleblue-hover > tbody > tr.danger:hover > th {
+  background-color: #ebcccc;
+}
