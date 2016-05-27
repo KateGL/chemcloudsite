@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
+#from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
+#from django.forms.util import flatatt
 from .chemical_models import Reaction_scheme, Substance, Reaction, Experiment, Reaction_subst, Problem
 import re
-from .utils import check_blocks
+from chemical.utils import check_blocks
+
 
 
 #Реакции
@@ -47,17 +50,21 @@ class SubstanceForm(forms.ModelForm):
        model = Substance
        fields = ('name', 'charge', 'is_radical', 'formula_brutto', 'note')
 
+
 #Вещества реакции
 class ReactionSubstForm(forms.ModelForm):
     class Meta:
        model = Reaction_subst
        fields = ('substance', 'alias', 'brutto_formula_short', 'note')
 
+
 #Эксперименты
 class ExperimentForm(forms.ModelForm):
+
     class Meta:
         model = Experiment
-        fields = ('name', 'exper_date','description', 'is_favorite','func','function_measure','arg','argument_measure','init_function_measure')
+        fields = ('name', 'exper_date', 'description', 'is_favorite', 'func', 'function_measure', 'arg',
+            'argument_measure', 'init_function_measure')
 
 
 #Задачи

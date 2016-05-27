@@ -20,6 +20,13 @@ function get_editbox_value(ebox){
     if (ebox.attr('type') == 'checkbox'){
         if( ebox.is(':checked')){return "True";}else{return "False";}
         }
+
+    if (ebox.hasClass('datetime')){
+    var dtp = ebox.find('.datetimepicker');
+    if(dtp != false){
+        ebox = dtp.children().first();
+        }
+    }
     //alert(ebox.val());
     return ebox.val();
     }
@@ -34,11 +41,19 @@ function set_readbox_value(rbox, value){
         rbox.val(value);
         return false;
         }
+
+    if (rbox.hasClass('datetime')){
+    var dtp = rbox.find('.datetimepicker');
+    if(dtp != false){
+        rbox = dtp.children().first();
+        }
+    }
+
     rbox.val(value);
     return false;
     }
 
-function clone_rbox(rbox){
+function append_clone_rbox(rbox, edt_td){
         clone = rbox.clone();
         clone.removeAttr('disabled');
         clone.addClass('data_edit');
@@ -50,6 +65,25 @@ function clone_rbox(rbox){
             clone.val(rbox.val());}
 
         clone.show();
+        edt_td.append(clone);
+
+        //for datetimepicker
+/*WARNING!!! need
+        <!-- 2. Подключить скрипт moment-with-locales.min.js для работы с датами -->
+<script src="{% static "js/moment-with-locales.min.js" %}"></script>
+<!-- 4. Подключить скрипт виджета "Bootstrap datetimepicker" -->
+ <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
+<!-- 6. Подключить CSS виджета "Bootstrap datetimepicker" -->
+<link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
+*/
+        var dtp = clone.find('.datetimepicker');
+        dtp.datetimepicker({
+            language: 'ru',
+            format: 'DD.MM.YYYY HH:mm',
+            pickSeconds: false,
+            pick12HourFormat: false
+            });
+
         return clone;
     }
 
@@ -90,6 +124,7 @@ function after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue){
 
 $(document).ready(function(){
     $('.detail_caption').addClass('text-right').addClass('col-md-2');
+    $('.detail_error').addClass('error');
     $('.detail_btns').addClass('col-md-2')
         .append('<button type="button" class="detail_btn_edit"></button>')
         .append('<button type="button" class="detail_btn_save"></button>')
@@ -103,17 +138,24 @@ $(document).ready(function(){
     $('.detail_btn_save').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
     $('.detail_btn_cancel').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-remove"></span>').hide();
 
+    if ($('.datetimepicker') != false){
+        var dtp = $('.datetimepicker')
+        if (dtp.hasClass('date')){
+        $('.datetimepicker').datetimepicker({language: 'ru'});
+        }
+    }
 
     $('#detail_main').on("click", "button.detail_btn_edit", function(){
         var parnt = $(this).parent('td');
         var edt_td = parnt.siblings(".detail_edit");
         var val_td = parnt.siblings(".detail_value");
-        var clone = clone_rbox(val_td.children(":first"));
-        edt_td.append(clone);
+        var clone = append_clone_rbox(val_td.children(":first"), edt_td);
+
         edt_td.show();
         val_td.hide();
 
         clone.focus();
+
         $(this).hide();
         $(this).siblings(".detail_btn_save").show();
         $(this).siblings(".detail_btn_cancel").show();
@@ -187,6 +229,9 @@ $(document).ready(function(){
         return false;
         }
     );
+
+
+
 
 /*remove to snippet!
     $(document.body).on("focusout", '#editbox', function(event){

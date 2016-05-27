@@ -3,6 +3,9 @@
 {% load staticfiles %}
 
 
+
+
+
 {% block body_block %}
 
 	
@@ -35,15 +38,38 @@
 					
 					
 					<tr>
-						<td>Дата проведения:</td>
-						<td>{{ experiment.exper_date }}</td>
+						<td class="detail_caption">Дата проведения:
+						</td>
+						
+						
+						<td class="detail_value">
+	     <!-- Инициализация виджета "Bootstrap datetimepicker" -->
+    <div class="form-group datetime">
+      <!-- Элемент HTML с id равным datetimepicker1 -->
+      <div class="input-group date datetimepicker">
+        <input type="text" class="form-control" value="{{  experiment.exper_date|date:'d.m.Y H:i' }}"/>
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+      </div>
+    </div>
+     
+    </td>
+                    
+                    {% if is_owner %}
+        <td class="detail_edit" > </td>
+         <td class="detail_btns" field_name="exper_date">
+
+        </td>
+        {% endif %}
+						
 					</tr>
 					
     <tr>
         <td class="detail_caption">Описание:</td>
         <td class="detail_value"><textarea class="form-control"  rows="10" disabled="disabled">{{  experiment.description }}</textarea></td>
         {% if is_owner %}
-        <td class="detail_edit"  ></td>
+        <td class="detail_edit"></td>
          <td class="detail_btns" field_name="description">
 
         </td>
@@ -151,7 +177,22 @@
 </div>
 {% endblock %}
 
+
+  
+
+
 {% block footer_block %}
+<!-- 2. Подключить скрипт moment-with-locales.min.js для работы с датами -->
+<script src="{% static "js/moment-with-locales.min.js" %}"></script>
+<!-- 4. Подключить скрипт виджета "Bootstrap datetimepicker" -->
+ <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
+<!-- 6. Подключить CSS виджета "Bootstrap datetimepicker" -->   
+<link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
+
+
 <script src="{% static "js/populate_dict_select.js" %}"></script>
 <script src="{% static "js/details.js" %}"></script>
+
+
+  
 {% endblock %}

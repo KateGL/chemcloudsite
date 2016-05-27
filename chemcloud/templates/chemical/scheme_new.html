@@ -18,3 +18,23 @@
         
    </div>
 {% endblock %}
+
+
+
+
+
+{% block footer_block %}
+<!-- 2. Подключить скрипт moment-with-locales.min.js для работы с датами -->
+<script src="{% static "js/moment-with-locales.min.js" %}"></script>
+<!-- 4. Подключить скрипт виджета "Bootstrap datetimepicker" -->
+ <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
+<!-- 6. Подключить CSS виджета "Bootstrap datetimepicker" -->   
+<link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
+
+
+<script src="{% static "js/populate_dict_select.js" %}"></script>
+<script src="{% static "js/details.js" %}"></script>
+
+
+  
+{% endblock %}

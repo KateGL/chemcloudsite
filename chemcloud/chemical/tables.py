@@ -205,8 +205,8 @@ class ExperimentTable(tables.Table):
     class Meta:
         model = Experiment
         attrs = {"class": "paleblue"}
-        fields = ("name", "description", "updated_date", "is_favorite")
-        sequence = ("name", "description", "is_favorite", "updated_date")
+        fields = ("exper_date", "name", "description", "updated_date", "is_favorite")
+        sequence = ("exper_date","name", "description", "is_favorite", "updated_date")
 
 
 #Задачи

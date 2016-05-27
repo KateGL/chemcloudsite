@@ -1,12 +1,59 @@
-  
+
+{% load staticfiles %}
+{% load widget_tweaks %}
+
 {% csrf_token %}
-            
+   <table class="table ">
+    <tbody>
+                     
 {% for field in form %}
-  {{field.label}} {% if field.field.required %} * {% endif %}
-  {{field}}
-  {{field.errors}}
-  <br>
+ 
+ <tr>										
+ 
+  <td class="detail_caption">{{field.label}} {% if field.field.required %} * {% endif %} </td>
+  <td class="detail_value"> 
+    {% if  field|widget_type == "checkboxinput" %}{{field}}
+    {% elif field|widget_type == "datetimeinput" %}
+      <!--{{field}}-->
+      <!-- Инициализация виджета "Bootstrap datetimepicker" -->
+    <div class="form-group datetime">
+      <!-- Элемент HTML с id равным datetimepicker1 -->
+      <div class="input-group date datetimepicker">
+        <input type="text" class="form-control" id="id_{{field.name}}" name="{{field.name}}" value="{{field.value|date:'d.m.Y H:i'}}"/>
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+      </div>
+    </div>
+      
+      
+    {% else %}
+    {{field|append_attr:"class:col-xs-12"}}
+    
+    {% endif %}
+    
+    </td>
+   <td class="detail_error">
+  {% if field.errors %}<label class="error" for="{{field.pk}}">{{field.errors.0}}</label>{% endif %}
+        {% if field.help_text %}<small class="help-text">{{field.help_text}}</small>{% endif %}
+        </td>
+ </tr>
 {% endfor %}                        
 			
-<button type="submit" class="save btn btn-primary" name="save_btn">Сохранить</button>
+
+        
+       </tbody>
+  </table>  
+           <button type="submit" class="save btn btn-primary" name="save_btn">Сохранить</button> 
+
+  
+   
+     
+      
+           
+ 
+    
+
+  
+
 			

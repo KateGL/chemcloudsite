@@ -37,21 +37,21 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'registration', # add in the registration package  django-registration-redux
+    'registration',  # add in the registration package  django-registration-redux
     'django_tables2',
+    'widget_tweaks',
     'annoying',
     'swapper',
-    'crispy_forms',
-    'chemmain', # main pages of site
-    'chemical', #models and views of main chemical entyties: atom, substance, reaction, mechanism, etc
-    'chem_ajax', #for ajax methods
+    'chemmain',  # main pages of site
+    'chemical',  # models and views of main chemical entyties: atom, substance, reaction, mechanism, etc
+    'chem_ajax',  # for ajax methods
 ]
 
 MIDDLEWARE_CLASSES = []
 
 if USE_DEBUG_TOOL:
-    INSTALLED_APPS += ['debug_toolbar',]
-    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware',]
+    INSTALLED_APPS += ['debug_toolbar', ]
+    MIDDLEWARE_CLASSES = ['debug_toolbar.middleware.DebugToolbarMiddleware', ]
 
 MIDDLEWARE_CLASSES += [
     'django.middleware.security.SecurityMiddleware',
@@ -73,7 +73,7 @@ TEMPLATE_PATH = os.path.join(BASE_DIR, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATE_PATH,],
+        'DIRS': [TEMPLATE_PATH, ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -137,19 +137,36 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
+
+#Date input format!!!
+DATE_INPUT_FORMATS = (
+    '%d.%m.%Y', '%d.%m.%Y', '%d.%m.%y',  # '25.10.2006', '25.10.2006', '25.10.06'
+    '%d-%m-%Y', '%d/%m/%Y', '%d/%m/%y',  # '25-10-2006', '25/10/2006', '25/10/06'
+    '%d %b %Y',  # '25 Oct 2006',
+    '%d %B %Y',  # '25 October 2006',
+)
+
+DATE_FORMAT = 'j F Y'
+TIME_FORMAT = 'H:i'
+DATETIME_FORMAT = 'j F Y H:i'
+YEAR_MONTH_FORMAT = 'F Y'
+MONTH_DAY_FORMAT = 'j F'
+SHORT_DATE_FORMAT = 'j N Y'
+SHORT_DATETIME_FORMAT = 'j N Y H:i'
+FIRST_DAY_OF_WEEK = 1
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
-STATIC_PATH = os.path.join(BASE_DIR,'static')
+STATIC_PATH = os.path.join(BASE_DIR, 'static')
 
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
     #STATIC_PATH,
-    BASE_DIR+STATIC_URL,
+    BASE_DIR + STATIC_URL,
 )
 
 

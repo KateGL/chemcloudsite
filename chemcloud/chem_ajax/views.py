@@ -7,9 +7,12 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core import serializers
 
+
 from django.contrib.auth.decorators import login_required
 from django.db import models
 import swapper
+import time
+from datetime import datetime
 
 from chemical.models import owner_required, substance_owner_required
 from chemical.urls_utils import make_name_link
@@ -20,26 +23,32 @@ from chemical.chemical_models import consist_to_string
 # Create your views here.
 
 
+
+
+
 def set_field_and_value_from_request(request, my_model):
     data = '{"result":"True", "message":"ok"}'
     if request.is_ajax():
         if request.method == 'POST':
             body_unicode = request.body.decode('utf-8')
             body = json.loads(body_unicode)
+            print(body)
             field_name = body['field_name']
-            value = body['value']
-
+            value_tmp = body['value']
             field_object = my_model._meta.get_field(field_name)
             #если это ссылка на класс
             if isinstance(field_object, models.ForeignKey):
-                #print('HIIIIIIIIIIIIIIII')
-                #print(field_object.rel.to)
                 rel_model = field_object.rel.to
-                value = rel_model.objects.get(pk=value)
+                value = rel_model.objects.get(pk=value_tmp)
+                #если это булево поле
+            elif isinstance(field_object, models.BooleanField):
+                value = (value_tmp.lower() == 'true')
+            elif isinstance(field_object, models.DateTimeField):
+                tmp_val = time.strptime(value_tmp, "%d.%m.%Y %H:%M")
+                tmp_val = datetime.fromtimestamp(time.mktime(tmp_val))
+                value = tmp_val
             else:
-                 #если это булево поле
-                if isinstance(field_object, models.BooleanField):
-                    value = (value.lower() == 'true')
+                value = value_tmp
 
             setattr(my_model, field_name, value)
             return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value}
