@@ -11,11 +11,11 @@ $(document).ready(function(){
       //$(this).parents('.panel').first().next().find('.panel-heading a').click();
       //$(this).parents('.panel-collapse').collapse('hide');
       //$('#collapseTwo').collapse('show')
-      $(id_coll).collapse('show');
+      $(id_coll).prop("disabled", "disabled").collapse('show');
     }
     else
      {
-        $(id_coll).collapse('hide');
+        $(id_coll).prop("disabled", "disabled").collapse('hide');
          }
 });
 });
