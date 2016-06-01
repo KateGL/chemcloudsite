@@ -77,12 +77,14 @@ function append_clone_rbox(rbox, edt_td){
 <link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
 */
         var dtp = clone.find('.datetimepicker');
-        dtp.datetimepicker({
-            language: 'ru',
-            format: 'DD.MM.YYYY HH:mm',
-            pickSeconds: false,
-            pick12HourFormat: false
-            });
+        if (dtp.hasClass('date')){
+            dtp.datetimepicker({
+                language: 'ru',
+                format: 'DD.MM.YYYY HH:mm',
+                pickSeconds: false,
+                pick12HourFormat: false
+                });
+            }
 
         return clone;
     }
@@ -130,8 +132,8 @@ $(document).ready(function(){
         .append('<button type="button" class="detail_btn_save"></button>')
         .append('<button type="button" class="detail_btn_cancel"></button>');
 
-    $('.detail_edit').hide().addClass('text-left').addClass('col-md-4').css({ 'font-weight': "bold" });
-    $('.detail_value').addClass('text-left').addClass('col-md-4').css({ 'font-weight': "bold" });
+    $('.detail_edit').hide().addClass('text-left').addClass('col-md-8').css({ 'font-weight': "bold" });
+    $('.detail_value').addClass('text-left').addClass('col-md-8').css({ 'font-weight': "bold" });
     $('.box_input').addClass('col-xs-12');
     $('.form-control').addClass('col-xs-12');
     $('.detail_btn_edit').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-edit"></span>');
@@ -141,7 +143,12 @@ $(document).ready(function(){
     if ($('.datetimepicker') != false){
         var dtp = $('.datetimepicker')
         if (dtp.hasClass('date')){
-        $('.datetimepicker').datetimepicker({language: 'ru'});
+        $('.datetimepicker').datetimepicker({
+                language: 'ru',
+                format: 'DD.MM.YYYY HH:mm',
+                pickSeconds: false,
+                pick12HourFormat: false
+                });
         }
     }
 
