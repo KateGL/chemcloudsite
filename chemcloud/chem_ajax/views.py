@@ -163,6 +163,20 @@ def experiment_detail_edit(request, id_reaction, id_experiment):
 
 
 @login_required
+@owner_required
+def problem_detail_edit(request, id_reaction, id_problem):
+    problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
+    problem = problem_dict['problem']
+    fv_dict = set_field_and_value_from_request(request, problem)
+
+    if (fv_dict['is_error'] is False):
+        problem.save()
+
+    xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')
+
+
+@login_required
 def dictionary_get(request):
     if request.method != 'GET':
         return False

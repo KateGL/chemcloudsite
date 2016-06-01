@@ -1,7 +1,10 @@
 {% extends 'chemical/base_reaction.html' %}
 
 {% load staticfiles %}
-
+{% block header_block %} 
+<!-- Custom titatoggle css -->
+    <link href="{% static "css/titatoggle-dist.css" %}" rel="stylesheet">
+ {% endblock %}
 
 {% block body_block %}
 	<div class="page-header">
@@ -61,4 +64,13 @@
 			
 
             </div>
+{% endblock %}
+
+
+{% block footer_block %}
+
+<script src="{% static "js/problem.js" %}"></script>
+
+
+  
 {% endblock %}

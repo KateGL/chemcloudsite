@@ -764,10 +764,11 @@ class Dict_problem_type(models.Model):
 
 class Problem(models.Model):
     id_problem = models.AutoField(primary_key=True, verbose_name='ИД')
-    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='problems')
-    problem_type = models.ForeignKey(Dict_problem_type, verbose_name='Вид задачи', null=False, on_delete=models.PROTECT, related_name='+',default=0)
+    reaction = models.ForeignKey(Reaction, null=False, on_delete=models.CASCADE, related_name='problems')
+    problem_type = models.ForeignKey(Dict_problem_type, verbose_name='Вид задачи', null=False, on_delete=models.PROTECT,
+        related_name='+', default=0)
     description = models.TextField(blank=True, verbose_name='Описание')
-    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+    created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
 
     class Meta:
         verbose_name = ('Задача')
