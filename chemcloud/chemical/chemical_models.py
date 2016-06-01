@@ -100,7 +100,13 @@ def get_atom_dict(formula_brutto):  # получение словаря с ти�
 def consist_dict_to_string(mydict):
     as_str = ''
     for key in sorted(mydict):
-        as_str += key + str(mydict[key].normalize())
+        key_as_str = ''
+        print(key)
+        print(mydict[key])
+        if mydict[key] != 1:
+            key_as_str = str(mydict[key].normalize())
+        print(key_as_str)
+        as_str += key + key_as_str
     return as_str
 
 
