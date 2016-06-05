@@ -15,9 +15,9 @@ function formatSubstance(subst){
 
 $(document).ready(function(){
 
-var url_str = $(".js-data-example-ajax").attr('data-check-url');
+var url_str = $("#id_substance").attr('data-check-url');
 
-$(".js-data-example-ajax").select2({
+$("#id_substance").select2({
 
   ajax: {
     url: url_str,
@@ -54,6 +54,14 @@ $(".js-data-example-ajax").select2({
   minimumInputLength: 1,
   templateResult: formatSubstance, // omitted for brevity, see the source of this page
   templateSelection: formatSubstance // omitted for brevity, see the source of this page
+});
+
+
+$('#id_substance').on("select2:selecting", function(e) {
+   // what you would like to happen
+   var bf = e.params.args.data.formula_brutto;
+
+   $('#id_brutto_formula_short').val(bf);
 });
 
 });

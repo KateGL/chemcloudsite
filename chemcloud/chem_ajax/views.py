@@ -89,6 +89,7 @@ def substance_search_list(request):
             dict_val['id'] = value['id_substance']
             dict_val['name'] = value['name']
             dict_val['formula_brutto_formatted'] = value['formula_brutto_formatted']
+            dict_val['formula_brutto'] = value['formula_brutto']
             lnk = get_subst_detail_link(value['id_substance'])
             dict_val['detail_link'] = make_detail_link(lnk)
             #print(dict_val)
