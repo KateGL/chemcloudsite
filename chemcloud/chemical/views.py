@@ -509,6 +509,7 @@ def react_substance_new(request, id_reaction):
         if form.is_valid():
             react_substance = form.save(commit=False)
             react_substance.reaction = react.reaction
+            react_substance.after_create()
             form.save()
             if 'save_and_new_btn' in request.POST:
                 return redirect('react_substance_new', id_reaction)

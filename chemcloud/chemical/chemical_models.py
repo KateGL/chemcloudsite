@@ -460,22 +460,25 @@ class Scheme_step(models.Model):
 
 #Вещества реакции
 class Reaction_subst(models.Model):
-    id_react_subst = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='substances' )
-    substance = models.ForeignKey(Substance, null = True, on_delete=models.PROTECT, related_name='+' )
-    alias = models.CharField (max_length = 250, verbose_name='Псевдоним', null = False)
-    brutto_formula_short = models.CharField (max_length = 250, verbose_name='Краткая брутто-формула')
-    #brutto_formula_short_formatted = models.CharField (max_length = 250, verbose_name='Краткая брутто-формула')
-    note = models.TextField(blank = True,  verbose_name='Примечание')
+    id_react_subst = models.AutoField(primary_key=True, verbose_name='ИД')
+    reaction = models.ForeignKey(Reaction, null=False, on_delete=models.CASCADE, related_name='substances')
+    substance = models.ForeignKey(Substance, null=True, on_delete=models.PROTECT, related_name='+')
+    alias = models.CharField(max_length=250, verbose_name='Псевдоним', null=False)
+    brutto_formula_short = models.CharField(max_length=250, verbose_name='Краткая брутто-формула')
+    brutto_formula_short_formatted = models.CharField(max_length=250, verbose_name='Краткая брутто-формула')
+    note = models.TextField(blank=True, verbose_name='Примечание')
 
     def __unicode__(self):
         return self.alias
 
+    def after_create(self):
+        self.brutto_formula_short_formatted = decorate_formula(self.brutto_formula_short)
+
     class Meta:
-      ordering            = ["id_react_subst", "reaction"]
-      verbose_name = ('Вещество реакции')
-      verbose_name_plural = ('Вещества реакции')
-      unique_together = (('reaction', 'substance'), ('reaction', 'alias'))
+        ordering = ["id_react_subst", "reaction"]
+        verbose_name = ('Вещество реакции')
+        verbose_name_plural = ('Вещества реакции')
+        unique_together = (('reaction', 'substance'), ('reaction', 'alias'))
 
 
 #Вещество в стадии схемы реакции

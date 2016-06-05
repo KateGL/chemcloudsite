@@ -257,6 +257,7 @@ def add_substance(id_s,nm,ch,is_r,fb,nt):
 
 def add_reac_subst(r,s,al,bfs,nt):
     a = Reaction_subst.objects.get_or_create(reaction=r,substance=s,alias=al,brutto_formula_short=bfs,note=nt)[0]
+    a.after_create()
     a.save()
     return a
 
