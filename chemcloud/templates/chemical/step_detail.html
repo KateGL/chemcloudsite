@@ -3,30 +3,72 @@
 {% load staticfiles %}
 
 
-{% block body_block %}
-	<div class="page-header">
-		   <div class="page-header">
 
-    <h1> Детали шага {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>
-           
+{% block body_block %}
+	
+	<div class="page-header">
+
+    <h1> <a href="{% url 'scheme_edit' id_reaction step.scheme.pk %}" class="pull-left"><span class="glyphicon glyphicon-menu-left"></span></a>Детали шага {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} </h1>          
             
     </div>
-<div class="page-content">
-        
+	
+<div class="page-content">    
+<div class="row">          
+ <div class="col-xs-8">
+    
             
-  <div class="table">
   <table class="table">
-    <tbody>
-     <tr>
-        <td class="text-right">Название</td>
-        <td class="text-left">{{  step.name }}</td>
-      </tr>
+     <tbody id="detail_main" model_name="Reaction_scheme" url_edit="{% url 'step_detail_edit' id_reaction step.scheme.pk step.pk %}">
+					<tr>
+						<td class="detail_caption">Обозначение:</td>
+						
+						<td class="detail_value"><input class="box_input"  type="text" disabled="disabled" value="{{  step.name }}"/></td>
+        {% if is_owner %}
+        <td class="detail_edit" > </td>         
+         <td class="detail_btns" field_name="name">
+  
+        </td>
+        {% endif %}
+					</tr>
+					<tr>
+						<td class="detail_caption">Примечание:</td>						
+						<td class="detail_value"><textarea class="form-control col-xs-12"  rows="10" disabled="disabled">{{  step.note}}</textarea></td>
+        {% if is_owner %}
+        <td class="detail_edit"  ></td>         
+         <td class="detail_btns" field_name="note">
       
-    </tbody>
+        </td>
+        {% endif %}
+					</tr>
+					
+					
+			<tr>
+						<td class="detail_caption">Выражение для скорости:</td>
+						
+						<td class="detail_value"><input class="box_input"  type="text" disabled="disabled" value=""/></td>
+
+					</tr>		
+				
+
+          </tbody>
   </table>
-</div>              
+    </div>
+        
+        <div class=" col-xs-4">
+    
+    {% include "chemical/step_detail_menu.html" %} 
+    
+     
+    
+    
+     
+      </div> 
+         
 
             </div>
+</div>
+{% endblock %}
 
-           
+{% block footer_block %}
+<script src="{% static "js/details.js" %}"></script>
 {% endblock %}

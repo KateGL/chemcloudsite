@@ -182,6 +182,20 @@ def scheme_detail_edit(request, id_reaction, id_scheme):
 
 @login_required
 @owner_required
+def step_detail_edit(request, id_reaction, id_scheme, id_step):
+    step_dict = request.user.chemistry.rscheme_step_get(id_reaction, id_scheme, id_step)
+    step = step_dict['step']
+    fv_dict = set_field_and_value_from_request(request, step)
+
+    if (fv_dict['is_error'] is False):
+        step.save()
+
+    xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')
+
+
+@login_required
+@owner_required
 def experiment_detail_edit(request, id_reaction, id_experiment):
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
     exper = exper_dict['experiment']
