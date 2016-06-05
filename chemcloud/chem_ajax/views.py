@@ -15,7 +15,7 @@ import time
 from datetime import datetime
 
 from chemical.models import owner_required, substance_owner_required
-from chemical.urls_utils import make_name_link
+from chemical.urls_utils import make_name_link, make_detail_link
 from chemical.urls_utils import get_subst_detail_link
 from chemical.utils import decorate_formula
 from chemical.models import substance_get_isomer, substance_get_isomer_count
@@ -67,6 +67,37 @@ def substance_search_hint(request, searched='', top_count=0):
         lnk = get_subst_detail_link(value['id_substance'])
         tmp = tmp + make_name_link(lnk, value['name']) + ' (' + value['formula_brutto_formatted'] + ')'
     return HttpResponse(tmp)
+
+
+@login_required
+def substance_search_list(request):
+    #print('Hi!')
+    #print(request.method)
+    if request.method != 'GET':
+        return False
+    top_count = 50 #request.GET['top_count']
+    searched = request.GET['q']
+
+    data = {}
+    substance_list = []
+    if searched != '':
+        subst = request.user.chemistry.substance_get_like(searched, top_count)
+        data['total_count'] = subst.count()
+        data['incomplete_results'] = False
+        for value in subst.values():
+            dict_val = {}
+            dict_val['id'] = value['id_substance']
+            dict_val['name'] = value['name']
+            dict_val['formula_brutto_formatted'] = value['formula_brutto_formatted']
+            lnk = get_subst_detail_link(value['id_substance'])
+            dict_val['detail_link'] = make_detail_link(lnk)
+            #print(dict_val)
+            substance_list.append(dict_val)
+    #print(substance_list)
+    data['items'] = substance_list
+    xml_bytes = json.dumps(data)
+    return HttpResponse(xml_bytes, 'application/json')
+
 
 
 @login_required

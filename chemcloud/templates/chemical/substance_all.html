@@ -25,7 +25,8 @@
      <div class="well well-md"> 
 	<div class="row" >
         <div class="col-xs-12">
-         <a class = "btn btn-new" href = "{% url 'substance_new' %}" role = "button">Добавить вещество</a>          
+         {% if is_owner %} <a class = "btn btn-new" href = "{% url 'substance_new' %}" role = "button">Добавить вещество</a> 
+         {%  endif %}
          <a class = "btn btn-link" href="{% url 'atom_all' %}" >Таблица Менделеева</a>
          <br><br>
         </div>

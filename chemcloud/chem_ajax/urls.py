@@ -10,6 +10,8 @@ urlpatterns = [
     url(r'^substance/search_hint/(?P<searched>[\w\-]+)/(?P<top_count>[0-9]+)/$',
         views.substance_search_hint, name='substance_search_hint'),
 
+    url(r'^substance/search_list/$', views.substance_search_list, name='substance_search_list'),
+
     url(r'^substance/(?P<id_substance>[0-9]+)/detail_edit/$', views.substance_detail_edit, name='substance_detail_edit'),
     url(r'^substance/check_isomer/$', views.substance_check_isomer, name='substance_check_isomer'),
 

@@ -29,16 +29,18 @@ from .models import owner_required, substance_owner_required
 @login_required
 def substance_all(request):
     substance_table = SubstanceTable(request.user.chemistry.substance_all())
+    is_substance_owner = request.user.chemistry.is_substance_owner
     RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
-    return render(request, 'chemical/substance_all.html', {"substance": substance_table})
+    return render(request, 'chemical/substance_all.html', {"substance": substance_table,"is_owner": is_substance_owner})
 
 
 @login_required
 def substance_all_search(request, searched=''):
     substance_table = SubstanceTable(request.user.chemistry.substance_get_like(searched, 0))
+    is_substance_owner = request.user.chemistry.is_substance_owner
     RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
     return render(request, 'chemical/substance_all.html',
-    {"substance": substance_table, "searched": searched})
+    {"substance": substance_table, "searched": searched, "is_owner": is_substance_owner})
 
 
 @login_required

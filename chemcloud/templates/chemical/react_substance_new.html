@@ -2,6 +2,12 @@
 
 {% load staticfiles %}
 {% load render_table from django_tables2 %}
+{% load widget_tweaks %}
+
+{% block header_block %}  
+<link href="{% static "css/select2.css" %}" rel="stylesheet" />
+
+{% endblock %}
 
 {% block body_block %}
 	<div class="page-header">
@@ -10,18 +16,87 @@
 	<div class="page-content">
 		
 		<div class="row">
-          <div class="col-xs-7">  
+          <div class="col-xs-8">  
            
  <form method="POST" class="form" action="{% url 'react_substance_new' id_reaction %}">  
+    
+{% csrf_token %}
+   <table class="table ">
+    <tbody>
+                    
+                    
+                    
+                     
+{% for field in form %} 
+<tr>										
+ 
+  
+
+{% if field.name == 'substance' %}
+ <td class="detail_caption">Вещество  {% if field.field.required %} * {% endif %} </td>
+  <td class="detail_value"> 
+    
+
+  
+   <select class="js-data-example-ajax col-xs-12" id="id_substance" name="substance"  data-check-url = "{% url 'substance_search_list'%}" >
+  <option value="" selected="selected">---------</option>
+</select>
+
+    
+    </td>   
+
+{% else %}
+ <td class="detail_caption">{{field.label}} {% if field.field.required %} * {% endif %} </td>
+  <td class="detail_value"> 
+    {% if  field|widget_type == "checkboxinput" %}{{field}}
+    {% elif field|widget_type == "datetimeinput" %}
+      <!--{{field}}-->
+      <!-- Инициализация виджета "Bootstrap datetimepicker" -->
+    <div class="form-group datetime">
+      <!-- Элемент HTML с id равным datetimepicker1 -->
+      <div class="input-group date datetimepicker">
+        <input type="text" class="form-control" id="id_{{field.name}}" name="{{field.name}}" value="{{field.value|date:'d.m.Y H:i'}}"/>
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+      </div>
+    </div>      
+      
+    {% else %}
+    {{field|append_attr:"class:col-xs-12"}}
+    
+    {% endif %}
+    
+    </td>
+  
+ {% endif %}
+ 
+  <td class="detail_error">
+  {% if field.errors %}<label class="error" for="{{field.pk}}">{{field.errors.0}}</label>{% endif %}
+        {% if field.help_text %}<small class="help-text">{{field.help_text}}</small>{% endif %}
+        </td>
+ </tr>
+ 
+{% endfor %}  
+                              
+			
+        
+
+        
+       </tbody>
+  </table>  
+           <button type="submit" class="save btn btn-primary" name="save_btn">Сохранить</button> 
             
-            {% include "chemical/form_body_new.html" %} 
+             
+              
+                
             <button type="submit" class="save btn btn-success" name="save_and_new_btn">Сохранить и добавить новое</button>
             
 </form >
 
             </div>
 		
-		<div class="col-xs-5">
+		<div class="col-xs-4">
             {% render_table substance %}
             </div>
    </div>
@@ -41,9 +116,13 @@
 <link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
 
 
+
 <script src="{% static "js/populate_dict_select.js" %}"></script>
 <script src="{% static "js/details.js" %}"></script>
+<script src="{% static "js/subst_select.js" %}"></script>
 
 
+<script src="{% static "js/select2/select2.min.js" %}"></script>
+<script src="{% static "js/select2/i18n/ru.js" %}"></script>
   
 {% endblock %}

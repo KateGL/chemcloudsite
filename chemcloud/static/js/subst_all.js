@@ -9,7 +9,6 @@ function redirect_to_search(){
     }
 
     //id="id_formula_brutto"  //Это имя автоматически генерируется формой добавления вещества
-
 function check_isomers(ev){
     var br_formula = $("#id_formula_brutto").val();
     var consist = br_formula;
