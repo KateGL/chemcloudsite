@@ -136,12 +136,13 @@ class Dict_measure_unitAdmin(admin.ModelAdmin):
 
 admin.site.register(Dict_measure_unit,Dict_measure_unitAdmin)
 
+
 #Вещества реакции в эксперименте
 class Exper_substAdmin(admin.ModelAdmin):
-  fields = ['reaction_subst','experiment','dict_subst_role','is_observed','init_func_val']
-  list_display = ('reaction_subst','experiment','dict_subst_role','is_observed','init_func_val')
+    fields = ['experiment', 'reaction_subst', 'dict_subst_role', 'is_observed', 'init_func_val']
+    list_display = ('experiment', 'reaction_subst', 'dict_subst_role', 'is_observed', 'init_func_val')
 
-admin.site.register(Exper_subst,Exper_substAdmin)
+admin.site.register(Exper_subst, Exper_substAdmin)
 
 #Роли вещества в механизме
 class Dict_subst_roleAdmin(admin.ModelAdmin):
@@ -171,12 +172,13 @@ class Exper_dataAdmin(admin.ModelAdmin):
 
 admin.site.register(Exper_data,Exper_dataAdmin)
 
+
 #Дополнительные экспериментальные данные
 class Exper_subst_dataAdmin(admin.ModelAdmin):
-  fields = ['exper_subst','value','subst_param','unit']
-  list_display = ('exper_subst','value','subst_param','unit')
+    fields = ['exper_subst', 'value', 'subst_param', 'unit']
+    list_display = ('exper_subst', 'value', 'subst_param', 'unit')
 
-admin.site.register(Exper_subst_data,Exper_subst_dataAdmin)
+admin.site.register(Exper_subst_data, Exper_subst_dataAdmin)
 
 #Экспериментальные данные
 class Exper_pointAdmin(admin.ModelAdmin):
