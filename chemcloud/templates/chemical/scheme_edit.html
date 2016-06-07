@@ -22,25 +22,27 @@
       <div class="btn-group">
         <button type="button" id="add_step" class="btn btn-default" data-reacid="{{id_reaction}}" data-schemeid="{{id_scheme}}" data-url-addstep="{% url 'step_new' id_reaction id_scheme %}" data-toggle="tooltip" data-placement="top" title="Добавить стадию"><span class="glyphicon glyphicon-plus"></span></button>
         <button type="button" id="check_balance" class="btn btn-default" data-url-checkbalance="{% url 'scheme_check_balance' id_reaction id_scheme %}" data-toggle="tooltip" data-placement="top" title="Проверить баланс схемы"><span class="glyphicon glyphicon-check"></span></button>
-      </div>
+      
+    </div>
 </div>	
 
 			<div class="table-container">
 				<table id="all-steps_{{id_reaction}}_{{id_scheme}}"  class="paleblue" data-url-cellupdate="{% url 'cell_update' %}">
 					<thead>
 						<tr>
-							<th class="order_arrows">Переместить</th>
+							<th class="order_arrows"></th>
 							<th class="order orderable"><a href="?sort=order">№ п/п</a></th>
 							<th class="name orderable"><a href="?sort=name">Обозначение</a></th>
 							<th class="step">Стадия</th>
 							<th class="remove">Удалить</th>
 							<th class="detail_link">Детали</th>
+                            <th class="info"></th>
 						</tr>
 					</thead>
 	    			<tbody id="steps_body">
 {% if steps %}	
 						{% for step in steps %}
-						<tr class="{% if not step.is_good_balance %} danger {% endif %}">
+						<tr >
 							<td data-url-order="{% url 'change_step_order' id_reaction id_scheme %}"><button id="btn_{{step.id_step}}up" class="changeorder" data-stepid="{{step.id_step}}" data-direction="up"  type="button" >&#9650</button><br>
 <button id="btn_{{step.id_step}}down" class="changeorder" data-stepid="{{step.id_step}}" data-direction="down"  type="button" >&#9660</button></td>
 							<td id="order_{{step.id_step}}"> {{ step.order }} </td>
@@ -49,6 +51,8 @@
                             <td class="edit step {{step.id_step}}">{{ step.get_leftPart_of_step }} {% if step.is_revers %} <-> {% else %} -> {% endif %} {{ step.get_rightPart_of_step }} <div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div></td>
 							<td><button id="btn_{{step.id_step}}del" class="step_delete" type="button" data-stepid="{{step.id_step}}" data-url-delete="{% url 'step_delete' id_reaction id_scheme %}" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>
 							<td><a href="{% url 'step_detail' id_reaction id_scheme step.id_step %}"> Детали</a> </td>
+							<td><span {% if step.is_good_balance %} class="info_{{step.id_step}} glyphicon glyphicon-ok glyphicon-good_balance" {% else %} class="info_{{step.id_step}} glyphicon glyphicon-exclamation-sign glyphicon-bad_balance"  {% endif %} data-toggle="tooltip" data-placement="top" title="{% if step.is_good_balance %} Закон сохранения массы соблюдается {% else %} Не соблаюдается закон сохранения массы {% endif %}"></span> </td>
+
 			
 						</tr>
 						{% endfor %}

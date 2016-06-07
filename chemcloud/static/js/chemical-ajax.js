@@ -52,6 +52,7 @@ function csrfSafeMethod(method) {
 		arr = ptd.attr('class').split( " " );
         arr = ptd.attr('class').split( " " );
         var id  = arr[1]+arr[2];
+        var info_id = 'info_'+arr[2];
 		//получаем наименование таблицы, в которую будем вносить изменения
 		var table_str = $('table').attr('id');
         var evalue = $('.ajax'+id + ' input').val();
@@ -91,9 +92,10 @@ function csrfSafeMethod(method) {
 				var result = arr.result;			
 				var errorText = arr.errorText;
                 var messageText = arr.messageText;
-                var messageText = arr.messageText;
+                var info_iconText = arr.info_iconText;
+                var info_iconName= arr.info_iconName;
                 var tr_class = arr.tr_class;
-                console.log(tr_class)
+                
 				if (result == 'success')		
 				{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
 				 	$('.ajax'+id).html($('.ajax'+id+' input').val() + '<div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div>');
@@ -104,9 +106,19 @@ function csrfSafeMethod(method) {
                     if (messageText.length !=0)
                         alert(messageText);
                     if (tr_class.length !=0)
-                        ptr.addClass(tr_class);
+                        ptr.addClass(tr_class);//можно подкрасить строки передаваемым классом
                     else
                         ptr.removeClass(old_class);
+
+                    if (info_iconText.length !=0)//для столбца с иконкой информации такой вот шаблончик работы
+                    {
+                        var picon = $('.'+info_id);
+                        picon.attr("title", info_iconText )
+                    }
+                    if (info_iconName.length !=0)
+                    {    var picon = $('.'+info_id);
+                         picon.attr("class", info_id + ' ' + info_iconName )
+                    }
                
 				}
 				else

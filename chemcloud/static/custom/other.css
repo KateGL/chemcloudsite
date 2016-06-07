@@ -126,3 +126,12 @@ color: #FEC63D;
 .paleblue-hover > tbody > tr.danger:hover > th {
   background-color: #ebcccc;
 }
+
+
+.glyphicon-good_balance {
+ color: #008000;
+}
+
+.glyphicon-bad_balance {
+ color: #ff0000;
+}
