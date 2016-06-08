@@ -1,18 +1,17 @@
 $(document).ready(function(){
 	$('#check_balance').click(function(){
         var n = $('button.save').length;
-        console.log(n);
+
         if (n>0)
         {
             alert("В таблице механизма имеются несохраненные данные. Пожалуйста, сохраните все изменения и повторите проверку баланса.");       
             return false;
         }  
-console.log('tut');
+
 		var url = $(this).attr("data-url-checkbalance");
 		$.getJSON(url, {}, function(data){
             
 			var arr   = JSON.parse(data);
-            console.log(arr);
 			var result = arr.result;			
             var messageText = arr.messageText;
 			if (result == 'True')		
@@ -61,8 +60,7 @@ console.log('tut');
             var url_detail = arr.url_detail;
             var url_changeorder = arr.url_changeorder;
             var url_delete = arr.url_delete;
-
-			var tr_str = '<tr class="danger">';
+			var tr_str = '<tr>';
 			tr_str = tr_str + '<td data-url-order="'+url_changeorder+'"><button id="btn_' + id_step + 'up" class="changeorder" data-stepid="' + id_step + '" data-direction="up"  type="button">&#9650</button></br><button id="btn_' + id_step + 'down" class="changeorder" data-stepid="' + id_step + '" data-direction="down"  type="button">&#9660</button></td>';
 
 			tr_str = tr_str + '<td id="order_' + id_step + '"> '+step_order+' </td>';
@@ -70,20 +68,25 @@ console.log('tut');
 			tr_str = tr_str + '<td class="edit step '+id_step + '"><div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div></td>';//сама стадия пока пустая
 			tr_str = tr_str + '<td><button id="btn_' + id_step + 'del" class="step_delete" type="button" class="btn btn-default"  data-stepid="' + id_step + '" data-url-delete="' + url_delete+ '" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>';
 			tr_str = tr_str + '<td> <a href="'+url_detail+'">Детали </a></td>';
+			tr_str = tr_str + '<td><span class="glyphicon glyphicon-exclamation-sign glyphicon-bad_balance" data-toggle="tooltip" data-placement="top" title="Пустая стадия"></span> </td>';
+
+
 			tr_str = tr_str + '</tr>';
-			$(tr_str).insertAfter($('tr:last'));
+			//$(tr_str).insertAfter($('tr:last'));//так не работает делегрованная обработка событий, если строк не было
+            $('#steps_body').append(tr_str);
 			return true;	
 		});
 	});
 
 	$('#steps_body').on("click", "button.step_delete", function(){
-		if (!$(this).hasClass('step_delete')) //чтобы не реагировало на кнопки изменения порядка
+        if (!$(this).hasClass('step_delete')) //чтобы не реагировало на кнопки изменения порядка
 			return false;
 		var stepid   = $(this).attr("data-stepid");
 		var url     = $(this).attr("data-url-delete");
-//console.log(url);
+
 		var id_name = 'btn_'+stepid+'del';		
 		$.getJSON(url, {step_id: stepid}, function(data){
+
 			var arr   = JSON.parse(data);
 			var cur_order = arr.deleted_step_order;
 			var btn_cur = $('#'+id_name);

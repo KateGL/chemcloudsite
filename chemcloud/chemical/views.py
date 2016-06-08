@@ -248,7 +248,7 @@ def step_detail(request, id_reaction, id_scheme, id_step):
 @owner_required
 def scheme_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
-
+    
     form = ReacSchemeForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
@@ -373,24 +373,43 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
             else:
                 left_str = arr2[0]
                 right_str = arr2[1]
-                data_list = _create_step_part(request, id_reaction, step, True, left_str, 0)
-                if len(data_list) > 0:
-                    data_list = data_list + _create_step_part(request, id_reaction, step, False, right_str, len(data_list))
-                if len(data_list) == 0 or not step.generate_step_from_str(data_list):
+                data_list=[]
+                data_list_left = _create_step_part(request, id_reaction, step, True, left_str, 0)
+                data_list_rigth = []
+                if len(data_list_left) > 0:
+                    data_list_rigth = _create_step_part(request, id_reaction, step, False, right_str, len(data_list_left))
+                    data_list = data_list_left+data_list_rigth 
+                if len(data_list_left) == 0 or len(data_list_rigth) == 0 or not step.generate_step_from_str(data_list):
                     result = 'error'
-                    errorText = 'Ошибка распознавания и сохранения стадии. Длина = '  + str(len(data_list))
+                    errorText = 'Ошибка распознавания и сохранения стадии'
+                    if len(data_list) == 0:
+                        errorText = errorText + '. Некорректно введены левая и правая части'
+                    elif len(data_list_left) == 0:
+                        errorText = errorText + '. Некорректно введена левая часть'
+                    elif len(data_list_rigth) == 0:
+                        errorText = errorText + '. Некорректно введена правая часть'
+                    else:
+                        errorText = errorText + '. Убедитесь, что одно и то же вещество не содержится одновременно в левой и правой частях стадии. '
+                    errorText = errorText + '. Проверьте соответствие введенных псевдонимов веществам.'                    
     mess = ''
+    tr_class = ''
+    info_iconName = ''
+    info_iconText=''
     if result == 'success':
         step.save()
         balance_mess = []
         balance_bool = True
-        tr_class = ''
+        
+        info_iconName = 'glyphicon glyphicon-ok glyphicon-good_balance'
+        info_iconText = 'Закон сохранения массы выполняется'
         if field_str == 'step':
             balance_bool = step.check_step_balance(balance_mess)
         if not balance_bool:
-            mess = balance_mess[0]
-            tr_class = 'danger'
-    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'" }'
+            #mess = balance_mess[0]
+            #tr_class = 'danger'
+            info_iconName = 'glyphicon glyphicon-exclamation-sign glyphicon-bad_balance'
+            info_iconText = balance_mess[0]   
+    data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'", "info_iconText": "' + info_iconText + '", "info_iconName":"'+ info_iconName +'" }'
     return data
 
 
@@ -429,7 +448,7 @@ def step_new(request, id_reaction, id_scheme):
     link_changeorder = reverse('change_step_order', args=[id_reaction, id_scheme ])
     link_delete = reverse('step_delete', args=[id_reaction, id_scheme ])
 
-    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'", "url_detail": "'+ link_detail+'", "url_changeorder": "' + link_changeorder+'"}'
+    data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'", "url_detail": "'+ link_detail+'", "url_changeorder": "' + link_changeorder+'", "url_delete": "' + link_delete +'"}'
     #fv_dict = {"id_step": new_step.id_step, "order":new_step.order, "name": new_step.name, "url_detail": link_detail, "url_changeorder": link_changeorder}
     xml_bytes = json.dumps(data)
     print (xml_bytes)
