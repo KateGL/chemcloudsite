@@ -46,12 +46,12 @@ $("#id_substance").select2({
     },
     cache: true
   },
-  //language: "select2/i18n/ru",
   'language': "ru",
   //tags: "true",
-  //placeholder: 'first',
+  placeholder: 'first',
   escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
   minimumInputLength: 1,
+  allowClear: true,
   templateResult: formatSubstance, // omitted for brevity, see the source of this page
   templateSelection: formatSubstance // omitted for brevity, see the source of this page
 });
@@ -60,8 +60,12 @@ $("#id_substance").select2({
 $('#id_substance').on("select2:selecting", function(e) {
    // what you would like to happen
    var bf = e.params.args.data.formula_brutto;
-
    $('#id_brutto_formula_short').val(bf);
+});
+
+$('#id_substance').on("select2:unselect", function(e) {
+   // what you would like to happen
+   $('#id_brutto_formula_short').val('');
 });
 
 });

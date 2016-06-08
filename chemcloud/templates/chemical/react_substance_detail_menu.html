@@ -2,7 +2,9 @@
   <li class="list-group-item">
    <a type="button" class="btn btn-link" data-toggle="modal" data-target="#ModalReactSubstDelete"><span class="glyphicon glyphicon-remove"></span> Удалить</a>
   </li>
+   {% if substance.substance %}
     <li class="list-group-item"><a type="button" class="btn btn-link" href = "{% url 'substance_detail' substance.substance.pk %}">Детали Вещества (справочник)</a></li>
+    {% endif %}
 </ul>
 
 <!-- Modal Delete Reaction Substance-->   

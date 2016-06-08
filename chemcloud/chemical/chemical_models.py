@@ -462,7 +462,7 @@ class Scheme_step(models.Model):
 class Reaction_subst(models.Model):
     id_react_subst = models.AutoField(primary_key=True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null=False, on_delete=models.CASCADE, related_name='substances')
-    substance = models.ForeignKey(Substance, null=True, on_delete=models.PROTECT, related_name='+')
+    substance = models.ForeignKey(Substance, null=True, blank=True, default = None, on_delete=models.PROTECT, related_name='+')
     alias = models.CharField(max_length=250, verbose_name='Псевдоним', null=False)
     brutto_formula_short = models.CharField(max_length=250, verbose_name='Краткая брутто-формула')
     brutto_formula_short_formatted = models.CharField(max_length=250, verbose_name='Краткая брутто-формула')
@@ -478,7 +478,7 @@ class Reaction_subst(models.Model):
         ordering = ["id_react_subst", "reaction"]
         verbose_name = ('Вещество реакции')
         verbose_name_plural = ('Вещества реакции')
-        unique_together = (('reaction', 'substance'), ('reaction', 'alias'))
+        unique_together = (('reaction', 'alias'))
 
 
 #Вещество в стадии схемы реакции

@@ -23,26 +23,19 @@
 {% csrf_token %}
    <table class="table ">
     <tbody>
-                    
-                    
-                    
+      
                      
 {% for field in form %} 
-<tr>										
+<tr  >										
  
-  
 
 {% if field.name == 'substance' %}
+
  <td class="detail_caption">Вещество  {% if field.field.required %} * {% endif %} </td>
-  <td class="detail_value"> 
-    
-
-  
+  <td class="detail_value">    
    <select class="js-data-example-ajax col-xs-12" id="id_substance" name="substance"  data-check-url = "{% url 'substance_search_list'%}" >
-  <option value="" selected="selected">---------</option>
+ 
 </select>
-
-    
     </td>   
 
 {% else %}
