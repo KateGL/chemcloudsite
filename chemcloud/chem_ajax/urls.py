@@ -29,8 +29,13 @@ urlpatterns = [
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail_edit/$',
         views.experiment_detail_edit, name='experiment_detail_edit'),
 
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/exper_serie/(?P<id_exper_serie>[0-9]+)/detail_edit/$',
+        views.exper_serie_detail_edit, name='exper_serie_detail_edit'),
+
     url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/(?P<id_problem>[0-9]+)/detail_edit/$',
         views.problem_detail_edit, name='problem_detail_edit'),
 
     url(r'^dictionary/get/$', views.dictionary_get, name='dictionary_get'),
+    url(r'^exper_serie/get/(?P<id_reaction>[0-9]+)/$', views.exper_serie_get, name='exper_serie_get'),
+
     ]

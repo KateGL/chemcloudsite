@@ -462,7 +462,7 @@ class Scheme_step(models.Model):
 class Reaction_subst(models.Model):
     id_react_subst = models.AutoField(primary_key=True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null=False, on_delete=models.CASCADE, related_name='substances')
-    substance = models.ForeignKey(Substance, null=True, blank=True, default = None, on_delete=models.PROTECT, related_name='+')
+    substance = models.ForeignKey(Substance, null=True, blank=True, default=None, on_delete=models.PROTECT, related_name='+')
     alias = models.CharField(max_length=250, verbose_name='Псевдоним', null=False)
     brutto_formula_short = models.CharField(max_length=250, verbose_name='Краткая брутто-формула')
     brutto_formula_short_formatted = models.CharField(max_length=250, verbose_name='Краткая брутто-формула')
@@ -472,7 +472,10 @@ class Reaction_subst(models.Model):
         return self.alias
 
     def after_create(self):
-        self.brutto_formula_short_formatted = decorate_formula(self.brutto_formula_short)
+        if self.substance:
+            self.brutto_formula_short_formatted = decorate_formula(self.brutto_formula_short)
+        else:
+            self.brutto_formula_short_formatted = self.brutto_formula_short
 
     class Meta:
         ordering = ["id_react_subst", "reaction"]
@@ -617,6 +620,22 @@ class Dict_measure_unit(models.Model):
         ordering = ["id_unit"]
 
 
+#Серия для Экспериментов
+class Exper_serie (models.Model):
+    id_serie = models.AutoField(primary_key=True, verbose_name='ИД')
+    reaction = models.ForeignKey(Reaction, null=False, on_delete=models.CASCADE, related_name='exper_series')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Название')
+    description = models.TextField(blank=True, verbose_name='Описание')
+    is_archive = models.BooleanField(default=False, verbose_name='Поместить в Архив')
+
+    class Meta:
+        verbose_name = ('Серия экспериментов')
+        verbose_name_plural = ('Серии экспериментов')
+
+    def __unicode__(self):
+        return self.name
+
+
 #Эксперименты
 class Experiment (models.Model):
     id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
@@ -631,6 +650,9 @@ class Experiment (models.Model):
     updated_by   = models.TextField (verbose_name='Обновил(а)')
     updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
     is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
+    exper_serie = models.ForeignKey(Exper_serie, null=True, blank=True, default=None, on_delete=models.PROTECT,
+        related_name='experiments', verbose_name='Серия')
+
     created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
     name         = models.CharField (max_length = 250, verbose_name='Название')
     created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
@@ -730,29 +752,6 @@ class Exper_point (models.Model):
     class Meta:
       verbose_name = ('Экспериментальные данные')
       verbose_name_plural = ('Экспериментальные данные')
-
-class Exper_serie (models.Model):
-    id_serie = models.AutoField (primary_key = True, verbose_name='ИД')
-    name = models.CharField(max_length=250, unique=True, verbose_name='Название')
-    description = models.TextField(blank=True, verbose_name='Описание')
-
-
-    class Meta:
-      verbose_name = ('Серия экспериментов')
-      verbose_name_plural = ('Серии экспериментов')
-
-    def __unicode__(self):
-        return self.name
-
-
-class Experserie_experiment (models.Model):
-    #id_serie = models.AutoField (primary_key = True, verbose_name='ИД')
-    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='experserie_experiment',verbose_name='Эксперимент')
-    exper_serie   = models.ForeignKey(Exper_serie, null = False, on_delete=models.PROTECT, related_name='exper_serie', verbose_name='Серия экспериментов')
-
-    class Meta:
-      verbose_name = ('Эксперимент в серии экспериментов')
-      verbose_name_plural = ('Эксперименты в серии экспериментов')
 
 
 ##Задачи

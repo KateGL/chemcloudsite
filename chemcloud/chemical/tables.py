@@ -68,7 +68,7 @@ class ConsistTable(tables.Table):
 
 #Реакции
 class ReactionTable(tables.Table):
-    detail_link = tables.LinkColumn('reaction_detail', args=[A('pk')], orderable=False,  verbose_name='Ссылка', empty_values=())
+    detail_link = tables.LinkColumn('reaction_detail', args=[A('pk')], orderable=False, verbose_name='Ссылка', empty_values=())
     name = tables.Column(accessor='reaction.name')
     is_favorite = tables.Column(accessor='reaction.is_favorite')
     description = tables.Column(accessor='reaction.description')
@@ -90,7 +90,7 @@ class ReactionTable(tables.Table):
         # add class="paleblue" to <table> tag
         attrs = {"class": "paleblue"}
         fields = ("name", "is_favorite", "description", "updated_date", "user_rule", "detail_link")
-        sequence = ("is_favorite", "name",  "description", "updated_date","detail_link", "user_rule")
+        sequence = ("is_favorite", "name", "description", "updated_date", "detail_link", "user_rule")
 
 
 #Права на Реакции
@@ -192,13 +192,14 @@ class StepsTable(tables.Table):
         fields =("name", "order", "step", "order_arrows", "detail_link")
         sequence = ("order_arrows", "order","name", "step", "detail_link")
 
+
 #Эксперименты
 class ExperimentTable(tables.Table):
-    detail_link = tables.LinkColumn('experiment_detail', orderable=False,  verbose_name='', empty_values=())
+    detail_link = tables.LinkColumn('experiment_detail', orderable=False, verbose_name='', empty_values=())
     name = tables.LinkColumn('experiment_edit', orderable=True)
 
     def render_detail_link(self, record):
-        link = reverse('chemical.views.experiment_detail', args=[record.reaction.id_reaction,record.pk])
+        link = reverse('chemical.views.experiment_detail', args=[record.reaction.id_reaction, record.pk])
         return make_detail_link(link)
 
     def render_name(self, record):
@@ -208,8 +209,8 @@ class ExperimentTable(tables.Table):
     class Meta:
         model = Experiment
         attrs = {"class": "paleblue"}
-        fields = ("exper_date", "name", "description", "updated_date", "is_favorite")
-        sequence = ("exper_date","name", "description", "is_favorite", "updated_date")
+        fields = ("exper_date", "exper_serie","name", "description", "updated_date", "is_favorite")
+        sequence = ("exper_date","exper_serie","name", "description", "is_favorite", "updated_date")
 
 
 #Задачи

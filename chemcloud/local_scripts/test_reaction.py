@@ -13,7 +13,7 @@ from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
 from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
-from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data,Exper_serie,Experserie_experiment
+from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data,Exper_serie
 from chemical.chemical_models import Exper_point,Reaction_feature
 from django.contrib.auth.models import User
 
@@ -26,7 +26,6 @@ def drop_all():
      Reaction_subst.objects.all().delete()
      Substance.objects.all().delete()
      Exper_data.objects.all().delete()
-     Experserie_experiment.objects.all().delete()
      Exper_serie.objects.all().delete()
      Experiment.objects.all().delete()
      Reaction_feature.objects.all().delete()
@@ -129,7 +128,7 @@ def populate():
    add_substance_consist(c,d,4)
 
    # Добавление экспериментов
-   add_exper_serie(1,'Первая серия','Первая серия опытов реакции паровой конверсии пропана. Условия: Катализатор НИАП-12-05(з-15). 34% CH4, 17% C3H8, 49% H2O,   H2O/C(в пропане) = 1,    H2O/C = 0.58;  GHSV= 670 1/ч,    G(влаж.смеси)=0.17 мл/сек')
+   add_exper_serie(1,b,'Первая серия','Первая серия опытов реакции паровой конверсии пропана. Условия: Катализатор НИАП-12-05(з-15). 34% CH4, 17% C3H8, 49% H2O,   H2O/C(в пропане) = 1,    H2O/C = 0.58;  GHSV= 670 1/ч,    G(влаж.смеси)=0.17 мл/сек')
    # Эксперимент 1
    d = Dict_measure_unit.objects.get(id_unit=8)
    e = Dict_measure_unit.objects.get(id_unit=6)
@@ -140,7 +139,7 @@ def populate():
    add_exper(1,b,d,e,e,'Эксперимент 1. Катализатор НИАП-12-05',f,g,datetime.combine(h,i),'Admin',1,'Эксперимент 1','Admin')
    a = Experiment.objects.get(id_experiment=1)
    b = Exper_serie.objects.get(id_serie=1)
-   add_experserie_experiment(a,b)
+   
    # Добавление веществ реакции в эксперименте
    b = Reaction.objects.get(id_reaction=1)
    # C3H8
@@ -189,7 +188,7 @@ def populate():
    add_exper(2,b,d,e,e,'Эксперимент 2. Катализатор НИАП-12-05',f,g,datetime.combine(h,i),'Admin',1,'Эксперимент 2','Admin')
    a = Experiment.objects.get(id_experiment=2)
    b = Exper_serie.objects.get(id_serie=1)
-   add_experserie_experiment(a,b)
+   
    # Добавление вещест реакции в эксперименте
    b = Reaction.objects.get(id_reaction=1)
    # C3H8
@@ -291,15 +290,11 @@ def add_exper_subst(id_es,e,rs,dsr,io,ifv):
     a.save()
     return a
 
-def add_exper_serie(id_s,n,d):
-    a = Exper_serie.objects.get_or_create(id_serie=id_s,name=n,description=d)[0]
+def add_exper_serie(id_s,react,n,d):
+    a = Exper_serie.objects.get_or_create(id_serie=id_s,reaction=react,name=n,description=d)[0]
     a.save()
     return a
 
-def add_experserie_experiment(e,es):
-    a = Experserie_experiment.objects.get_or_create(experiment=e,exper_serie=es)[0]
-    a.save()
-    return a
 
 def add_exper_point(ip,es,av,fv):
     a = Exper_point.objects.get_or_create(id_point=ip,exper_subst=es,arg_val=av,func_val=fv)[0]

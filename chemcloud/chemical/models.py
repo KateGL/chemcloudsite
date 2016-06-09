@@ -9,7 +9,7 @@ from annoying.fields import AutoOneToOneField
 from django.contrib.auth.models import User
 
 from chemical.chemical_models import Dict_atom, Substance, Reaction, User_reaction
-from chemical.chemical_models import Reaction_subst, Experiment, Reaction_scheme
+from chemical.chemical_models import Reaction_subst, Experiment, Exper_serie, Reaction_scheme
 from chemical.chemical_models import Scheme_step, Substance_synonym, Dict_feature
 from chemical.chemical_models import Reaction_feature,Exper_subst,Dict_model_function
 from chemical.chemical_models import Problem, Dict_problem_type,Dict_model_argument,Dict_measure_unit
@@ -196,6 +196,21 @@ class Chemistry(models.Model):
             raise Http404("Experiment does not exist")
         exp_dict = {}
         exp_dict['experiment'] = exp
+        exp_dict['is_owner'] = react.is_owner
+        return exp_dict
+
+    def exper_serie_all(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.exper_series.all()
+
+    def exper_serie_get(self, id_reaction, id_experserie):
+        react = self.reaction_get(id_reaction)
+        try:
+            exp = react.reaction.exper_series.all().get(pk=id_experserie)
+        except Exper_serie.DoesNotExist:
+            raise Http404("Exper_serie does not exist")
+        exp_dict = {}
+        exp_dict['exper_serie'] = exp
         exp_dict['is_owner'] = react.is_owner
         return exp_dict
 

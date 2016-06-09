@@ -11,13 +11,12 @@ function formatSubstance(subst){
      { return '---------'}
     }
 
+function applySelect2(subst_serch_element){
+    var url_str = subst_serch_element.attr('data-check-url');
 
 
-$(document).ready(function(){
 
-var url_str = $("#id_substance").attr('data-check-url');
-
-$("#id_substance").select2({
+subst_serch_element.select2({
 
   ajax: {
     url: url_str,
@@ -55,7 +54,12 @@ $("#id_substance").select2({
   templateResult: formatSubstance, // omitted for brevity, see the source of this page
   templateSelection: formatSubstance // omitted for brevity, see the source of this page
 });
+    }
 
+
+$(document).ready(function(){
+
+applySelect2($("#id_substance"));
 
 $('#id_substance').on("select2:selecting", function(e) {
    // what you would like to happen

@@ -33,12 +33,13 @@
 
  <td class="detail_caption">Вещество  {% if field.field.required %} * {% endif %} </td>
   <td class="detail_value">    
-   <select class="js-data-example-ajax col-xs-12" id="id_substance" name="substance"  data-check-url = "{% url 'substance_search_list'%}" >
+   <select class="select2 col-xs-12" id="id_substance" name="substance"  data-check-url = "{% url 'substance_search_list'%}" >
  
 </select>
     </td>   
 
 {% else %}
+
  <td class="detail_caption">{{field.label}} {% if field.field.required %} * {% endif %} </td>
   <td class="detail_value"> 
     {% if  field|widget_type == "checkboxinput" %}{{field}}

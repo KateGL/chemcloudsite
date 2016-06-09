@@ -50,16 +50,29 @@ urlpatterns = [
 #Вещества реакции
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/all/$', views.react_substance_all, name='react_substance_all'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/new/$', views.react_substance_new, name='react_substance_new'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/detail/$', views.react_substance_detail, name='react_substance_detail'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/delete/$', views.react_substance_delete, name='react_substance_delete'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/detail/$',
+        views.react_substance_detail, name='react_substance_detail'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/substance/(?P<id_react_substance>[0-9]+)/delete/$',
+        views.react_substance_delete, name='react_substance_delete'),
+
+
+#Серии для Экспериментов
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/exper_serie/new/$', views.exper_serie_new, name='exper_serie_new'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/exper_serie/(?P<id_exper_serie>[0-9]+)/detail/$',
+        views.exper_serie_detail, name='exper_serie_detail'),
 
 #Эксперименты
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail/$', views.experiment_detail, name='experiment_detail'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail/$',
+        views.experiment_detail, name='experiment_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/edit/$', views.experiment_edit, name='experiment_edit'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/copy/$', views.experiment_copy, name='experiment_copy'),
-    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/delete/$', views.experiment_delete, name='experiment_delete'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/new/(?P<id_exper_serie>[0-9]+)/$', views.experiment_new, name='experiment_new'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/edit/$',
+        views.experiment_edit, name='experiment_edit'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/copy/$',
+        views.experiment_copy, name='experiment_copy'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/delete/$',
+        views.experiment_delete, name='experiment_delete'),
 
 #Задачи
     url(r'^reaction/(?P<id_reaction>[0-9]+)/problem/all/$', views.problem_all, name='problem_all'),

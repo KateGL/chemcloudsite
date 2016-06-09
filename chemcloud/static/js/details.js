@@ -15,6 +15,14 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function applyDatetimePicker(dtp){
+    dtp.datetimepicker({
+                language: 'ru',
+                format: 'DD.MM.YYYY HH:mm',
+                pickSeconds: false,
+                pick12HourFormat: false
+                });
+    }
 
 function get_editbox_value(ebox){
     if (ebox.attr('type') == 'checkbox'){
@@ -54,7 +62,7 @@ function set_readbox_value(rbox, value){
     }
 
 function append_clone_rbox(rbox, edt_td){
-        clone = rbox.clone();
+        var clone = rbox.clone();
         clone.removeAttr('disabled');
         clone.addClass('data_edit');
         if(rbox.hasClass('form-control')){
@@ -76,14 +84,13 @@ function append_clone_rbox(rbox, edt_td){
 <!-- 6. Подключить CSS виджета "Bootstrap datetimepicker" -->
 <link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet">
 */
+        if(clone.hasClass('datetime')){
         var dtp = clone.find('.datetimepicker');
-        if (dtp.hasClass('date')){
-            dtp.datetimepicker({
-                language: 'ru',
-                format: 'DD.MM.YYYY HH:mm',
-                pickSeconds: false,
-                pick12HourFormat: false
-                });
+        applyDatetimePicker(dtp);
+        }
+
+        if (clone.hasClass('select2')){
+            applySelect2(clone);
             }
 
         return clone;
@@ -143,12 +150,7 @@ $(document).ready(function(){
     if ($('.datetimepicker') != false){
         var dtp = $('.datetimepicker')
         if (dtp.hasClass('date')){
-        $('.datetimepicker').datetimepicker({
-                language: 'ru',
-                format: 'DD.MM.YYYY HH:mm',
-                pickSeconds: false,
-                pick12HourFormat: false
-                });
+            applyDatetimePicker(dtp);
         }
     }
 
@@ -175,7 +177,7 @@ $(document).ready(function(){
 
     $('#detail_main').on("click", "button.detail_btn_save", function(){
         //send ajax json
-console.log('trtrtrt');
+//console.log('trtrtrt');
         var url_str  = $('#detail_main').attr('url_edit');
         var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
 
@@ -184,7 +186,7 @@ console.log('trtrtrt');
         var val_td = parnt.siblings(".detail_value");
         var ebox = edt_td.find('.data_edit');
         var evalue = get_editbox_value(ebox);
-        console.log(evalue);
+        //console.log(evalue);
         var btn_save = $(this);
         var fldname = parnt.attr('field_name');
         var data_to_edit = {

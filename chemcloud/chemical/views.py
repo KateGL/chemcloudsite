@@ -18,7 +18,7 @@ from chemical.tables import StepsTable, UserOfReactionTable
 
 
 from django.shortcuts import redirect
-from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm, ProblemForm
+from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, ReactionShareForm, ProblemForm, ExperSerieForm
 from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
 from .models import owner_required, substance_owner_required
@@ -248,7 +248,7 @@ def step_detail(request, id_reaction, id_scheme, id_step):
 @owner_required
 def scheme_new(request, id_reaction):
     react = request.user.chemistry.reaction_get(id_reaction)
-    
+
     form = ReacSchemeForm(request.POST or None)
     if request.method == 'POST':
         if form.is_valid():
@@ -378,7 +378,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
                 data_list_rigth = []
                 if len(data_list_left) > 0:
                     data_list_rigth = _create_step_part(request, id_reaction, step, False, right_str, len(data_list_left))
-                    data_list = data_list_left+data_list_rigth 
+                    data_list = data_list_left+data_list_rigth
                 if len(data_list_left) == 0 or len(data_list_rigth) == 0 or not step.generate_step_from_str(data_list):
                     result = 'error'
                     errorText = 'Ошибка распознавания и сохранения стадии'
@@ -390,7 +390,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
                         errorText = errorText + '. Некорректно введена правая часть'
                     else:
                         errorText = errorText + '. Убедитесь, что одно и то же вещество не содержится одновременно в левой и правой частях стадии. '
-                    errorText = errorText + '. Проверьте соответствие введенных псевдонимов веществам.'                    
+                    errorText = errorText + '. Проверьте соответствие введенных псевдонимов веществам.'
     mess = ''
     tr_class = ''
     info_iconName = ''
@@ -399,7 +399,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         step.save()
         balance_mess = []
         balance_bool = True
-        
+
         info_iconName = 'glyphicon glyphicon-ok glyphicon-good_balance'
         info_iconText = 'Закон сохранения массы выполняется'
         if field_str == 'step':
@@ -408,7 +408,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
             #mess = balance_mess[0]
             #tr_class = 'danger'
             info_iconName = 'glyphicon glyphicon-exclamation-sign glyphicon-bad_balance'
-            info_iconText = balance_mess[0]   
+            info_iconText = balance_mess[0]
     data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'", "info_iconText": "' + info_iconText + '", "info_iconName":"'+ info_iconName +'" }'
     return data
 
@@ -555,13 +555,38 @@ def react_substance_delete(request, id_reaction, id_react_substance):
     subst_dict['substance'].delete()
     return redirect('react_substance_all', id_reaction)#или лушче на сообщение - "?"
 
+#Серии для Экспериментов
+@login_required
+@owner_required
+def exper_serie_new(request, id_reaction):
+    react = request.user.chemistry.reaction_get(id_reaction)
+
+    form = ExperSerieForm(request.POST or None)
+    if request.method == 'POST':
+        if form.is_valid():
+            exper_serie = form.save(commit=False)
+            exper_serie.reaction = react.reaction
+            form.save()
+            return redirect('exper_serie_detail', id_reaction, exper_serie.pk)
+
+    context = {'id_reaction': id_reaction, 'form': form}
+    return render(request, 'chemical/exper_serie_new.html', context)
+
+
+@login_required
+def exper_serie_detail(request, id_reaction, id_exper_serie):
+    exper_serie_dict = request.user.chemistry.exper_serie_get(id_reaction, id_exper_serie)
+    context = {'exper_serie': exper_serie_dict['exper_serie'], 'id_reaction': id_reaction, "is_owner": exper_serie_dict['is_owner']}
+    return render(request, 'chemical/exper_serie_detail.html', context)
+
+
 # Эксперименты
 @login_required
 def experiment_all(request, id_reaction):
     exp_table = ExperimentTable(request.user.chemistry.experiment_all(id_reaction))
     RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
-    context_dict = {'experiments': exp_table, 'id_reaction' : id_reaction}
-    return render(request, 'chemical/experiment_all.html', context_dict )
+    context_dict = {'experiments': exp_table, 'id_reaction':id_reaction}
+    return render(request, 'chemical/experiment_all.html', context_dict)
 
 
 @login_required
@@ -601,7 +626,7 @@ def experiment_copy(request, id_reaction, id_experiment):
 
 @login_required
 @owner_required
-def experiment_new(request, id_reaction):
+def experiment_new(request, id_reaction, id_exper_serie=''):
     react = request.user.chemistry.reaction_get(id_reaction)
 
     form = ExperimentForm(request.POST or None)

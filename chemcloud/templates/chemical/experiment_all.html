@@ -12,7 +12,9 @@
 		{% if id_reaction %}
 			<div class="panel panel-default">
 				<div class="panel-body">
-					<a class = "btn btn-new" href = "{% url 'experiment_new' id_reaction %}" role = "button">Создать эксперимент</a> <!-- TODO: убрала из кнопки pull-left. Без него кнопка становится нормальной ссылкой, хоть и сбивается выравнивание -->
+					<a class = "btn btn-new" href = "{% url 'experiment_new' id_reaction %}" role = "button">Создать эксперимент</a> 
+					
+					<a class = "btn btn-new" href = "{% url 'exper_serie_new' id_reaction %}" role = "button">Создать серию для экспериментов</a>
 				</div>
 			</div>
 

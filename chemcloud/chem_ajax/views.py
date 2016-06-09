@@ -7,14 +7,14 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.core import serializers
 
-
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
 from django.db import models
 import swapper
 import time
 from datetime import datetime
 
-from chemical.models import owner_required, substance_owner_required
+from chemical.models import owner_required, substance_owner_required, Chemistry
 from chemical.urls_utils import make_name_link, make_detail_link
 from chemical.urls_utils import get_subst_detail_link
 from chemical.utils import decorate_formula
@@ -23,23 +23,27 @@ from chemical.chemical_models import consist_to_string
 # Create your views here.
 
 
-
-
-
 def set_field_and_value_from_request(request, my_model):
     data = '{"result":"True", "message":"ok"}'
     if request.is_ajax():
         if request.method == 'POST':
             body_unicode = request.body.decode('utf-8')
             body = json.loads(body_unicode)
-            print(body)
+            #print(body)
             field_name = body['field_name']
             value_tmp = body['value']
+            #print(field_name)
             field_object = my_model._meta.get_field(field_name)
+            #print(field_object)
             #если это ссылка на класс
             if isinstance(field_object, models.ForeignKey):
-                rel_model = field_object.rel.to
-                value = rel_model.objects.get(pk=value_tmp)
+                try:
+                    rel_model = field_object.rel.to
+                    #print(rel_model)
+                    value = rel_model.objects.get(pk=value_tmp)
+                    #print(value)
+                except ObjectDoesNotExist:
+                    value = None
                 #если это булево поле
             elif isinstance(field_object, models.BooleanField):
                 value = (value_tmp.lower() == 'true')
@@ -75,7 +79,7 @@ def substance_search_list(request):
     #print(request.method)
     if request.method != 'GET':
         return False
-    top_count = 50 #request.GET['top_count']
+    top_count = 50  # request.GET['top_count']
     searched = request.GET['q']
 
     data = {}
@@ -98,7 +102,6 @@ def substance_search_list(request):
     data['items'] = substance_list
     xml_bytes = json.dumps(data)
     return HttpResponse(xml_bytes, 'application/json')
-
 
 
 @login_required
@@ -160,6 +163,8 @@ def react_substance_detail_edit(request, id_reaction, id_react_substance):
     fv_dict = set_field_and_value_from_request(request, rsubst)
 
     if (fv_dict['is_error'] is False):
+        if fv_dict['field_name'] == 'brutto_formula_short':
+            rsubst.after_create()
         rsubst.save()
 
     xml_bytes = json.dumps(fv_dict['err_msg'])
@@ -196,10 +201,29 @@ def step_detail_edit(request, id_reaction, id_scheme, id_step):
 
 @login_required
 @owner_required
+def exper_serie_detail_edit(request, id_reaction, id_exper_serie):
+    exper_serie_dict = request.user.chemistry.exper_serie_get(id_reaction, id_exper_serie)
+    exper_serie = exper_serie_dict['exper_serie']
+    fv_dict = set_field_and_value_from_request(request, exper_serie)
+
+    if (fv_dict['is_error'] is False):
+        exper_serie.save()
+
+    xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')
+
+
+@login_required
+@owner_required
 def experiment_detail_edit(request, id_reaction, id_experiment):
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
     exper = exper_dict['experiment']
+
     fv_dict = set_field_and_value_from_request(request, exper)
+
+    #if fv_dict['field_name'] == 'exper_serie':
+        #if fv_dict['value'] == '0':
+            #print('HELLO')
 
     if (fv_dict['is_error'] is False):
         exper.save()
@@ -233,6 +257,24 @@ def dictionary_get(request):
     model_dict = {}
 
     for mdl in my_model.objects.all():
+        model_dict[mdl.pk] = mdl.name
+
+    xml_bytes = json.dumps(model_dict)
+    #print(xml_bytes)
+    #print('end eiw')
+    return HttpResponse(xml_bytes, 'application/json')
+
+
+@login_required
+def exper_serie_get(request, id_reaction):
+    if request.method != 'GET':
+        return False
+    series_all = request.user.chemistry.exper_serie_all(id_reaction)
+
+    model_dict = {}
+    model_dict[0] = '--------'
+
+    for mdl in series_all:
         model_dict[mdl.pk] = mdl.name
 
     xml_bytes = json.dumps(model_dict)

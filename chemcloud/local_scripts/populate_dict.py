@@ -9,30 +9,12 @@ from datetime import datetime,date,time
 
 from chemical.chemical_models import Dict_atom,Dict_feature,Dict_model_function
 from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
-from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
-from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
-from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
-from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data,Exper_serie,Experserie_experiment
-from chemical.chemical_models import Exper_point
+from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param
+from chemical.chemical_models import Dict_subst_role
+from chemical.chemical_models import Dict_problem_type
 from django.contrib.auth.models import User
 
 def drop_all():
-     User_reaction.objects.all().delete()
-     Substance_synonym.objects.all().delete()
-     Exper_subst_data.objects.all().delete()
-     Exper_point.objects.all().delete()
-     Exper_subst.objects.all().delete()
-     Reaction_subst.objects.all().delete()
-     Substance.objects.all().delete()
-     Exper_data.objects.all().delete()
-     Experserie_experiment.objects.all().delete()
-     Exper_serie.objects.all().delete()
-     Experiment.objects.all().delete()
-     Reaction.objects.all().delete()
-     Reaction_scheme.objects.all().delete()
-     Scheme_step.objects.all().delete()
-     Scheme_step_subst.objects.all().delete()
-     Substance_consist.objects.all().delete()
 
      Dict_atom.objects.all().delete()
      Dict_feature.objects.all().delete()
@@ -42,6 +24,7 @@ def drop_all():
      Dict_exper_param.objects.all().delete()
      Dict_subst_role.objects.all().delete()
      Dict_measure_unit.objects.all().delete()
+     Dict_problem_type.objects.all().delete()
 
      print "dropped all dictionaries data"
 
@@ -194,11 +177,25 @@ def populate():
    add_dict_subst_role(3,'Продукт')
    add_dict_subst_role(4,'В реакцию не вступает')
 
+   add_dict_problem_type(1,'Прямая задача химической кинетики')
+   add_dict_problem_type(2,'Обратная задача химической кинетики')
+   add_dict_problem_type(3,'Анализ неопределенности кинетических параметров')
+   add_dict_problem_type(4,'Анализ чувствительности кинетических параметров')
+   add_dict_problem_type(5,'Анализ жесткости системы ОДУ')
+   add_dict_problem_type(6,'Оптимизация условий проведения реакции')
+   add_dict_problem_type(7,'Расчет энергий активаций с помощью МНК')
+   add_dict_problem_type(8,'Выделение маршрутов механизма реакции')
+
    # Print out what we have added to the user.
    #for a in Dict_atom.objects.all():
    #         print "{0}- {1} ".format(str(a), a.symbol)
    #for a in Dict_feature.objects.all():
    #         print "{0}- {1} ".format(str(a), a.name)
+
+def add_dict_problem_type(id,nm):
+    a = Dict_problem_type.objects.get_or_create(id_problem_type=id,name=nm)[0]
+    a.save()
+    return a
 
 def add_atom(atom_num, symb, atom_m, n, nl):
     a = Dict_atom.objects.get_or_create(atom_number=atom_num, symbol=symb, atom_mass = atom_m, name = n, name_latin = nl)[0]

@@ -75,6 +75,20 @@
         </td>
         {% endif %}
       </tr>
+      
+      <tr>				
+						
+						<td class="detail_caption">Серия:</td>
+						<td class="detail_value dict_selector" 
+						    
+						data-init-value={% if experiment.exper_serie %} "{{ experiment.exper_serie.pk }}" {% else %}""{% endif %} data-model="Exper_serie" data-url="{% url 'exper_serie_get' id_reaction %}"></td>
+						{% if is_owner %}
+                        <td class="detail_edit"></td>
+                        <td class="detail_btns" field_name="exper_serie">
+                        </td>
+                        {% endif %}
+					</tr>
+					<tr>
 
       <tr>
         <td class="detail_caption ">Избранное:</td>

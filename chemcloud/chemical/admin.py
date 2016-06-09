@@ -8,7 +8,7 @@ from chemical.chemical_models import Scheme_step, Scheme_step_subst
 from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_tag,Dict_feature,Reaction_feature, Dict_model_function, Dict_model_argument, Dict_measure_unit
 from chemical.chemical_models import User_reaction,Substance_consist,Exper_subst,Dict_subst_role
 from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exper_data,Exper_subst_data
-from chemical.chemical_models import Exper_point,Exper_serie,Experserie_experiment
+from chemical.chemical_models import Exper_point,Exper_serie
 from chemical.models import Chemistry
 
 
@@ -200,4 +200,3 @@ class Experserie_experimentAdmin(admin.ModelAdmin):
   fields = ['experiment','exper_serie']
   list_display = ('experiment','exper_serie')
 
-admin.site.register(Experserie_experiment,Experserie_experimentAdmin)
