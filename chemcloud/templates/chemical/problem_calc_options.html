@@ -22,11 +22,11 @@
    
     
  {% if problem.problem_type.pk == 1 %} <!-- Прямая задача химической кинетики-->
-         {% include "chemical/problem_calc_options_1.html" %}
+         {% include "chemical/problem_calc_options_1_direct.html" %}
      {% endif %}
     
 {% if problem.problem_type.pk == 2 %} <!-- Обратная задача химической кинетики-->
-         {% include "chemical/problem_calc_options_2.html" %}
+         {% include "chemical/problem_calc_options_2_inverse.html" %}
      {% endif %}
      
      <!-- Анализ неопределенности кинетических параметров-->
@@ -40,7 +40,9 @@
      {% endif %}
     
 				<div class="panel-body">
-					<a class = "btn btn-new" href = "#" role = "button">Запустить расчет</a> 
+					<a class = "btn btn-new" href = "#" role = "button">Назад</a> 
+                    <a class = "btn btn-new" href = "#" role = "button">Запустить расчет</a> 
+                    
 				</div>
 			
     

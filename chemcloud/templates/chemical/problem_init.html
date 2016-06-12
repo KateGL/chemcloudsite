@@ -16,34 +16,34 @@
 			    <div class="col-xs-12">
 			        
 			       
-
+        <form method="POST" class="form-horizontal" action="">
   <div class="panel-group"> 
      
      
      {% if problem.problem_type.pk == 1 %} <!-- Прямая задача химической кинетики-->
-         {% include "chemical/problem_init_1.html" %}
+         {% include "chemical/problem_init_1_direct.html" %}
      {% endif %}
       
      {% if problem.problem_type.pk == 2 %} <!-- Обратная задача химической кинетики-->
-         {% include "chemical/problem_init_2.html" %}
+         {% include "chemical/problem_init_2_inverse.html" %}
      {% endif %}
  
        {% if problem.problem_type.pk == 3 %} <!-- Анализ неопределенности кинетических параметров-->
-         {% include "chemical/problem_init_3.html" %}
+         {% include "chemical/problem_init_3_uncertainty.html" %}
      {% endif %}
      
      {% if problem.problem_type.pk == 4 %} <!-- Анализ чувствительности кинетических параметров-->
-         {% include "chemical/problem_init_4.html" %}
+         {% include "chemical/problem_init_4_sensitivity.html" %}
      {% endif %}
      
     <!-- Оптимизация условий проведения реакции-->
     {% if problem.problem_type.pk == 6 %} 
-         {% include "chemical/problem_init_6.html" %}
+         {% include "chemical/problem_init_6_optimization.html" %}
      {% endif %}
     
     <!-- Расчет энергий активаций с помощью МНК-->
     {% if problem.problem_type.pk == 7 %} 
-         {% include "chemical/problem_init_7.html" %}
+         {% include "chemical/problem_init_7_MNK.html" %}
      {% endif %}
     
     
@@ -53,6 +53,7 @@
 			
     
   </div>
+</form>
 
 			     
 			        

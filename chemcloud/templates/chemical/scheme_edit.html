@@ -51,7 +51,7 @@
                             <td class="edit step {{step.id_step}}">{{ step.get_leftPart_of_step }} {% if step.is_revers %} <-> {% else %} -> {% endif %} {{ step.get_rightPart_of_step }} <div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div></td>
 							<td><button id="btn_{{step.id_step}}del" class="step_delete" type="button" data-stepid="{{step.id_step}}" data-url-delete="{% url 'step_delete' id_reaction id_scheme %}" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>
 							<td><a href="{% url 'step_detail' id_reaction id_scheme step.id_step %}"> Детали</a> </td>
-							<td><span {% if step.is_good_balance %} class="info_{{step.id_step}} glyphicon glyphicon-ok glyphicon-good_balance" {% else %} class="info_{{step.id_step}} glyphicon glyphicon-exclamation-sign glyphicon-bad_balance"  {% endif %} data-toggle="tooltip" data-placement="top" title="{% if step.is_good_balance %} Закон сохранения массы соблюдается {% else %} Не соблаюдается закон сохранения массы {% endif %}"></span> </td>
+							<td><span {% if step.is_good_balance %} class="info_{{step.id_step}} glyphicon glyphicon-ok glyphicon-good_balance" {% else %} class="info_{{step.id_step}} glyphicon glyphicon-exclamation-sign glyphicon-bad_balance"  {% endif %} data-toggle="tooltip" data-placement="top" title="{% if step.is_good_balance %} Закон сохранения массы соблюдается {% else %} Не соблюдается закон сохранения массы {% endif %}"></span> </td>
 
 			
 						</tr>
