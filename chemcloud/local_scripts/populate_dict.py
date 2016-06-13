@@ -13,11 +13,15 @@ from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param
 from chemical.chemical_models import Dict_subst_role
 from chemical.chemical_models import Dict_problem_type
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
-from chemical.chemical_models import Dict_calc_param
+from chemical.chemical_models import Dict_calc_param, Reaction_feature,Experiment,Exper_subst
+from chemical.chemical_models import Exper_point
 from django.contrib.auth.models import User
 
 def drop_all():
-
+     Reaction_feature.objects.all().delete()
+     Exper_point.objects.all().delete()
+     Exper_subst.objects.all().delete()
+     Experiment.objects.all().delete()
      Dict_atom.objects.all().delete()
      Dict_feature.objects.all().delete()
      Dict_exper_subst_param.objects.all().delete()
@@ -153,7 +157,7 @@ def populate():
    add_dict_model_argument(0,'Не задано','')
    add_dict_model_argument(1,'Время','t')
    add_dict_model_argument(2,'Длина реактора','l')
-   add_dict_measure_unit(0,'empty','Пусто',1,1,None)
+   add_dict_measure_unit(0,'empty','Не задано',1,1,None)
    b = Dict_measure_unit.objects.get(id_unit=0)
    add_dict_measure_unit(1,'сек','Секунда',1,1,b)
    b = Dict_measure_unit.objects.get(id_unit=1)
@@ -259,7 +263,7 @@ def populate():
    add_dict_calc_param   (37, 'Максимальный шаг интегрирования', 'hmax')
    add_dict_calc_param   (38, 'Число итераций', 'itercount')
    add_dict_calc_param   (39, 'Число процессоров', 'processor count')
-   add_dict_calc_param   (40, 'Точность остановки', 'eps') 
+   add_dict_calc_param   (40, 'Точность остановки', 'eps')
    add_dict_calc_param   (41, 'Логарифмическое сглаживание поверхности', 'use ln')
    add_dict_calc_param   (42, 'Исходная точка', 'first point')
    add_dict_calc_param   (43, 'Размерность', 'Dimension') #а локальный или глобальный метод, это уже наверно методом из справочника методов определяется
@@ -268,14 +272,14 @@ def populate():
    add_dict_calc_param   (44, '...', '...')
 
 	#входные параметры настройки индексного метода
-   add_dict_calc_param   (45, 'Номер модификации для метода множественных эвольвент. Возможные значения: 0, 1, 2 (рекомендуется, по умолчанию) или 3', 'modification') 
-   add_dict_calc_param   (46, 'Параметр надежности. Должно быть >1,0 или = ~ 2,0 ... 3,0 рекомендуется', 'r') 
-   add_dict_calc_param   (47, 'Смешанная стратегия', 'mixed') 
-   add_dict_calc_param   (48, 'Супер-смешанная стратегия', 'super-mixed') 
-   add_dict_calc_param   (49, 'Метод', 'method') 
-   add_dict_calc_param   (50, 'Параметр для eps-резервирования', 'q') 
-   add_dict_calc_param   (51, 'Число дополнительных эвольвент L = 0 означает 1 по умолчанию эвольвенту, L>=1 рекомендуется', 'L') 
-   add_dict_calc_param   (52, 'Уровень точности для кривой Пеано. m>=10 рекомендуется. Максимальная точность составляет 2^m', 'm') 
+   add_dict_calc_param   (45, 'Номер модификации для метода множественных эвольвент. Возможные значения: 0, 1, 2 (рекомендуется, по умолчанию) или 3', 'modification')
+   add_dict_calc_param   (46, 'Параметр надежности. Должно быть >1,0 или = ~ 2,0 ... 3,0 рекомендуется', 'r')
+   add_dict_calc_param   (47, 'Смешанная стратегия', 'mixed')
+   add_dict_calc_param   (48, 'Супер-смешанная стратегия', 'super-mixed')
+   add_dict_calc_param   (49, 'Метод', 'method')
+   add_dict_calc_param   (50, 'Параметр для eps-резервирования', 'q')
+   add_dict_calc_param   (51, 'Число дополнительных эвольвент L = 0 означает 1 по умолчанию эвольвенту, L>=1 рекомендуется', 'L')
+   add_dict_calc_param   (52, 'Уровень точности для кривой Пеано. m>=10 рекомендуется. Максимальная точность составляет 2^m', 'm')
 
 #входные параметры, привязываемые к веществу
    add_dict_calc_param   (53, 'Начальная концентрация вещества', 'init concentration $1')
