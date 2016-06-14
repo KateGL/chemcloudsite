@@ -95,7 +95,7 @@ function csrfSafeMethod(method) {
                 var info_iconText = arr.info_iconText;
                 var info_iconName= arr.info_iconName;
                 var tr_class = arr.tr_class;
-                
+
 				if (result == 'success')		
 				{//находим input внутри элемента с классом ajax и вставляем вместо input его значение
 				 	$('.ajax'+id).html($('.ajax'+id+' input').val() + '<div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div>');

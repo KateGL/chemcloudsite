@@ -68,7 +68,7 @@ $(document).ready(function(){
 			tr_str = tr_str + '<td class="edit step '+id_step + '"><div class="div-right"><button type="button" class="editbtn"  ><span class="glyphicon glyphicon-pencil"></span></button></div></td>';//сама стадия пока пустая
 			tr_str = tr_str + '<td><button id="btn_' + id_step + 'del" class="step_delete" type="button" class="btn btn-default"  data-stepid="' + id_step + '" data-url-delete="' + url_delete+ '" data-toggle="tooltip" data-placement="top" title="Удалить стадию"><span class="glyphicon glyphicon-remove"></span></button> </td>';
 			tr_str = tr_str + '<td> <a href="'+url_detail+'">Детали </a></td>';
-			tr_str = tr_str + '<td><span class="glyphicon glyphicon-exclamation-sign glyphicon-bad_balance" data-toggle="tooltip" data-placement="top" title="Пустая стадия"></span> </td>';
+			tr_str = tr_str + '<td><span class="info_' + id_step + ' glyphicon glyphicon-exclamation-sign glyphicon-bad_balance" data-toggle="tooltip" data-placement="top" title="Пустая стадия"></span> </td>';
 
 
 			tr_str = tr_str + '</tr>';

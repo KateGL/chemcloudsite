@@ -9,6 +9,9 @@ from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_t
 from chemical.chemical_models import User_reaction,Substance_consist,Exper_subst
 from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exper_data,Exper_subst_data
 from chemical.chemical_models import Exper_point,Exper_serie
+from chemical.chemical_models import Dict_problem_type
+from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
+from chemical.chemical_models import Dict_calc_param
 from chemical.models import Chemistry
 
 
@@ -193,4 +196,14 @@ admin.site.register(Exper_serie,Exper_serieAdmin)
 class Experserie_experimentAdmin(admin.ModelAdmin):
   fields = ['experiment','exper_serie']
   list_display = ('experiment','exper_serie')
+
+
+#Справочники
+class Dict_calc_paramAdmin(admin.ModelAdmin):
+  fields = ['id_dict_param','name', 'mask']
+  list_display = ('id_dict_param','name', 'mask')
+
+admin.site.register(Dict_calc_param,Dict_calc_paramAdmin)
+
+
 

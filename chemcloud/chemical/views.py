@@ -233,7 +233,7 @@ def scheme_check_balance(request, id_reaction, id_scheme):
     balance_mess = []
     bad_steps = []
     result = 'True'
-    balance_bool = scheme.check_scheme_balance(balance_mes)
+    balance_bool = scheme.check_scheme_balance(balance_mess)
     mess = ''
     tr_class=''
     if not balance_bool:
@@ -318,8 +318,8 @@ def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
         #поиск соответствующего вещества реакции, если нет - ошибка
         #subst_list = request.user.chemistry.react_subst_all(id_reaction)
         str_temp = str_i.strip()
-        #ищем любую латинскую букву - это значит начало псевдонима. Все , что до - это стех.коэффициент
-        req_res = re.search(r'([A-Z,a-z]+\d*)', str_temp) #r перед строкой - включение сырого режима. Отключение экранирования
+        #ищем любую латинскую букву или букву кириллицы - это значит начало псевдонима. Все , что до - это стех.коэффициент а-яА-ЯёЁa-zA-Z0-9
+        req_res = re.search(u'([A-Za-zа-яА-ЯёЁ]+\d*)', str_temp) #r перед строкой - включение сырого режима. Отключение экранирования
         if req_res == None:
             return []
         start_pos = req_res.start()
@@ -337,6 +337,8 @@ def _create_step_part(request, id_reaction, step, is_left, part_str, start_i ):
         if is_left:
             steh_koef = -1.0*steh_koef
         subst_dict = request.user.chemistry.react_subst_filterbyAlias(id_reaction, alias)
+        if subst_dict=={}:
+            return []
         reac_subst = subst_dict['substance']
         element = [i, steh_koef, reac_subst]
         i=i+1
@@ -359,16 +361,16 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         step_str = value_str.strip(' ')
         left_str = ''
         right_str = ''
-        pos=step_str.find('->')
+        pos=step_str.find('<->')
         arr2 = []
         if pos != -1:
-            step.is_revers = False
-            arr2 = value_str.split('->')
+            step.is_revers = True
+            arr2 = value_str.split('<->')
         else:
-            pos = step_str.find('<->')
+            pos = step_str.find('->')
             if pos != -1:
-                step.is_revers = True
-                arr2 = value_str.split('<->')
+                step.is_revers = False
+                arr2 = value_str.split('->')
             else:
                 result = 'error'
                 errorText = 'Неправильно введен флаг обратимости стадии'
@@ -395,8 +397,8 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
                     elif len(data_list_rigth) == 0:
                         errorText = errorText + '. Некорректно введена правая часть'
                     else:
-                        errorText = errorText + '. Убедитесь, что одно и то же вещество не содержится одновременно в левой и правой частях стадии. '
-                    errorText = errorText + '. Проверьте соответствие введенных псевдонимов веществам.'
+                        errorText = errorText + '. Убедитесь, что одно и то же вещество не содержится одновременно в левой и правой частях стадии '
+                    errorText = errorText + '. Проверьте соответствие введенных псевдонимов веществам и корректность введенных стехиометрических коэффициентов.'
     mess = ''
     tr_class = ''
     info_iconName = ''
@@ -413,6 +415,7 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         if not balance_bool:
             #mess = balance_mess[0]
             #tr_class = 'danger'
+            print(balance_mess[0])
             info_iconName = 'glyphicon glyphicon-exclamation-sign glyphicon-bad_balance'
             info_iconText = balance_mess[0]
     data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'", "info_iconText": "' + info_iconText + '", "info_iconName":"'+ info_iconName +'" }'
@@ -687,6 +690,7 @@ def problem_detail(request, id_reaction, id_problem):
 def problem_new(request, id_reaction, id_problem_type):
     react = request.user.chemistry.reaction_get(id_reaction)
     problem_type = request.user.chemistry.dict_problem_type_get(id_problem_type)
+    print('problem_type.name')
     print(problem_type.name)
 
     form = ProblemForm(request.POST or None, initial={'problem_type': problem_type})
@@ -696,6 +700,7 @@ def problem_new(request, id_reaction, id_problem_type):
             problem.reaction = react.reaction
             form.save()
             return redirect('problem_init', id_reaction, problem.pk)
+    
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)
     #context = {'id_reaction': id_reaction, 'id_problem_type': id_problem_type}
@@ -717,6 +722,9 @@ def problem_init(request, id_reaction, id_problem):
     context['id_reaction'] = id_reaction
     context["is_owner"] = problem_dict['is_owner']
     context['step_name'] = 'problem_init'
+    
+    problem_context = request.user.chemistry.get_problem_context(context['problem'], 1)
+    context['problem_context'] = problem_context
     return render(request, 'chemical/problem_init.html', context)
 
 

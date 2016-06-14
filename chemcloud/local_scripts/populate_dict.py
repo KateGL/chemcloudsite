@@ -11,10 +11,14 @@ from chemical.chemical_models import Dict_atom,Dict_feature,Dict_model_function
 from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param
 from chemical.chemical_models import Dict_problem_type
+from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
+from chemical.chemical_models import Dict_calc_param, Reaction_feature,Experiment,Exper_subst
+from chemical.chemical_models import Exper_point
 from django.contrib.auth.models import User
 
 
 def drop_all():
+
     Dict_atom.objects.all().delete()
     Dict_feature.objects.all().delete()
     Dict_exper_subst_param.objects.all().delete()
@@ -23,12 +27,18 @@ def drop_all():
     Dict_exper_param.objects.all().delete()
     Dict_measure_unit.objects.all().delete()
     Dict_problem_type.objects.all().delete()
-
+    Dict_calc_criteria_constraints.objects.all().delete()
+    Dict_calc_functional.objects.all().delete()
+    Dict_calc_param.objects.all().delete()
     print "dropped all dictionaries data"
+
+     Reaction_feature.objects.all().delete()
+     Exper_point.objects.all().delete()
+     Exper_subst.objects.all().delete()
+     Experiment.objects.all().delete()
 
 
 def populate():
-
     add_atom(atom_num=0, symb="",  atom_m=0,  n = "Не задано",   nl = "")
     add_atom(atom_num=1, symb="H",  atom_m=1.00800002,  n = "Водород",   nl = "Hydrogenium")
     add_atom(atom_num=2, symb="He",  atom_m=4.00299978,  n = "Гелий",   nl = "Helium")	
@@ -139,6 +149,7 @@ def populate():
     add_atom(atom_num=107, symb="Bh",  atom_m=262,  n = "Борий",   nl =  "Bohrium")
     add_atom(atom_num=108, symb="Hn",  atom_m=265,  n = "Хассий ",   nl =  "Hassium")
     add_atom(atom_num=109, symb="Mt",  atom_m=268,  n = "Мейтнерий",   nl =  "Meitnerium")
+
     add_dict_feature(0,'Не задано')
     add_dict_feature(1,'Нестационарная')
     add_dict_feature(2,'Изотермическая')
@@ -148,7 +159,7 @@ def populate():
     add_dict_model_argument(0,'Не задано','')
     add_dict_model_argument(1,'Время','t')
     add_dict_model_argument(2,'Длина реактора','l')
-    add_dict_measure_unit(0,'empty','Пусто',1,1,None)
+    add_dict_measure_unit(0,'empty','Не задано',1,1,None)
     b = Dict_measure_unit.objects.get(id_unit=0)
     add_dict_measure_unit(1,'сек','Секунда',1,1,b)
     b = Dict_measure_unit.objects.get(id_unit=1)
@@ -181,11 +192,118 @@ def populate():
     add_dict_problem_type(7,'Расчет энергий активаций с помощью МНК')
     add_dict_problem_type(8,'Выделение маршрутов механизма реакции')
 
+
+   add_dict_calc_criteria_constraints(1,'Сравнение значений концентраций наблюдаемых веществ между расчетом и экспериментом')
+   add_dict_calc_criteria_constraints(2,'Сравнение значений периодов индукции наблюдаемых веществ между расчетом и экспериментом')
+   add_dict_calc_criteria_constraints(3,'Сравнение значений начальных скоростей изменения концентраций веществ между расчетом и экспериментом')
+   add_dict_calc_criteria_constraints(4,'Максимальная концентрация вещества')
+
+   add_dict_calc_functional(1,'Сумма абсолютных разностей')
+   add_dict_calc_functional(2,'Сумма квадратов разностей')
+   add_dict_calc_functional(3,'Сумма относительных отклонений')
+   add_dict_calc_functional(4,'Среднеквадратичная погрешность')
+
    # Print out what we have added to the user.
    #for a in Dict_atom.objects.all():
    #         print "{0}- {1} ".format(str(a), a.symbol)
    #for a in Dict_feature.objects.all():
    #         print "{0}- {1} ".format(str(a), a.name)
+
+#dict_param
+#параметры, которые могут быть как входными, так и выходными
+   add_dict_calc_param   (1, 'Температура', 'T')
+     #с привязкой к веществу
+   add_dict_calc_param   (2, 'Отношение концентрации вещества $1 к базовому веществу $2', '$1:$2')
+     #с привязкой к стадии
+   add_dict_calc_param   (3, 'Константа скорости прямой стадии', 'k_$1 ->')
+   add_dict_calc_param   (4, 'Константа скорости обратной стадии', 'k_$1 <-')
+   add_dict_calc_param   (5, 'Нижняя граница константы скорости прямой стадии', 'min k_$1 ->')
+   add_dict_calc_param   (6, 'Нижняя граница константы скорости обратной стадии', 'min k_$1 <-') #для выходного параметра это означает интервал неопределенноти . Для входного - диапазон поиска
+   add_dict_calc_param   (7, 'Нижняя граница энергии активации прямой стадии', 'min Ea_$1 ->')
+   add_dict_calc_param   (8, 'Нижняя граница энергии активации обратной стадии', 'min Ea_$1 <-')
+   add_dict_calc_param   (9, 'Нижняя граница предэкспоненциального множителя прямой стадии', 'min Ak0_$1 ->')
+   add_dict_calc_param   (10, 'Нижняя граница предэкспоненциального множителя обратной стадии', 'min Ak0_$1 <-')
+   add_dict_calc_param   (11, 'Верхняя граница константы скорости прямой стадии', 'max k_$1 ->')
+   add_dict_calc_param   (12, 'Верхняя граница константы скорости обратной стадии', 'max k_$1 <-')
+   add_dict_calc_param   (13, 'Верхняя граница энергии активации прямой стадии', 'max Ea_$1 ->')
+   add_dict_calc_param   (14, 'Верхняя граница энергии активации обратной стадии', 'max Ea_$1 <-')
+   add_dict_calc_param   (15, 'Верхняя граница предэкспоненциального множителя прямой стадии', 'max Ak0_$1 ->')
+   add_dict_calc_param   (16, 'Верхняя граница предэкспоненциального множителя обратной стадии', 'max Ak0_$1 <-')
+
+
+#выходные параметры, привязываемые к стадиям
+   add_dict_calc_param   (17, 'Энергия активации прямой стадии', 'Ea_$1 ->')
+   add_dict_calc_param   (18, 'Энергия активации обратной стадии', 'Ea_$1 <-')
+   add_dict_calc_param   (19, 'Предэкспоненциальный множитель прямой стадии', 'Ak0_$1 ->')
+   add_dict_calc_param   (20, 'Предэкспоненциальный множитель обратной стадии', 'Ak0_$1 <-')
+   add_dict_calc_param   (21, 'Чувствительность константы скорости прямой стадии', 'Si k_$1 ->')
+   add_dict_calc_param   (22, 'Чувствительность константы скорости обратной стадии', 'Si k_$1 <-')
+   add_dict_calc_param   (23, 'Чувствительность энергии активации прямой стадии', 'Si Ea_$1 ->')
+   add_dict_calc_param   (24, 'Чувствительность энергии активации обратной стадии', 'Si Ea_$1 <-')
+   add_dict_calc_param   (25, 'Чувствительность предэкспоненциального множителя прямой стадии', 'Si Ak0_$1 ->')
+   add_dict_calc_param   (26, 'Чувствительность предэкспоненциального множителя обратной стадии', 'Si Ak0_$1 <-')
+   add_dict_calc_param   (27, 'Величина достоверности МНК для прямой стадии', 'R_$1 ->')
+   add_dict_calc_param   (28, 'Величина достоверности МНК для обратной стадии', 'R_$1 <-')
+
+
+#выходные параметры, НЕ привязываемые к стадиям
+   add_dict_calc_param   (29, 'Баланс', 'balance')
+   add_dict_calc_param   (30, 'Невязка', 'nev')
+
+#выходные параметры, привязываемые к веществу
+   add_dict_calc_param   (31, 'Выход продукта', 'product yield $1')
+   add_dict_calc_param   (32, 'Период индукции', 't_induc $1')
+   add_dict_calc_param   (33, 'Средняя скорость', 'avr_rate $1')
+
+#входные параметры
+   add_dict_calc_param   (34, 'Вид искомых кинетических параметров', 'KinParam')#1 - константы, 2 - энергии активации
+   add_dict_calc_param   (35, 'Начальный шаг интегрирования', 'h0')
+   add_dict_calc_param   (36, 'Минимальный шаг интегрирования', 'hmin')
+   add_dict_calc_param   (37, 'Максимальный шаг интегрирования', 'hmax')
+   add_dict_calc_param   (38, 'Число итераций', 'itercount')
+   add_dict_calc_param   (39, 'Число процессоров', 'processor count')
+   add_dict_calc_param   (40, 'Точность остановки', 'eps')
+   add_dict_calc_param   (41, 'Логарифмическое сглаживание поверхности', 'use ln')
+   add_dict_calc_param   (42, 'Исходная точка', 'first point')
+   add_dict_calc_param   (43, 'Размерность', 'Dimension') #а локальный или глобальный метод, это уже наверно методом из справочника методов определяется
+
+	#входные параметры - настройки генетического алгоритма
+   add_dict_calc_param   (44, '...', '...')
+
+	#входные параметры настройки индексного метода
+   add_dict_calc_param   (45, 'Номер модификации для метода множественных эвольвент. Возможные значения: 0, 1, 2 (рекомендуется, по умолчанию) или 3', 'modification')
+   add_dict_calc_param   (46, 'Параметр надежности. Должно быть >1,0 или = ~ 2,0 ... 3,0 рекомендуется', 'r')
+   add_dict_calc_param   (47, 'Смешанная стратегия', 'mixed')
+   add_dict_calc_param   (48, 'Супер-смешанная стратегия', 'super-mixed')
+   add_dict_calc_param   (49, 'Метод', 'method')
+   add_dict_calc_param   (50, 'Параметр для eps-резервирования', 'q')
+   add_dict_calc_param   (51, 'Число дополнительных эвольвент L = 0 означает 1 по умолчанию эвольвенту, L>=1 рекомендуется', 'L')
+   add_dict_calc_param   (52, 'Уровень точности для кривой Пеано. m>=10 рекомендуется. Максимальная точность составляет 2^m', 'm')
+
+#входные параметры, привязываемые к веществу
+   add_dict_calc_param   (53, 'Начальная концентрация вещества', 'init concentration $1')
+   add_dict_calc_param   (54, 'Допустимая погрешность по периоду индукции для вещества', 'indud eps $1')
+   add_dict_calc_param   (55, 'Допустимая погрешность по средней скорости изменения вещества', 'wrate eps $1')
+
+#входные параметры, привязываемые к стадии
+   add_dict_calc_param   (56, 'Фиксировать кинетические параметры для прямой стадии', 'fix $1 ->')
+   add_dict_calc_param   (57, 'Фиксировать кинетические параметры для обратной стадии', 'fix $1 <-')
+
+
+def add_dict_calc_param(id, nm, msk):
+    a = Dict_calc_param.objects.get_or_create(id_dict_param=id, name=nm, mask = msk)[0]
+    a.save()
+    return a
+
+def add_dict_calc_functional(id,nm):
+    a = Dict_calc_functional.objects.get_or_create(id_func=id, name=nm)[0]
+    a.save()
+    return a
+
+def add_dict_calc_criteria_constraints(id,nm):
+    a = Dict_calc_criteria_constraints.objects.get_or_create(id_criteria=id, name=nm)[0]
+    a.save()
+    return a
 
 def add_dict_problem_type(id,nm):
     a = Dict_problem_type.objects.get_or_create(id_problem_type=id,name=nm)[0]
