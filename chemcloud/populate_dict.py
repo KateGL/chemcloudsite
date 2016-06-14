@@ -167,10 +167,9 @@ def populate():
     add_dict_exper_param(0,'Не задано')
     add_dict_exper_param(1,'Влажность смеси')
     add_dict_exper_param(2,'Скорость потока')
-    add_dict_exper_subst_param(0, 'Не задано')
-    add_dict_exper_subst_param(1, 'Период индукции')
-    add_dict_exper_subst_param(2, 'Начальная скорость')
-    add_dict_exper_subst_param(3, 'Средняя скорость изменения концентрации вещества')
+    add_dict_exper_subst_param(0,'Не задано')
+    add_dict_exper_subst_param(1,'Период индукции')
+    add_dict_exper_subst_param(2,'Начальная скорость')
 
     add_dict_problem_type(1,'Прямая задача химической кинетики')
     add_dict_problem_type(2,'Обратная задача химической кинетики')

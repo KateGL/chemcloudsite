@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.http import HttpResponseForbidden
 from django.core.exceptions import PermissionDenied
 
+
 from annoying.fields import AutoOneToOneField
 from django.contrib.auth.models import User
 
@@ -215,8 +216,8 @@ class Chemistry(models.Model):
         return exp_dict
 
     # получить вещества эксперимента
-    def exper_subst_all(self, id_reaction,id_experiment):
-        exper_dict = self.experiment_get(id_reaction,id_experiment)
+    def exper_subst_all(self, id_reaction, id_experiment):
+        exper_dict = self.experiment_get(id_reaction, id_experiment)
         return exper_dict['experiment'].exper_substs.all()
 
     #по id вещества эксперимента получить вещество эксперимента

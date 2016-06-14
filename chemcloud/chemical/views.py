@@ -22,6 +22,7 @@ from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, React
 from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
 from .models import owner_required, substance_owner_required
+from .view_helpers import React_Substance_with_Exper
 
 # Вещество
 
@@ -31,7 +32,7 @@ def substance_all(request):
     substance_table = SubstanceTable(request.user.chemistry.substance_all())
     is_substance_owner = request.user.chemistry.is_substance_owner
     RequestConfig(request, paginate={"per_page": 25}).configure(substance_table)
-    return render(request, 'chemical/substance_all.html', {"substance": substance_table,"is_owner": is_substance_owner})
+    return render(request, 'chemical/substance_all.html', {"substance": substance_table, "is_owner": is_substance_owner})
 
 
 @login_required
@@ -80,10 +81,10 @@ def substance_new(request):
 
 
 # расчеты
-
 @login_required
 def calculation_all(request):
     return render(request, 'chemical/calculation_all.html', {})
+
 
 # атом
 @login_required
@@ -92,10 +93,12 @@ def atoms_all(request):
     RequestConfig(request, paginate={"per_page": 30}).configure(atom_table)
     return render(request, 'chemical/atom_all.html', {"atom": atom_table})
 
+
 @login_required
 def atom_detail(request, atom_number):
     atom = request.user.chemistry.atom_get(atom_number)
     return render(request, 'chemical/atom_detail.html', {"atom": atom})
+
 
 # Справочники
 @login_required
@@ -109,6 +112,7 @@ def reaction_all(request):
     reaction_table = ReactionTable(request.user.chemistry.reaction_all())
     RequestConfig(request, paginate={"per_page": 15}).configure(reaction_table)
     return render(request, 'chemical/reaction_all.html', {"reaction": reaction_table})
+
 
 @login_required
 def reaction_detail(request, id_reaction):
@@ -128,7 +132,7 @@ def reaction_detail(request, id_reaction):
             #form.cleaned_data['message'])  , 'text': str(form.cleaned_data['rights']
     return render(request, 'chemical/reaction_detail.html',
          {"reaction": react.reaction, "id_reaction": id_reaction, "is_owner": react.is_owner,
-              'form': form, 'user_reacts': user_reacts, 'react_features':react_features})
+              'form': form, 'user_reacts': user_reacts, 'react_features': react_features})
 
 
 @login_required
@@ -150,7 +154,7 @@ def reaction_delete(request, id_reaction):
     #например, если по реакции есть расчеты
     react = request.user.chemistry.reaction_get(id_reaction)
     react.reaction.delete()
-    return redirect('reaction_all')#или лушче на сообщение - "Реакция удалена?"
+    return redirect('reaction_all')  # или лушче на сообщение - "Реакция удалена?"
 
 
 @login_required
@@ -162,21 +166,23 @@ def reaction_new(request):
             reaction.add_owner(request.user)
             form.save()
             return redirect('reaction_detail', reaction.pk)
-    return render(request,'chemical/reaction_new.html', {'form': form})
+    return render(request, 'chemical/reaction_new.html', {'form': form})
 
 
 #  Механизмы реакции
 @login_required
 def scheme_all(request, id_reaction):
     mech_table = MechanizmTable(request.user.chemistry.react_scheme_all(id_reaction))
-    context_dict = {'schemes': mech_table, 'id_reaction' : id_reaction}
+    context_dict = {'schemes': mech_table, 'id_reaction': id_reaction}
     return render(request, 'chemical/scheme_all.html', context_dict)
+
 
 @login_required
 def scheme_detail(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
-    context = {'scheme': scheme_dict['scheme'], 'id_reaction' : id_reaction, 'is_owner': scheme_dict['is_owner']}
-    return render(request, 'chemical/scheme_detail.html', context )
+    context = {'scheme': scheme_dict['scheme'], 'id_reaction': id_reaction, 'is_owner': scheme_dict['is_owner']}
+    return render(request, 'chemical/scheme_detail.html', context)
+
 
 #@login_required
 #test for dataTable
@@ -507,6 +513,7 @@ def change_step_order(request, id_reaction, id_scheme):
         return HttpResponse(xml_bytes,mimetype)
     return HttpResponse(status=400)
 
+
 #Вещества реакции
 @login_required
 def react_substance_all(request, id_reaction):
@@ -553,7 +560,8 @@ def react_substance_delete(request, id_reaction, id_react_substance):
     #тут нужно добавить обработчик ошибок...
     subst_dict = request.user.chemistry.react_subst_get(id_reaction, id_react_substance)
     subst_dict['substance'].delete()
-    return redirect('react_substance_all', id_reaction)#или лушче на сообщение - "?"
+    return redirect('react_substance_all', id_reaction)  # или лушче на сообщение - "?"
+
 
 #Серии для Экспериментов
 @login_required
@@ -576,7 +584,8 @@ def exper_serie_new(request, id_reaction):
 @login_required
 def exper_serie_detail(request, id_reaction, id_exper_serie):
     exper_serie_dict = request.user.chemistry.exper_serie_get(id_reaction, id_exper_serie)
-    context = {'exper_serie': exper_serie_dict['exper_serie'], 'id_reaction': id_reaction, "is_owner": exper_serie_dict['is_owner']}
+    context = {'exper_serie': exper_serie_dict['exper_serie'],
+        'id_reaction': id_reaction, "is_owner": exper_serie_dict['is_owner']}
     return render(request, 'chemical/exper_serie_detail.html', context)
 
 
@@ -585,7 +594,7 @@ def exper_serie_detail(request, id_reaction, id_exper_serie):
 def experiment_all(request, id_reaction):
     exp_table = ExperimentTable(request.user.chemistry.experiment_all(id_reaction))
     RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
-    context_dict = {'experiments': exp_table, 'id_reaction':id_reaction}
+    context_dict = {'experiments': exp_table, 'id_reaction': id_reaction}
     return render(request, 'chemical/experiment_all.html', context_dict)
 
 
@@ -593,7 +602,8 @@ def experiment_all(request, id_reaction):
 def experiment_detail(request, id_reaction, id_experiment):
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
     context = {'experiment': exper_dict['experiment'], 'id_reaction': id_reaction, "is_owner": exper_dict['is_owner']}
-    return render(request, 'chemical/experiment_detail.html', context )
+    return render(request, 'chemical/experiment_detail.html', context)
+
 
 @login_required
 def experiment_edit(request, id_reaction, id_experiment):
@@ -601,9 +611,25 @@ def experiment_edit(request, id_reaction, id_experiment):
     # получаем список веществ реакции
     # reac_substs = request.user.chemistry.react_subst_all(id_reaction)
     # получаем список веществ эксперимента
-    exp_substs = request.user.chemistry.exper_subst_all(id_reaction,id_experiment)
-    exp_points = request.user.chemistry.exper_points_all(id_reaction,id_experiment)
-    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'], "is_owner": exper_dict['is_owner'],'exp_substs': exp_substs,'exp_points':exp_points}
+    react_subst = request.user.chemistry.react_subst_all(id_reaction)
+    exp_substs = request.user.chemistry.exper_subst_all(id_reaction, id_experiment)
+    exp_points = request.user.chemistry.exper_points_all(id_reaction, id_experiment)
+
+    # добавим сюда ссылку на точку эксперимента
+    react_with_exper = {}
+    for react_s in react_subst:
+        rswe = React_Substance_with_Exper()
+        rswe.react_subst = react_s
+        react_with_exper[react_s.pk] = rswe
+
+    for exp_s in exp_substs:  # все экспериментальные вещества
+        react_with_exper[exp_s.reaction_subst.pk].exper_subst = exp_s
+
+    #print(react_with_exper)
+
+    context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'],
+        "is_owner": exper_dict['is_owner'], 'react_with_exper': react_with_exper,
+        'exp_points': exp_points}
     return render(request, 'chemical/experiment_edit.html', context)
 
 
@@ -613,7 +639,7 @@ def experiment_delete(request, id_reaction, id_experiment):
     #тут нужно добавить обработчик ошибок...
     exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
     exper_dict['experiment'].delete()
-    return redirect('experiment_all', id_reaction)#или лушче на сообщение - "?"
+    return redirect('experiment_all', id_reaction)  # или лушче на сообщение - "?"
 
 
 @login_required
@@ -621,7 +647,6 @@ def experiment_delete(request, id_reaction, id_experiment):
 def experiment_copy(request, id_reaction, id_experiment):
     #empty now TODO
     return redirect('experiment_detail', id_reaction, id_experiment)
-
 
 
 @login_required

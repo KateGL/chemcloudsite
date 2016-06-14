@@ -1,16 +1,30 @@
 {% extends 'chemical/base_reaction.html' %}
-
 {% load staticfiles %}
 
 
 {% block body_block %}
 	<div class="page-header">
-		<h1>{{ experiment.name }} {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %}</h1>
+		<h1>{{ experiment.name }} {% if is_owner %} (Owner grants) {% else %}(Read only){% endif %} 
+		<a  href = "{% url 'experiment_detail' id_reaction experiment.pk %}">(Детали)</a></h1>
 	</div>
 		<div class="page-content">
 		
 <div class="row"><div class="col-xs-12">		       
-			       
+			    <div class="controls-row">
+      <label class="control-label">Отображать для веществ: </label>
+   
+              <label class="checkbox-inline"><input type="checkbox" checked="checked" id="chbox_alias">Псевдонимы</label>
+             <label class="checkbox-inline"><input type="checkbox" id="chbox_brutto_short">Краткие формулы</label>
+              
+          <!--     <label class="radio-inline">
+          <input name="radioGroupInit" id="radio1" value="alias" type="radio" checked="checked"> Псевдонимы
+        </label>
+        <label class="radio-inline">
+          <input name="radioGroupInit" id="radio2" value="formula" type="radio"> Краткие формулы
+        </label>
+               -->        
+        </div>
+            
 
   <div class="panel-group">
    
@@ -23,56 +37,72 @@
       <div id="init" class="panel-collapse collapse in">
         <div class="panel-body">
         
-        
-        <div class="controls-row">
-      <label class="control-label">Вид: </label>
-   
-               <label class="radio-inline">
-          <input name="radioGroupInit" id="radio1" value="alias" type="radio" checked="checked"> Псевдонимы
-        </label>
-        <label class="radio-inline">
-          <input name="radioGroupInit" id="radio2" value="formula" type="radio"> Формулы
-        </label>
-                       
-        </div>
-        
+           
         
         
         <div>
-<table class="paleblue">
+        Вещества реакции:
+    <table class="paleblue col-xs-12" id="detail_main" model_name="Exper_subst" url_edit="{% url 'experiment_edit_subst' id_reaction experiment.pk %}">
+    <tr >
+        <th class='cptn-alias'> </th>
+        <th class ='cptn-brutto_formula_short'> </th>
+        <th> Погрешность, % </th>
+        <th> Начальная концентрация, {{ experiment.init_function_measure.code }}</th>
+        <th>Наблюдаемое</th>
+    </tr>   
+    {% for key, value in react_with_exper.items %}
     <tr>
-       <th>Усл/парметр</th>
-       {% for exp_subst in exp_substs %}
-          <th> {{ exp_subst.reaction_subst.brutto_formula_short }} ({{ exp_subst.reaction_subst.alias }})</th>
-       {% endfor %}
+        <td class='cptn-alias'> {{ value.react_subst.alias }}  </td>
+        <td class ='cptn-brutto_formula_short'>{{ value.react_subst.brutto_formula_short_formatted | safe }} </td>
+        
+        <td>         <!--Погрешность -->   
+            <span class="detail_value"><input class="box_input"  type="text" disabled="disabled" 
+              value={% if value.exper_subst %} "{{ value.exper_subst.standard_error}}"{%else%}"0"{% endif%}/></span>
+        {% if is_owner %}
+        <span class="detail_edit" > </span>
+        <span class="detail_btns" 
+           field_name="standard_error" 
+           record_id="{{ value.react_subst.pk}}">
+        </span>
+        {% endif %}
+        </td>
+        
+        <td>   <!--Начальная концентрация -->          
+            <span class="detail_value"><input class="box_input"  type="text" disabled="disabled" 
+              value={% if value.exper_subst %} "{{ value.exper_subst.init_func_val}}"{%else%}"0"{% endif%}
+              /></span>
+        {% if is_owner %}
+        <span class="detail_edit" > </span>
+        <span class="detail_btns" 
+            field_name="init_func_val"
+            record_id="{{ value.react_subst.pk}}">
+        </span>
+        {% endif %}
+        </td>
+        
+        
+        <td>      <!--Наблюдаемое -->       
+            <span class="detail_value"><input class="box_input"  type="checkbox" disabled="disabled" 
+              value={% if value.exper_subst %} "{{ value.exper_subst.is_observed}}"{%else%}"False"{% endif%}
+              {% if value.exper_subst %} {% if value.exper_subst.is_observed %} checked="checked" {% endif %}{% endif%}              
+              /></span>
+        {% if is_owner %}
+        <span class="detail_edit" > </span>
+        <span class="detail_btns" 
+            field_name="is_observed"
+            record_id="{{ value.react_subst.pk}}">
+        </span>
+        {% endif %}
+        </td>
+        
+        
     </tr>
-    <tr>
-       <td>Роль вещества</td>
-       {% for exp_subst in exp_substs %}
-          <td> {{ exp_subst.dict_subst_role.name }} </td>
-       {% endfor %}
-    </tr>
-    <tr>
-       <td>Погрешность, %</td>
-       {% for exp_subst in exp_substs %}
-          <td> Добавить поле в БД </td>
-       {% endfor %}
-    </tr>
-    <tr>
-       <td>Начальная концентрация, {{ experiment.init_function_measure.code }}</td>
-       {% for exp_subst in exp_substs %}
-          <td> {{ exp_subst.init_func_val }} </td>
-       {% endfor %}
-    </tr>
-    <tr>
-       <td>Наблюдаемое</td>
-       {% for exp_subst in exp_substs %}
-          <td><input  type="checkbox"  value="{{  exp_subst.is_observed }}"
-         {% if exp_subst.is_observed %} checked="checked" {% endif %}/></td>
+   {% endfor %}
+         
+        
+    </table>
+        
 
-       {% endfor %}
-    </tr>
-</table>
 </div>
         
         
@@ -84,10 +114,10 @@
      <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
-          <a data-toggle="collapse" href="#subst">Вещества реакции </a>
+          <a data-toggle="collapse" href="#data">Данные эксперимента </a>
         </h4>
       </div>
-      <div id="subst" class="panel-collapse collapse in">
+      <div id="data" class="panel-collapse collapse in">
         <div class="panel-body">
         
        
@@ -105,8 +135,9 @@
         
         <table class="paleblue">
     <tr>
-       <th>{{ experiment.arg.name }} ({{experiment.argument_measure.code }})</th>
-          <th> вещество</th> <th>{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
+       <th>{{ experiment.arg.name }} ({{experiment.argument_measure.code }})<br>/{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
+       
+           <th> вещество 1</th><th> вещество 1</th><th> вещество 1</th>
            </tr>
     {% if exp_points %}
         {% for exp_point in exp_points %}
@@ -140,9 +171,9 @@
       </div>
       <div id="subst_other" class="panel-collapse collapse in">
         <div class="panel-body">
-        
+        <label class="control-label">Свойство: </label> <span class="dict_selector" data-init-value="{{ experiment.function_measure.pk }}" data-model="Dict_measure_unit" data-url="{% url 'dictionary_get' %}"></span>
     
-        
+        <label class="control-label">Вещество: </label>
         </div>
         
       </div>
@@ -158,4 +189,11 @@
 
 
             </div>
+{% endblock %}
+
+
+{% block footer_block %}
+<script src="{% static "js/populate_dict_select.js" %}"></script>
+<script src="{% static "js/details.js" %}"></script>
+<script src="{% static "js/experiment.js" %}"></script>
 {% endblock %}
