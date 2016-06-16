@@ -140,7 +140,8 @@ class MechanizmTable(tables.Table):
     class Meta:
         model = Reaction_scheme
         # add class="paleblue" to <table> tag
-        attrs = {"classteps_counts": "paleblue"}
+        #attrs = {"classteps_counts": "paleblue"}
+        attrs = {"class": "paleblue"}
         fields =("name", "description", "updated_date", "is_possible")
         sequence = ("name", "description", "steps_count", "is_possible", "updated_date")
 
