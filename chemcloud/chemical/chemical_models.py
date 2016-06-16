@@ -284,20 +284,19 @@ class Reaction_scheme (models.Model):
             atoms_count_list = []
             i = 0
             for subst_i in substs_list:
-                if subst_i.substance is not None:                
-                    subst_consist_list = subst_i.substance.consist.all()
-                    list_temp = []
-                    for subst_consist in subst_consist_list:
-                        atom_j = subst_consist.atom
-                        atoms_list = atoms_list + [atom_j.symbol]
-                        list_temp2 = [atom_j.symbol, subst_consist.atom_count]
-                        list_temp = list_temp + [list_temp2]
-                    atoms_count_list = atoms_count_list + [list_temp]
+                subst_consist_list = subst_i.substance.consist.all()
+                list_temp = []
+                for subst_consist in subst_consist_list:
+                    atom_j = subst_consist.atom
+                    atoms_list = atoms_list + [atom_j.symbol]
+                    list_temp2 = [atom_j.symbol, subst_consist.atom_count]
+                    list_temp = list_temp + [list_temp2]
+                atoms_count_list = atoms_count_list + [list_temp]
                 i = i+1
             #удаляем дубликаты в списке атомов
             atoms_list = list(set(atoms_list))
             elem_count = len(atoms_list)
-            if subst_count == 0 or elem_count == 0:
+            if subst_count == 0:
                 return []
             #строки - число атомов хим элемента в веществе, стоблцы - хим.элементы
             A_mtrx = np.zeros((subst_count, elem_count))
@@ -403,7 +402,7 @@ class Scheme_step(models.Model):
                 G_coll[0][i] =  subst_i.stoich_koef
                 if subst_i.reac_substance.substance is None:
                     error_str = 'Невозможно проверить баланс стадии. Псевдониму '+str(subst_i.reac_substance.alias)+' не сопоставлено вещество реакции'
-                    error_list.append(error_str) 
+                    error_list.append(error_str)
                     return False
                 subst_consist_list = subst_i.reac_substance.substance.consist.all()
                 list_temp = []
@@ -669,7 +668,8 @@ class Experiment (models.Model):
     def __unicode__(self):
         return self.name
 
-    def get_distinct_arg_val(self):
+    #возвращает отсортированный массив разных аргументов для exper_point
+    def get_distinct_point_arg_val(self):
         return {}
 
     class Meta:
@@ -686,9 +686,9 @@ class Dict_exper_param (models.Model):
         return self.name
 
     class Meta:
-      ordering            = ["id_experparam"]
-      verbose_name = ('Дополнительные данные эксперимента')
-      verbose_name_plural = ('Дополнительные данные эксперимента')
+        ordering = ["id_experparam"]
+        verbose_name = ('Дополнительные данные эксперимента')
+        verbose_name_plural = ('Дополнительные данные эксперимента')
 
 
 class Dict_exper_subst_param (models.Model):
@@ -743,15 +743,15 @@ class Exper_subst (models.Model):
 
 
 class Exper_subst_data (models.Model):
-    id_exper_subst_data = models.AutoField (primary_key = True, verbose_name='ИД')
-    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_subst_data' )
+    id_exper_subst_data = models.AutoField(primary_key=True, verbose_name='ИД')
+    exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.PROTECT, related_name='exper_subst_data')
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
-    subst_param    = models.ForeignKey(Dict_exper_subst_param, null = False, on_delete=models.PROTECT, related_name='+',default=0)
-    unit = models.ForeignKey(Dict_measure_unit, null = False, on_delete=models.PROTECT, related_name='+',default=0)
+    subst_param = models.ForeignKey(Dict_exper_subst_param, null=False, on_delete=models.PROTECT, related_name='+', default=0)
+    unit = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT, related_name='+', default=0)
 
     class Meta:
-      verbose_name = ('Дополнительные экспериментальные данные')
-      verbose_name_plural = ('Дополнительные экспериментальные данные')
+        verbose_name = ('Дополнительные экспериментальные данные')
+        verbose_name_plural = ('Дополнительные экспериментальные данные')
 
 
 class Exper_point (models.Model):

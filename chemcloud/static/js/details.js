@@ -145,9 +145,9 @@ $(document).ready(function(){
     $('.detail_value').addClass('text-left').addClass('col-md-8').css({ 'font-weight': "bold" });
     $('.box_input').addClass('col-xs-12');
     $('.form-control').addClass('col-xs-12');
-    $('.detail_btn_edit').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-edit"></span>');
-    $('.detail_btn_save').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
-    $('.detail_btn_cancel').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-remove"></span>').hide();
+    $('.detail_btn_edit').addClass('btn btn-sm btn-link').html('<span class="glyphicon glyphicon-pencil"></span>');
+    $('.detail_btn_save').addClass('btn btn-sm btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
+    $('.detail_btn_cancel').addClass('btn btn-sm btn-link').html('<span class="glyphicon glyphicon-remove"></span>').hide();
 
     if ($('.datetimepicker') != false){
         var dtp = $('.datetimepicker')

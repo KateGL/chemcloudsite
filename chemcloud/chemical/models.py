@@ -16,6 +16,7 @@ from chemical.chemical_models import Reaction_feature,Exper_subst,Dict_model_fun
 from chemical.chemical_models import Problem, Dict_problem_type,Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
 
+
 def owner_required(f):
     def decorator(request, *args, **kwargs):
         id_reaction = kwargs['id_reaction']
@@ -134,8 +135,7 @@ class Chemistry(models.Model):
                 raise Http404("More than substance with alias: '"+ alias_str + "'")
             if subst_list.count() == 0:
                 raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
-        except:
-            return {}
+        except Reaction_subst.DoesNotExist:
             raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
         subst_dict = {}
         subst_dict['substance'] = subst_list[0]
@@ -235,15 +235,15 @@ class Chemistry(models.Model):
         return exp_subst.exper_points.all()
 
     # получить все экспериментальные точки по id эксперимента и id реакции
-    def exper_points_all(self,id_reaction,id_experiment):
-        exp_substs = self.exper_subst_all(id_reaction,id_experiment)
-        i = 0
-        exp_point_all = []
-        for exp_subst in exp_substs:
-            if exp_subst.is_observed:
-                exp_point_all.insert(i,self.exper_points(exp_subst.id_expersubst))
-                i= i+1
-        return exp_point_all
+    #def exper_points_all(self,id_reaction,id_experiment):
+        #exp_substs = self.exper_subst_all(id_reaction,id_experiment)
+        #i = 0
+        #exp_point_all = []
+        #for exp_subst in exp_substs:
+            #if exp_subst.is_observed:
+                #exp_point_all.insert(i,self.exper_points(exp_subst.id_expersubst))
+                #i= i+1
+        #return exp_point_all
 
 
 
@@ -320,7 +320,6 @@ class Chemistry(models.Model):
             raise Http404("Dict_measure_unit does not exist")
         return dict_unit
 
-
     def problem_all(self, id_reaction):
         react = self.reaction_get(id_reaction)
         return react.reaction.problems.all()
@@ -352,24 +351,24 @@ class Chemistry(models.Model):
                 _list.append(Dict_calc_criteria_constraints.objects.get(pk=2))
         except:
             raise Http404("Error in getting criteria list")
-        return _list 
+        return _list
 
     # вернуть ограничения, отфильтрованные по типу задачи
     def dict_constraints_filter(self, id_problem_type):
         try:
-            _list=[]            
+            _list=[]
             if id_problem_type == 2: #обратная задача
                 _list.append(Dict_calc_criteria_constraints.objects.get(pk=2))
                 _list.append(Dict_calc_criteria_constraints.objects.get(pk=3))
         except:
             raise Http404("Error in getting constraints list")
-        return _list 
+        return _list
 
     # вернуть все виды функционалов невязки
     def dict_calc_functional_all(self):
         return Dict_calc_functional.objects.all()
 
-    # вернуть функционалов невязки по id 
+    # вернуть функционалов невязки по id
     def dict_calc_functional_get(self, _id):
         try:
             dict_calc_functional = Dict_calc_functional.objects.get(pk=_id)
@@ -383,26 +382,30 @@ class Chemistry(models.Model):
             problem_context = {}
             id_problem_type = problem.problem_type.id_problem_type
             if id_problem_type==2:#обратная задача
-                problem_context = self.get_inverse_problem_context(problem, page_num) 
+                problem_context = self.get_inverse_problem_context(problem, page_num)
         except:
             raise Http404("Error in getting problem context")
-        return problem_context  
+        return problem_context
 
     def get_inverse_problem_context(self, problem, page_num):
         try:
             print('tut')
             problem_context = {}
+            criteria_list = {}
+            constraints_list = {}
+            functional_list = {}
+            print(page_num)
             if page_num == 1: #init - постановка задачи
                 id_problem_type = problem.problem_type.id_problem_type
-                criteria_list    = self.dict_criteria_filter(id_problem_type) 
-                #criteria_value   = Dict_calc_param.objects.get(pk=_id) 
+                criteria_list    = self.dict_criteria_filter(id_problem_type)
+                #criteria_value   = Dict_calc_param.objects.get(pk=_id)
                 constraints_list = self.dict_constraints_filter(id_problem_type)
                 functional_list  = self.dict_calc_functional_all()
-            
 
+            print('tut3')
             problem_context = {'criteria_list': criteria_list,  'constraints_list': constraints_list, 'functional_list':functional_list}
-            print('problem_context' ) 
-            print(problem_context )  
+            print('problem_context' )
+            print(problem_context )
         except:
             raise Http404("Error in getting inverse problem context")
         return problem_context
@@ -410,6 +413,3 @@ class Chemistry(models.Model):
     class Meta:
         verbose_name = ('Доступ к Химии')
         verbose_name_plural = ('Доступ к Химии')
-
-
-

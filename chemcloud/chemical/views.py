@@ -616,7 +616,7 @@ def experiment_edit(request, id_reaction, id_experiment):
     # получаем список веществ эксперимента
     react_subst = request.user.chemistry.react_subst_all(id_reaction)
     exp_substs = request.user.chemistry.exper_subst_all(id_reaction, id_experiment)
-    exp_points = request.user.chemistry.exper_points_all(id_reaction, id_experiment)
+    exp_points = {}#request.user.chemistry.exper_points_all(id_reaction, id_experiment)
 
     # добавим сюда ссылку на точку эксперимента
     react_with_exper = {}
@@ -629,7 +629,7 @@ def experiment_edit(request, id_reaction, id_experiment):
         react_with_exper[exp_s.reaction_subst.pk].exper_subst = exp_s
 
     #print(react_with_exper)
-
+    print(exp_points)
     context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'],
         "is_owner": exper_dict['is_owner'], 'react_with_exper': react_with_exper,
         'exp_points': exp_points}
@@ -690,8 +690,7 @@ def problem_detail(request, id_reaction, id_problem):
 def problem_new(request, id_reaction, id_problem_type):
     react = request.user.chemistry.reaction_get(id_reaction)
     problem_type = request.user.chemistry.dict_problem_type_get(id_problem_type)
-    print('problem_type.name')
-    print(problem_type.name)
+    #print(problem_type.name)
 
     form = ProblemForm(request.POST or None, initial={'problem_type': problem_type})
     if request.method == 'POST':
@@ -700,7 +699,6 @@ def problem_new(request, id_reaction, id_problem_type):
             problem.reaction = react.reaction
             form.save()
             return redirect('problem_init', id_reaction, problem.pk)
-    
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)
     #context = {'id_reaction': id_reaction, 'id_problem_type': id_problem_type}
@@ -722,7 +720,7 @@ def problem_init(request, id_reaction, id_problem):
     context['id_reaction'] = id_reaction
     context["is_owner"] = problem_dict['is_owner']
     context['step_name'] = 'problem_init'
-    
+
     problem_context = request.user.chemistry.get_problem_context(context['problem'], 1)
     context['problem_context'] = problem_context
     return render(request, 'chemical/problem_init.html', context)
