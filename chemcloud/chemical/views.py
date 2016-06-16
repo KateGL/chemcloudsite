@@ -200,8 +200,10 @@ def scheme_edit(request, id_reaction, id_scheme):
     scheme_dict = request.user.chemistry.react_scheme_get(id_reaction, id_scheme)
     #получаем список стадий схемы
     steps = scheme_dict['scheme'].steps.all()
-    reac_substs = request.user.chemistry.react_subst_all(id_reaction)
-    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name, 'is_owner': scheme_dict['is_owner'], 'reac_substs': reac_substs, 'id_scheme': id_scheme }
+    rst = ReactionSubstTable(request.user.chemistry.react_subst_all(id_reaction))
+    RequestConfig(request, paginate={"per_page": 25}).configure(rst)
+    context = {'steps': steps, 'id_reaction': id_reaction, 'scheme_name': scheme_dict['scheme'].name,
+        'is_owner': scheme_dict['is_owner'], 'reac_substs': rst, 'id_scheme': id_scheme }
     return render(request, 'chemical/scheme_edit.html', context)
 
 
