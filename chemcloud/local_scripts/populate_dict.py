@@ -13,7 +13,8 @@ from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param
 from chemical.chemical_models import Dict_subst_role
 from chemical.chemical_models import Dict_problem_type
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
-from chemical.chemical_models import Dict_calc_param
+from chemical.chemical_models import Dict_calc_param, Dict_calc_status
+from chemical.chemical_models import Dict_calc_method, Dict_problem_class
 from django.contrib.auth.models import User
 
 def drop_all():
@@ -30,6 +31,9 @@ def drop_all():
      Dict_calc_criteria_constraints.objects.all().delete()
      Dict_calc_functional.objects.all().delete()
      Dict_calc_param.objects.all().delete()
+     Dict_calc_status.objects.all().delete()
+     Dict_calc_method.objects.all().delete()
+     Dict_problem_class.objects.all().delete()
      print "dropped all dictionaries data"
 
 def populate():
@@ -181,15 +185,6 @@ def populate():
    add_dict_subst_role(3,'Продукт')
    add_dict_subst_role(4,'В реакцию не вступает')
 
-   add_dict_problem_type(1,'Прямая задача химической кинетики')
-   add_dict_problem_type(2,'Обратная задача химической кинетики')
-   add_dict_problem_type(3,'Анализ неопределенности кинетических параметров')
-   add_dict_problem_type(4,'Анализ чувствительности кинетических параметров')
-   add_dict_problem_type(5,'Анализ жесткости системы ОДУ')
-   add_dict_problem_type(6,'Оптимизация условий проведения реакции')
-   add_dict_problem_type(7,'Расчет энергий активаций с помощью МНК')
-   add_dict_problem_type(8,'Выделение маршрутов механизма реакции')
-
    add_dict_calc_criteria_constraints(1,'Сравнение значений концентраций наблюдаемых веществ между расчетом и экспериментом')
    add_dict_calc_criteria_constraints(2,'Сравнение значений периодов индукции наблюдаемых веществ между расчетом и экспериментом')
    add_dict_calc_criteria_constraints(3,'Сравнение значений начальных скоростей изменения концентраций веществ между расчетом и экспериментом')
@@ -226,8 +221,6 @@ def populate():
    add_dict_calc_param   (14, 'Верхняя граница энергии активации обратной стадии', 'max Ea_$1 <-')
    add_dict_calc_param   (15, 'Верхняя граница предэкспоненциального множителя прямой стадии', 'max Ak0_$1 ->')
    add_dict_calc_param   (16, 'Верхняя граница предэкспоненциального множителя обратной стадии', 'max Ak0_$1 <-')
-
-
 #выходные параметры, привязываемые к стадиям
    add_dict_calc_param   (17, 'Энергия активации прямой стадии', 'Ea_$1 ->')
    add_dict_calc_param   (18, 'Энергия активации обратной стадии', 'Ea_$1 <-')
@@ -241,17 +234,13 @@ def populate():
    add_dict_calc_param   (26, 'Чувствительность предэкспоненциального множителя обратной стадии', 'Si Ak0_$1 <-')
    add_dict_calc_param   (27, 'Величина достоверности МНК для прямой стадии', 'R_$1 ->')
    add_dict_calc_param   (28, 'Величина достоверности МНК для обратной стадии', 'R_$1 <-')
-
-
 #выходные параметры, НЕ привязываемые к стадиям
    add_dict_calc_param   (29, 'Баланс', 'balance')
    add_dict_calc_param   (30, 'Невязка', 'nev')
-
 #выходные параметры, привязываемые к веществу
    add_dict_calc_param   (31, 'Выход продукта', 'product yield $1')
    add_dict_calc_param   (32, 'Период индукции', 't_induc $1')
    add_dict_calc_param   (33, 'Средняя скорость', 'avr_rate $1')
-
 #входные параметры
    add_dict_calc_param   (34, 'Вид искомых кинетических параметров', 'KinParam')#1 - константы, 2 - энергии активации
    add_dict_calc_param   (35, 'Начальный шаг интегрирования', 'h0')
@@ -263,10 +252,8 @@ def populate():
    add_dict_calc_param   (41, 'Логарифмическое сглаживание поверхности', 'use ln')
    add_dict_calc_param   (42, 'Исходная точка', 'first point')
    add_dict_calc_param   (43, 'Размерность', 'Dimension') #а локальный или глобальный метод, это уже наверно методом из справочника методов определяется
-
 	#входные параметры - настройки генетического алгоритма
    add_dict_calc_param   (44, '...', '...')
-
 	#входные параметры настройки индексного метода
    add_dict_calc_param   (45, 'Номер модификации для метода множественных эвольвент. Возможные значения: 0, 1, 2 (рекомендуется, по умолчанию) или 3', 'modification') 
    add_dict_calc_param   (46, 'Параметр надежности. Должно быть >1,0 или = ~ 2,0 ... 3,0 рекомендуется', 'r') 
@@ -276,16 +263,72 @@ def populate():
    add_dict_calc_param   (50, 'Параметр для eps-резервирования', 'q') 
    add_dict_calc_param   (51, 'Число дополнительных эвольвент L = 0 означает 1 по умолчанию эвольвенту, L>=1 рекомендуется', 'L') 
    add_dict_calc_param   (52, 'Уровень точности для кривой Пеано. m>=10 рекомендуется. Максимальная точность составляет 2^m', 'm') 
-
 #входные параметры, привязываемые к веществу
    add_dict_calc_param   (53, 'Начальная концентрация вещества', 'init concentration $1')
    add_dict_calc_param   (54, 'Допустимая погрешность по периоду индукции для вещества', 'indud eps $1')
    add_dict_calc_param   (55, 'Допустимая погрешность по средней скорости изменения вещества', 'wrate eps $1')
-
 #входные параметры, привязываемые к стадии
    add_dict_calc_param   (56, 'Фиксировать кинетические параметры для прямой стадии', 'fix $1 ->')
    add_dict_calc_param   (57, 'Фиксировать кинетические параметры для обратной стадии', 'fix $1 <-')
 
+
+   add_dict_calc_status   (1, 'Черновик', 'Редактируется. Расчет не запущен')
+   add_dict_calc_status   (2, 'В очереди на рассчет', 'Расчет запущен и ждет своей очереди')
+   add_dict_calc_status   (3, 'В процессе решения', 'Расчет запущен и считается')
+   add_dict_calc_status   (4, 'Расчет завершен', 'Самозавершение расчета или по требованию пользователя')
+   add_dict_calc_status   (5, 'Расчет отменен', 'Расчет отменен пользователем, не дождавшись своей очереди')
+
+   add_dict_problem_class   (1, 'Задача Коши')
+   add_dict_problem_class   (2, 'Глобальная оптимизация')
+   add_dict_problem_class   (3, 'Учет ограничений')
+   add_dict_problem_class   (4, 'Локальный анализ чувствительности')
+   add_dict_problem_class   (5, 'Глобальный анализ чувствительности')
+   add_dict_problem_class   (6, 'Локальный анализ неопределенности')
+   add_dict_problem_class   (7, 'Глобальный анализ неопределенности')
+   add_dict_problem_class   (8, 'Задача на собственные числа')
+   add_dict_problem_class   (9, 'Декомпозиция схемы реакции')
+   add_dict_problem_class   (10, 'Аппроксимация точек')
+ 
+   add_dict_calc_method   (1, 'Метод Мишельсена', 'Полуявный метод 3го порядка точности',   [1])
+   add_dict_calc_method   (2, 'Метод Розенброка 4', 'Полуявный метод 4го порядка точности', [1])
+   add_dict_calc_method   (3, 'Неявный метод Эйлера', '', [1])
+   add_dict_calc_method   (4, 'Неявный метод Адамса', '', [1])
+   add_dict_calc_method   (5, 'Индексный метод условной глобальной оптимизации','Нижний Новгород. Развертки', [2,3,7])
+   add_dict_calc_method   (6, 'Генетический алгоритм','', [2,7])
+   add_dict_calc_method   (7, 'Метод анализа чувствительности вокруг точки','', [4])
+   add_dict_calc_method   (8, 'Метод анализа неопределенности вокруг точки','', [6])
+   add_dict_calc_method   (9, 'Метод Леверье-Фадеева','', [8])
+   add_dict_calc_method   (10, 'Графовый метод','', [9])
+   add_dict_calc_method   (11, 'Линеаризация методом наименьших квадратов','', [9])
+
+   add_dict_problem_type(1,'Прямая задача химической кинетики', [1])
+   add_dict_problem_type(2,'Обратная задача химической кинетики', [1,2,3])
+   add_dict_problem_type(3,'Анализ неопределенности кинетических параметров', [3,6,7])
+   add_dict_problem_type(4,'Анализ чувствительности кинетических параметров', [3,4,5])
+   add_dict_problem_type(5,'Анализ жесткости системы ОДУ', [1,9])
+   add_dict_problem_type(6,'Оптимизация условий проведения реакции', [1,2,3])
+   add_dict_problem_type(7,'Расчет энергий активаций с помощью МНК', [10])
+   add_dict_problem_type(8,'Выделение маршрутов механизма реакции',[9])
+
+def add_dict_calc_status(id, nm, nt):
+    a = Dict_calc_status.objects.get_or_create(id_status=id, name=nm, note=nt)[0]
+    a.save()
+    return a
+
+def add_dict_calc_method(id, nm, ds, prblm_cls_lst):
+    a = Dict_calc_method.objects.get_or_create(id_method=id, name=nm, description=ds)[0]
+    a.save()
+    for pclass_id in prblm_cls_lst:    
+        pclass = Dict_problem_class.objects.get(pk = pclass_id)
+        a.problem_classes.add (pclass)
+    return a
+
+
+
+def add_dict_problem_class(id, nm):
+    a = Dict_problem_class.objects.get_or_create(id_problem_class=id, name=nm)[0]
+    a.save()
+    return a
 
 def add_dict_calc_param(id, nm, msk):
     a = Dict_calc_param.objects.get_or_create(id_dict_param=id, name=nm, mask = msk)[0]
@@ -302,9 +345,12 @@ def add_dict_calc_criteria_constraints(id,nm):
     a.save()
     return a
 
-def add_dict_problem_type(id,nm):
+def add_dict_problem_type(id,nm, prblm_cls_lst):
     a = Dict_problem_type.objects.get_or_create(id_problem_type=id,name=nm)[0]
     a.save()
+    for pclass_id in prblm_cls_lst:    
+        pclass = Dict_problem_class.objects.get(pk = pclass_id)
+        a.problem_classes.add (pclass)
     return a
 
 def add_atom(atom_num, symb, atom_m, n, nl):

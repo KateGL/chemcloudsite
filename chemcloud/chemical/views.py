@@ -674,6 +674,8 @@ def problem_new(request, id_reaction, id_problem_type):
             problem = form.save(commit=False)
             problem.reaction = react.reaction
             form.save()
+            
+            calculation = problem.create_new_calculation()
             return redirect('problem_init', id_reaction, problem.pk)
     
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}

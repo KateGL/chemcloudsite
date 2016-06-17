@@ -758,10 +758,23 @@ class Exper_point (models.Model):
       verbose_name_plural = ('Экспериментальные данные')
 
 
-##Задачи
+#Задачи
+class Dict_problem_class(models.Model):
+    id_problem_class = models.IntegerField(primary_key=True, verbose_name='ИД')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Класс задачи')
+
+    class Meta:
+        verbose_name = ('Класс задачи')
+        verbose_name_plural = ('Классы задач')
+
+    def __unicode__(self):
+        return self.name
+
+
 class Dict_problem_type(models.Model):
     id_problem_type = models.IntegerField(primary_key=True, verbose_name='ИД')
     name = models.CharField(max_length=250, unique=True, verbose_name='Тип задачи')
+    problem_classes = models.ManyToManyField(Dict_problem_class)
 
     class Meta:
         verbose_name = ('Вид задачи')
@@ -770,14 +783,59 @@ class Dict_problem_type(models.Model):
     def __unicode__(self):
         return self.name
 
+class Dict_calc_method(models.Model):
+    id_method = models.IntegerField(primary_key=True, verbose_name='ИД')
+    name = models.CharField(max_length=250, unique=True, verbose_name='Тип задачи')
+    description = models.TextField(blank=True, verbose_name='Описание')
+    problem_classes = models.ManyToManyField(Dict_problem_class)
+
+    class Meta:
+        verbose_name = ('Методы решения задачи')
+        verbose_name_plural = ('Методы решения задач')
+
+    def __unicode__(self):
+        return self.name
 
 class Problem(models.Model):
     id_problem = models.AutoField(primary_key=True, verbose_name='ИД')
     reaction = models.ForeignKey(Reaction, null=False, on_delete=models.CASCADE, related_name='problems')
-    problem_type = models.ForeignKey(Dict_problem_type, verbose_name='Вид задачи', null=False, on_delete=models.PROTECT,
-        related_name='+', default=0)
+    problem_type = models.ForeignKey(Dict_problem_type, verbose_name='Вид задачи', null=False, on_delete=models.PROTECT, related_name='+')
     description = models.TextField(blank=True, verbose_name='Описание')
     created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
+    schemes      = models.ManyToManyField(Reaction_scheme)
+    expers       = models.ManyToManyField(Experiment)
+    exper_points = models.ManyToManyField(Exper_point)
+
+    def create_new_calculation(self):
+        try:
+            calcs = self.calculations
+            calc_status = Dict_calc_status.objects.get(pk = 1)
+            new_calc = Calculation.objects.get_or_create( problem = self, status = calc_status)[0]
+            new_calc.save()
+            self.calculations.add(new_calc)
+            #создание настроек по умолчанию
+            #критерий невязки
+            dict_func = Dict_calc_functional.objects.get(pk = 1)
+            dict_criteria = Dict_calc_criteria_constraints.objects.get(pk = 1)
+            new_criteria = Calc_criteria_constraint.objects.get_or_create( is_constraint = False, calculation = new_calc, functional = dict_func, criteria = dict_criteria)[0]
+            new_criteria.save()
+            #по умолчанию первый механизм
+            schemes = self.reaction.schemes.objects.all()
+            if schemes.count() > 0:
+                scheme = schemes[0]
+                self.schemes.add(scheme)
+            #по умолчанию все эксперименты
+            expers = self.reaction.experiments.objects.all()
+            if expers.count() > 0:
+                #exper = expers[0]
+                self.experiments.add(expers)
+            #границы поиска
+
+            #метод и настройки метода прямой задачи
+            #метод и настройки метода обратной задачи
+        except:
+            return -1
+        return new_calc
 
     class Meta:
         verbose_name = ('Задача')
@@ -785,7 +843,7 @@ class Problem(models.Model):
 
     def __unicode__(self):
         return self.id_problem
-
+ 
 class Dict_calc_criteria_constraints(models.Model):
     id_criteria = models.AutoField(primary_key=True, verbose_name='ИД')
     name  = models.CharField(max_length=250, unique=True, verbose_name='Тип критерия/ограничения')
@@ -818,5 +876,85 @@ class Dict_calc_param(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class Dict_calc_status(models.Model):
+    id_status = models.AutoField(primary_key=True, verbose_name='ИД')
+    name  = models.CharField(max_length=250, unique=True, verbose_name='Название статуса')
+    note  = models.CharField(max_length=250, unique=True, verbose_name='Примечание')
+    class Meta:
+        verbose_name = ('Статус задачи')
+        verbose_name_plural = ('Статусы задачи')
+
+    def __unicode__(self):
+        return self.name
+
+
+class Calculation(models.Model): 
+    id_calc = models.AutoField(primary_key=True, verbose_name='ИД')
+    is_approved = models.BooleanField(default=False, verbose_name='Утвержден', null=False)
+    status = models.ForeignKey(Dict_calc_status, verbose_name='Статус задачи', null=False, on_delete=models.PROTECT, related_name='+')
+    problem = models.ForeignKey(Problem, verbose_name='Задача', null=False, on_delete=models.CASCADE, related_name='Calculations')
+    version = models.IntegerField(default=1,verbose_name='Версия', null=False)
+    calc_time = models.DecimalField(max_digits=11, decimal_places=2, verbose_name='Время расчета', default = 0)
+    calc_start_date = models.DateTimeField (null = False, default=timezone.now, verbose_name='Дата и время запуска расчета')
+    calc_end_date = models.DateTimeField (null = True, verbose_name='Дата и время завершения расчета')
+    data_archive = models.BinaryField ( verbose_name='Архив с данными задачи', null=True)
+    methods = models.ManyToManyField(Dict_calc_method)
+    updated_by   = models.TextField (verbose_name='Обновил(а)')
+    updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
+    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
+    created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
+
+
+    class Meta:
+        verbose_name = ('Расчет')
+        verbose_name_plural = ('Расчеты')
+
+    def __unicode__(self):
+        return self.id_calc
+
+
+class Calc_log(models.Model):
+    id_calc_log = models.AutoField(primary_key=True, verbose_name='ИД')    
+    calc = models.OneToOneField(Calculation, on_delete=models.SET_NULL, null=True)
+    _log = models.BinaryField ( verbose_name='Лог решения задачи', null=True)
+    class Meta:
+        verbose_name = ('Лог расчета')
+        verbose_name_plural = ('Логи расчета')
+
+    def __unicode__(self):
+        return self.id_id_calc_log
+
+class Calc_param(models.Model):
+    id_calc_param = models.AutoField(primary_key=True, verbose_name='ИД')
+    is_input = models.BooleanField(verbose_name='Флаг входного параметра', null=False)
+    value = models.DecimalField(max_digits=20, decimal_places=7, verbose_name='Значение параметра')
+    calculation = models.ForeignKey(Calculation, verbose_name='Расчет задачи', null=False, on_delete=models.PROTECT, related_name='Params')
+    dict_param = models.ForeignKey(Dict_calc_param, verbose_name='Параметр', null=False, on_delete=models.PROTECT, related_name='+')
+    step = models.ForeignKey(Scheme_step, verbose_name='Стадия механизма', null=True, on_delete=models.PROTECT, related_name='+')
+    substance = models.ForeignKey( Reaction_subst, verbose_name='Вещество реакции', null=True, on_delete=models.PROTECT, related_name='+')
+
+    class Meta:
+        verbose_name = ('Параметр расчета')
+        verbose_name_plural = ('Параметры расчета')
+
+    def __unicode__(self):
+        return self.id_calc_param
+
+class Calc_criteria_constraint(models.Model):
+    id_ccc = models.AutoField(primary_key=True, verbose_name='ИД')
+    is_constraint = models.BooleanField(verbose_name='Флаг ограничения', null=False)
+    calculation = models.ForeignKey(Calculation, verbose_name='Расчет задачи', null=False, on_delete=models.PROTECT, related_name='constraints')
+    criteria = models.ForeignKey(Dict_calc_criteria_constraints, verbose_name='Критерий/ограничение задачи', null=False, on_delete=models.PROTECT, related_name='+')
+    functional = models.ForeignKey(Dict_calc_functional, verbose_name='Вид функционала', null=False, on_delete=models.PROTECT, related_name='+')
+
+    class Meta:
+        verbose_name = ('Критерий/ограничение задачи')
+        verbose_name_plural = ('Критерии/ограничения задачи')
+        unique_together = ('calculation', 'criteria')
+
+    def __unicode__(self):
+        return self.id_ccc
 
 
