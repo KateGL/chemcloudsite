@@ -132,6 +132,8 @@ function after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue){
 
 
 $(document).ready(function(){
+    process_selector($('.dict_selector'), false);
+
     $('.detail_caption').addClass('text-right').addClass('col-md-2');
     $('.detail_error').addClass('error');
     $('.detail_btns').addClass('col-md-2')
@@ -143,9 +145,9 @@ $(document).ready(function(){
     $('.detail_value').addClass('text-left').addClass('col-md-8').css({ 'font-weight': "bold" });
     $('.box_input').addClass('col-xs-12');
     $('.form-control').addClass('col-xs-12');
-    $('.detail_btn_edit').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-edit"></span>');
-    $('.detail_btn_save').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
-    $('.detail_btn_cancel').addClass('btn btn-md btn-link').html('<span class="glyphicon glyphicon-remove"></span>').hide();
+    $('.detail_btn_edit').addClass('btn btn-sm btn-link').html('<span class="glyphicon glyphicon-pencil"></span>');
+    $('.detail_btn_save').addClass('btn btn-sm btn-link').html('<span class="glyphicon glyphicon-ok"></span>').hide();
+    $('.detail_btn_cancel').addClass('btn btn-sm btn-link').html('<span class="glyphicon glyphicon-remove"></span>').hide();
 
     if ($('.datetimepicker') != false){
         var dtp = $('.datetimepicker')
@@ -155,7 +157,7 @@ $(document).ready(function(){
     }
 
     $('#detail_main').on("click", "button.detail_btn_edit", function(){
-        var parnt = $(this).parent('td');
+        var parnt = $(this).parent();
         var edt_td = parnt.siblings(".detail_edit");
         var val_td = parnt.siblings(".detail_value");
         var clone = append_clone_rbox(val_td.children(":first"), edt_td);
@@ -181,7 +183,7 @@ $(document).ready(function(){
         var url_str  = $('#detail_main').attr('url_edit');
         var csrftoken = getCookie('csrftoken');//эта вещь нужна, чтобы можно было передавать POST запросы
 
-        var parnt = $(this).parent('td');
+        var parnt = $(this).parent();
         var edt_td = parnt.siblings(".detail_edit");
         var val_td = parnt.siblings(".detail_value");
         var ebox = edt_td.find('.data_edit');
@@ -189,9 +191,11 @@ $(document).ready(function(){
         //console.log(evalue);
         var btn_save = $(this);
         var fldname = parnt.attr('field_name');
+        var rec_id = parnt.attr('record_id');
         var data_to_edit = {
             field_name: fldname,
-            value: evalue
+            value: evalue,
+            record_id : rec_id
         }
         //alert(JSON.stringify(data_to_edit));
         $.ajaxSetup({
@@ -223,7 +227,7 @@ $(document).ready(function(){
     );
 
     $('#detail_main').on("click", "button.detail_btn_cancel", function(){
-        var parnt = $(this).parent('td');
+        var parnt = $(this).parent();
         var edt_td = parnt.siblings(".detail_edit");
         var val_td = parnt.siblings(".detail_value");
         var btns = edt_td.siblings('.detail_btns');

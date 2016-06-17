@@ -284,20 +284,19 @@ class Reaction_scheme (models.Model):
             atoms_count_list = []
             i = 0
             for subst_i in substs_list:
-                if subst_i.substance is not None:                
-                    subst_consist_list = subst_i.substance.consist.all()
-                    list_temp = []
-                    for subst_consist in subst_consist_list:
-                        atom_j = subst_consist.atom
-                        atoms_list = atoms_list + [atom_j.symbol]
-                        list_temp2 = [atom_j.symbol, subst_consist.atom_count]
-                        list_temp = list_temp + [list_temp2]
-                    atoms_count_list = atoms_count_list + [list_temp]
+                subst_consist_list = subst_i.substance.consist.all()
+                list_temp = []
+                for subst_consist in subst_consist_list:
+                    atom_j = subst_consist.atom
+                    atoms_list = atoms_list + [atom_j.symbol]
+                    list_temp2 = [atom_j.symbol, subst_consist.atom_count]
+                    list_temp = list_temp + [list_temp2]
+                atoms_count_list = atoms_count_list + [list_temp]
                 i = i+1
             #удаляем дубликаты в списке атомов
             atoms_list = list(set(atoms_list))
             elem_count = len(atoms_list)
-            if subst_count == 0 or elem_count == 0:
+            if subst_count == 0:
                 return []
             #строки - число атомов хим элемента в веществе, стоблцы - хим.элементы
             A_mtrx = np.zeros((subst_count, elem_count))
@@ -403,7 +402,7 @@ class Scheme_step(models.Model):
                 G_coll[0][i] =  subst_i.stoich_koef
                 if subst_i.reac_substance.substance is None:
                     error_str = 'Невозможно проверить баланс стадии. Псевдониму '+str(subst_i.reac_substance.alias)+' не сопоставлено вещество реакции'
-                    error_list.append(error_str) 
+                    error_list.append(error_str)
                     return False
                 subst_consist_list = subst_i.reac_substance.substance.consist.all()
                 list_temp = []
@@ -482,7 +481,7 @@ class Reaction_subst(models.Model):
             self.brutto_formula_short_formatted = self.brutto_formula_short
 
     class Meta:
-        ordering = ["id_react_subst", "reaction"]
+        ordering = ["alias"]
         verbose_name = ('Вещество реакции')
         verbose_name_plural = ('Вещества реакции')
         unique_together = (('reaction', 'alias'))
@@ -642,44 +641,42 @@ class Exper_serie (models.Model):
 
 #Эксперименты
 class Experiment (models.Model):
-    id_experiment    = models.AutoField (primary_key = True, verbose_name='ИД')
-    reaction     = models.ForeignKey(Reaction, null = False, on_delete=models.CASCADE, related_name='experiments' )
-    argument_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения аргумента',default=0)
-    function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения функции',default=0)
-    init_function_measure = models.ForeignKey(Dict_measure_unit, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Единица измерения начальных концентраций',default=0)
-    description  = models.TextField (blank = True, verbose_name='Описание')
-    func = models.ForeignKey(Dict_model_function, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Функция',default=0)
-    arg = models.ForeignKey(Dict_model_argument, null = True, on_delete=models.PROTECT, related_name='+',verbose_name='Аргумент',default=0)
-    exper_date = models.DateTimeField (default=timezone.now, verbose_name='Дата проведения')
-    updated_by   = models.TextField (verbose_name='Обновил(а)')
-    updated_date = models.DateTimeField (default=timezone.now, verbose_name='Дата обновления')
-    is_favorite  = models.BooleanField(default = False, verbose_name='Избранное')
+    id_experiment = models.AutoField(primary_key=True, verbose_name='ИД')
+    reaction = models.ForeignKey(Reaction, null=False, on_delete=models.CASCADE, related_name='experiments')
+    argument_measure = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT,
+        related_name='+', verbose_name='Единица измерения аргумента', default=0)
+    function_measure = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT,
+        related_name='+', verbose_name='Единица измерения функции', default=0)
+    init_function_measure = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT,
+        related_name='+', verbose_name='Единица измерения начальных концентраций', default=0)
+    description = models.TextField(blank=True, verbose_name='Описание')
+    func = models.ForeignKey(Dict_model_function, null=False, on_delete=models.PROTECT,
+        related_name='+', verbose_name='Функция', default=0)
+    arg = models.ForeignKey(Dict_model_argument, null=False, on_delete=models.PROTECT,
+        related_name='+', verbose_name='Аргумент', default=0)
+    exper_date = models.DateTimeField(default=timezone.now, verbose_name='Дата проведения')
+    updated_by = models.TextField(verbose_name='Обновил(а)')
+    updated_date = models.DateTimeField(default=timezone.now, verbose_name='Дата обновления')
+    is_favorite = models.BooleanField(default=False, verbose_name='Избранное')
     exper_serie = models.ForeignKey(Exper_serie, null=True, blank=True, default=None, on_delete=models.PROTECT,
         related_name='experiments', verbose_name='Серия')
 
-    created_date = models.DateTimeField (default=timezone.now, verbose_name='Дата создания')
-    name         = models.CharField (max_length = 250, verbose_name='Название')
-    created_by   = models.TextField (verbose_name='Создал(ла)')#todo data type
+    created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
+    name = models.CharField(max_length=250, verbose_name='Название')
+    created_by = models.TextField(verbose_name='Создал(ла)')  # todo data type
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.name
 
-    class Meta:
-      ordering            = ["id_experiment"]
-      verbose_name = ('Эксперимент')
-      verbose_name_plural = ('Эксперименты')
-
-class Dict_subst_role (models.Model):
-    id_role = models.IntegerField (primary_key = True, verbose_name='ИД')
-    name         = models.CharField (max_length = 250, verbose_name='Название')
-
-    def __unicode__ (self):
-        return self.name
+    #возвращает отсортированный массив разных аргументов для exper_point
+    def get_distinct_point_arg_val(self):
+        return {}
 
     class Meta:
-      ordering            = ["id_role"]
-      verbose_name = ('Роль вещества в механизме')
-      verbose_name_plural = ('Роли вещества в механизме')
+        ordering = ["id_experiment"]
+        verbose_name = ('Эксперимент')
+        verbose_name_plural = ('Эксперименты')
+
 
 class Dict_exper_param (models.Model):
     id_experparam = models.IntegerField(primary_key = True, verbose_name='ИД')
@@ -689,9 +686,10 @@ class Dict_exper_param (models.Model):
         return self.name
 
     class Meta:
-      ordering            = ["id_experparam"]
-      verbose_name = ('Дополнительные данные эксперимента')
-      verbose_name_plural = ('Дополнительные данные эксперимента')
+        ordering = ["id_experparam"]
+        verbose_name = ('Дополнительные данные эксперимента')
+        verbose_name_plural = ('Дополнительные данные эксперимента')
+
 
 class Dict_exper_subst_param (models.Model):
     id_expersubstparam = models.IntegerField (primary_key = True, verbose_name='ИД')
@@ -705,57 +703,71 @@ class Dict_exper_subst_param (models.Model):
       verbose_name = ('Дополнительная информация о веществе реакции')
       verbose_name_plural = ('Дополнительная информация о веществе реакции')
 
+
 class Exper_data (models.Model):
-    id_exper_data = models.AutoField (primary_key = True, verbose_name='ИД')
-    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_data' )
+    id_exper_data = models.AutoField(primary_key=True, verbose_name='ИД')
+    experiment = models.ForeignKey(Experiment, null=False, on_delete=models.CASCADE, related_name='exper_data')
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
-    exper_param    = models.ForeignKey(Dict_exper_param, null = False, on_delete=models.PROTECT, related_name='+',default=0)
-    dict_unit_id_unit = models.ForeignKey(Dict_measure_unit, null = False, on_delete=models.PROTECT, related_name='+',default=0)
+    exper_param = models.ForeignKey(Dict_exper_param, null=False, on_delete=models.PROTECT, related_name='+', default=0)
+    dict_unit_id_unit = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT, related_name='+', default=0)
 
     class Meta:
-      verbose_name = ('Дополнительная информация эксперимента')
-      verbose_name_plural = ('Дополнительная информация эксперимента')
+        verbose_name = ('Дополнительная информация эксперимента')
+        verbose_name_plural = ('Дополнительная информация эксперимента')
+
 
 class Exper_subst (models.Model):
-    id_expersubst = models.AutoField (primary_key = True, verbose_name='ИД')
-    experiment    = models.ForeignKey(Experiment, null = False, on_delete=models.PROTECT, related_name='exper_substs')
-    reaction_subst = models.ForeignKey(Reaction_subst, null = False, on_delete=models.PROTECT, related_name='+' )
-    dict_subst_role = models.ForeignKey(Dict_subst_role, null = False, on_delete=models.PROTECT, related_name='+',default=0)
-    is_observed  = models.BooleanField(default = False, verbose_name='Наблюдаемое')
-    # todo правильное название?
-    init_func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Начальное значение')
+    id_expersubst = models.AutoField(primary_key=True, verbose_name='ИД')
+    experiment = models.ForeignKey(Experiment, null=False, on_delete=models.CASCADE, related_name='exper_substs')
+    reaction_subst = models.ForeignKey(Reaction_subst, null=False, on_delete=models.PROTECT, related_name='+')
+    is_observed = models.BooleanField(default=False, verbose_name='Наблюдаемое', null=False)
+    init_func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Начальная концентрация',
+         null=False, default=0)
+    standard_error = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Погрешность ', null=False, default=0)
 
-    def __unicode__ (self):
-        return self.reaction_subst.substance.formula_brutto
+    def __unicode__(self):
+        return self.reaction_subst.alias
+
+# азные интервалы времени
+    def get_distinct_arg_val(self):
+        return {}
+
+    def get_points_by_arg(self, arg_value):
+        return {}
 
     class Meta:
-      ordering            = ["id_expersubst"]
-      verbose_name = ('Вещество реакции в эксперименте')
-      verbose_name_plural = ('Вещества реакции в эксперименте')
+        #order_with_respect_to = 'reaction_subst'
+        unique_together = (('experiment', 'reaction_subst'))
+        verbose_name = ('Вещество реакции в эксперименте')
+        verbose_name_plural = ('Вещества реакции в эксперименте')
+
 
 class Exper_subst_data (models.Model):
-    id_exper_subst_data = models.AutoField (primary_key = True, verbose_name='ИД')
-    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_subst_data' )
+    id_exper_subst_data = models.AutoField(primary_key=True, verbose_name='ИД')
+    exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.PROTECT, related_name='exper_subst_data')
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
-    subst_param    = models.ForeignKey(Dict_exper_subst_param, null = False, on_delete=models.PROTECT, related_name='+',default=0)
-    unit = models.ForeignKey(Dict_measure_unit, null = False, on_delete=models.PROTECT, related_name='+',default=0)
+    subst_param = models.ForeignKey(Dict_exper_subst_param, null=False, on_delete=models.PROTECT, related_name='+', default=0)
+    unit = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT, related_name='+', default=0)
 
     class Meta:
-      verbose_name = ('Дополнительные экспериментальные данные')
-      verbose_name_plural = ('Дополнительные экспериментальные данные')
+        verbose_name = ('Дополнительные экспериментальные данные')
+        verbose_name_plural = ('Дополнительные экспериментальные данные')
+
 
 class Exper_point (models.Model):
-    id_point = models.AutoField (primary_key = True, verbose_name='ИД')
-    exper_subst    = models.ForeignKey(Exper_subst, null = False, on_delete=models.PROTECT, related_name='exper_points', verbose_name='Вещество эксперимента')
+    id_point = models.AutoField(primary_key=True, verbose_name='ИД')
+    exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.CASCADE,
+        related_name='exper_points', verbose_name='Вещество эксперимента')
     arg_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение аргумента')
     func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение концентрации')
 
-    def __unicode__ (self):
-        return self.exper_subst.reaction_subst.substance.formula_brutto
+    def __unicode__(self):
+        return self.exper_subst.reaction_subst.alias
 
     class Meta:
-      verbose_name = ('Экспериментальные данные')
-      verbose_name_plural = ('Экспериментальные данные')
+        ordering = ["arg_val"]
+        verbose_name = ('Экспериментальные данные')
+        verbose_name_plural = ('Экспериментальные данные')
 
 
 #Задачи

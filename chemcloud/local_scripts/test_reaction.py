@@ -13,7 +13,7 @@ from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
 from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
-from chemical.chemical_models import Dict_subst_role,Exper_subst_data,Exper_subst,Exper_data,Exper_serie
+from chemical.chemical_models import Exper_subst_data,Exper_subst,Exper_data,Exper_serie
 from chemical.chemical_models import Exper_point,Reaction_feature
 from django.contrib.auth.models import User
 
@@ -139,32 +139,29 @@ def populate():
    add_exper(1,b,d,e,e,'Эксперимент 1. Катализатор НИАП-12-05',f,g,datetime.combine(h,i),'Admin',1,'Эксперимент 1','Admin')
    a = Experiment.objects.get(id_experiment=1)
    b = Exper_serie.objects.get(id_serie=1)
-   
+
    # Добавление веществ реакции в эксперименте
    b = Reaction.objects.get(id_reaction=1)
    # C3H8
    c = Substance.objects.get(id_substance=1)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   e = Dict_subst_role.objects.get(id_role=1)
-   add_exper_subst(1,a,d,e,1,17)
+   add_exper_subst(1,a,d,1,17)
    # H2O
    c = Substance.objects.get(id_substance=2)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(2,a,d,e,0,49)
+   add_exper_subst(2,a,d,0,49)
    # O2
    c = Substance.objects.get(id_substance=3)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   e = Dict_subst_role.objects.get(id_role=3)
-   add_exper_subst(3,a,d,e,1,0)
+   add_exper_subst(3,a,d,1,0)
    # H2
    c = Substance.objects.get(id_substance=4)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(4,a,d,e,1,0)
+   add_exper_subst(4,a,d,1,0)
    # CH4
    c = Substance.objects.get(id_substance=5)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   e = Dict_subst_role.objects.get(id_role=1)
-   add_exper_subst(5,a,d,e,1,34)
+   add_exper_subst(5,a,d,1,34)
 
    # данные Эксперимента 1
    c = Exper_subst.objects.get(id_expersubst=1)
@@ -188,32 +185,29 @@ def populate():
    add_exper(2,b,d,e,e,'Эксперимент 2. Катализатор НИАП-12-05',f,g,datetime.combine(h,i),'Admin',1,'Эксперимент 2','Admin')
    a = Experiment.objects.get(id_experiment=2)
    b = Exper_serie.objects.get(id_serie=1)
-   
+
    # Добавление вещест реакции в эксперименте
    b = Reaction.objects.get(id_reaction=1)
    # C3H8
    c = Substance.objects.get(id_substance=1)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   e = Dict_subst_role.objects.get(id_role=1)
-   add_exper_subst(6,a,d,e,1,17)
+   add_exper_subst(6,a,d,1,17)
    # H2O
    c = Substance.objects.get(id_substance=2)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(7,a,d,e,0,49)
+   add_exper_subst(7,a,d,0,49)
    # CO2
    c = Substance.objects.get(id_substance=3)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   e = Dict_subst_role.objects.get(id_role=3)
-   add_exper_subst(8,a,d,e,1,0)
+   add_exper_subst(8,a,d,1,0)
    # H2
    c = Substance.objects.get(id_substance=4)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   add_exper_subst(9,a,d,e,1,0)
+   add_exper_subst(9,a,d,1,0)
    # CH4
    c = Substance.objects.get(id_substance=5)
    d = Reaction_subst.objects.get(reaction=b,substance=c)
-   e = Dict_subst_role.objects.get(id_role=1)
-   add_exper_subst(10,a,d,e,1,34)
+   add_exper_subst(10,a,d,1,34)
 
    # данные Эксперимента 2
    c = Exper_subst.objects.get(id_expersubst=6)
@@ -285,8 +279,8 @@ def add_substance_consist(s,a,ac):
     a.save()
     return a
 
-def add_exper_subst(id_es,e,rs,dsr,io,ifv):
-    a = Exper_subst.objects.get_or_create(id_expersubst=id_es,experiment=e,reaction_subst=rs,dict_subst_role=dsr,is_observed=io,init_func_val=ifv)[0]
+def add_exper_subst(id_es,e,rs,io,ifv):
+    a = Exper_subst.objects.get_or_create(id_expersubst=id_es,experiment=e,reaction_subst=rs, is_observed=io,init_func_val=ifv)[0]
     a.save()
     return a
 

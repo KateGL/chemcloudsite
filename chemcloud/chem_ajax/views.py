@@ -13,18 +13,49 @@ from django.db import models
 import swapper
 import time
 from datetime import datetime
+from decimal import Decimal
 
 from chemical.models import owner_required, substance_owner_required, Chemistry
 from chemical.urls_utils import make_name_link, make_detail_link
 from chemical.urls_utils import get_subst_detail_link
 from chemical.utils import decorate_formula
 from chemical.models import substance_get_isomer, substance_get_isomer_count
-from chemical.chemical_models import consist_to_string
+from chemical.chemical_models import consist_to_string, Exper_subst
 # Create your views here.
 
 
-def set_field_and_value_from_request(request, my_model):
+def set_field_value_to_model(field_name, value_tmp, my_model):
     data = '{"result":"True", "message":"ok"}'
+    field_object = my_model._meta.get_field(field_name)
+    #print(field_object)
+    #если это ссылка на класс
+    if isinstance(field_object, models.ForeignKey):
+        try:
+            rel_model = field_object.rel.to
+            #print(rel_model)
+            value = rel_model.objects.get(pk=value_tmp)
+            #print(value)
+        except ObjectDoesNotExist:
+            value = None
+        #если это булево поле
+    elif isinstance(field_object, models.BooleanField):
+        value = (value_tmp.lower() == 'true')
+    elif isinstance(field_object, models.DateTimeField):
+        tmp_val = time.strptime(value_tmp, "%d.%m.%Y %H:%M")
+        tmp_val = datetime.fromtimestamp(time.mktime(tmp_val))
+        value = tmp_val
+    elif isinstance(field_object, models.DecimalField):
+        tmp_val = value_tmp.strip(' \t\n\r')
+        print(tmp_val)
+        value = Decimal(tmp_val)
+    else:
+        value = value_tmp
+
+    setattr(my_model, field_name, value)
+    return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value}
+
+
+def set_field_and_value_from_request(request, my_model):
     if request.is_ajax():
         if request.method == 'POST':
             body_unicode = request.body.decode('utf-8')
@@ -33,29 +64,7 @@ def set_field_and_value_from_request(request, my_model):
             field_name = body['field_name']
             value_tmp = body['value']
             #print(field_name)
-            field_object = my_model._meta.get_field(field_name)
-            #print(field_object)
-            #если это ссылка на класс
-            if isinstance(field_object, models.ForeignKey):
-                try:
-                    rel_model = field_object.rel.to
-                    #print(rel_model)
-                    value = rel_model.objects.get(pk=value_tmp)
-                    #print(value)
-                except ObjectDoesNotExist:
-                    value = None
-                #если это булево поле
-            elif isinstance(field_object, models.BooleanField):
-                value = (value_tmp.lower() == 'true')
-            elif isinstance(field_object, models.DateTimeField):
-                tmp_val = time.strptime(value_tmp, "%d.%m.%Y %H:%M")
-                tmp_val = datetime.fromtimestamp(time.mktime(tmp_val))
-                value = tmp_val
-            else:
-                value = value_tmp
-
-            setattr(my_model, field_name, value)
-            return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value}
+            return set_field_value_to_model(field_name, value_tmp, my_model)
 
     data = '{"result":"False", "message":"Request not Ajax or not POST"}'
     return {"is_error": True, "err_msg": data}
@@ -143,7 +152,6 @@ def substance_detail_edit(request, id_substance):
 @login_required
 @owner_required
 def reaction_detail_edit(request, id_reaction):
-    print(request)
     ureact = request.user.chemistry.reaction_get(id_reaction)
     react = ureact.reaction
     fv_dict = set_field_and_value_from_request(request, react)
@@ -221,12 +229,54 @@ def experiment_detail_edit(request, id_reaction, id_experiment):
 
     fv_dict = set_field_and_value_from_request(request, exper)
 
-    #if fv_dict['field_name'] == 'exper_serie':
-        #if fv_dict['value'] == '0':
-            #print('HELLO')
-
     if (fv_dict['is_error'] is False):
         exper.save()
+
+    xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')
+
+
+def get_fvr_dict(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            #print(body)
+            field_name = body['field_name']
+            value_tmp = body['value']
+            record_id = body['record_id']
+            #print(field_name)
+            data = '{"result":"True", "message":"ok"}'
+            return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value_tmp, "record_id": record_id}
+
+    data = '{"result":"False", "message":"Request not Ajax or not POST"}'
+    return {"is_error": True, "err_msg": data}
+
+
+@login_required
+@owner_required
+def experiment_edit_subst(request, id_reaction, id_experiment):
+    exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
+    exper = exper_dict['experiment']
+    #value = None
+    fvr_dict = get_fvr_dict(request)
+    rec_id = fvr_dict['record_id']
+
+    react_subst_dict = request.user.chemistry.react_subst_get(id_reaction, rec_id)
+    react_subst = react_subst_dict['substance']
+    exper_subst_list = exper.exper_substs.filter(reaction_subst=react_subst)
+
+    exper_subst = None
+    if exper_subst_list.count() > 0:
+        exper_subst = exper_subst_list[0]
+    else:
+        exper_subst = Exper_subst(experiment=exper, reaction_subst=react_subst)
+    #get or create exper_subst
+
+    fv_dict = set_field_value_to_model(fvr_dict['field_name'], fvr_dict['value'], exper_subst)
+    print(fv_dict)
+    if (fv_dict['is_error'] is False):
+        exper_subst.save()
 
     xml_bytes = json.dumps(fv_dict['err_msg'])
     return HttpResponse(xml_bytes, 'application/json')

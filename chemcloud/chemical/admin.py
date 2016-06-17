@@ -6,7 +6,7 @@ from django.contrib import admin
 from chemical.chemical_models import Dict_atom, Substance, Reaction, Reaction_scheme, Experiment
 from chemical.chemical_models import Scheme_step, Scheme_step_subst
 from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_tag,Dict_feature,Reaction_feature, Dict_model_function, Dict_model_argument, Dict_measure_unit
-from chemical.chemical_models import User_reaction,Substance_consist,Exper_subst,Dict_subst_role
+from chemical.chemical_models import User_reaction,Substance_consist,Exper_subst
 from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exper_data,Exper_subst_data
 from chemical.chemical_models import Exper_point,Exper_serie
 from chemical.chemical_models import Dict_problem_type, Problem
@@ -142,17 +142,11 @@ admin.site.register(Dict_measure_unit,Dict_measure_unitAdmin)
 
 #Вещества реакции в эксперименте
 class Exper_substAdmin(admin.ModelAdmin):
-    fields = ['experiment', 'reaction_subst', 'dict_subst_role', 'is_observed', 'init_func_val']
-    list_display = ('experiment', 'reaction_subst', 'dict_subst_role', 'is_observed', 'init_func_val')
+    fields = ['experiment', 'reaction_subst', 'is_observed', 'init_func_val', 'standard_error']
+    list_display = ('experiment', 'reaction_subst', 'is_observed', 'init_func_val', 'standard_error')
 
 admin.site.register(Exper_subst, Exper_substAdmin)
 
-#Роли вещества в механизме
-class Dict_subst_roleAdmin(admin.ModelAdmin):
-  fields = ['id_role', 'name']
-  list_display = ('id_role', 'name')
-
-admin.site.register(Dict_subst_role,Dict_subst_roleAdmin)
 
 #Дополнительные данные эксперимента
 class Dict_exper_paramAdmin(admin.ModelAdmin):
