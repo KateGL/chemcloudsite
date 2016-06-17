@@ -284,19 +284,20 @@ class Reaction_scheme (models.Model):
             atoms_count_list = []
             i = 0
             for subst_i in substs_list:
-                subst_consist_list = subst_i.substance.consist.all()
-                list_temp = []
-                for subst_consist in subst_consist_list:
-                    atom_j = subst_consist.atom
-                    atoms_list = atoms_list + [atom_j.symbol]
-                    list_temp2 = [atom_j.symbol, subst_consist.atom_count]
-                    list_temp = list_temp + [list_temp2]
-                atoms_count_list = atoms_count_list + [list_temp]
+                if subst_i.substance is not None:
+                    subst_consist_list = subst_i.substance.consist.all()
+                    list_temp = []
+                    for subst_consist in subst_consist_list:
+                        atom_j = subst_consist.atom
+                        atoms_list = atoms_list + [atom_j.symbol]
+                        list_temp2 = [atom_j.symbol, subst_consist.atom_count]
+                        list_temp = list_temp + [list_temp2]
+                    atoms_count_list = atoms_count_list + [list_temp]
                 i = i+1
             #удаляем дубликаты в списке атомов
             atoms_list = list(set(atoms_list))
             elem_count = len(atoms_list)
-            if subst_count == 0:
+            if subst_count == 0  or elem_count == 0:
                 return []
             #строки - число атомов хим элемента в веществе, стоблцы - хим.элементы
             A_mtrx = np.zeros((subst_count, elem_count))

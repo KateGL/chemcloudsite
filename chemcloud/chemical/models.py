@@ -135,8 +135,10 @@ class Chemistry(models.Model):
                 raise Http404("More than substance with alias: '"+ alias_str + "'")
             if subst_list.count() == 0:
                 raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
-        except Reaction_subst.DoesNotExist:
-            raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
+         except
+            return {}   
+#        except Reaction_subst.DoesNotExist:
+#            raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
         subst_dict = {}
         subst_dict['substance'] = subst_list[0]
         subst_dict['is_owner'] = react.is_owner
