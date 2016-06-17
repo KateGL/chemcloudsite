@@ -834,6 +834,7 @@ class Problem(models.Model):
             new_criteria.save()
             #по умолчанию первый механизм
             schemes = self.reaction.schemes.objects.all()
+            scheme  = None
             if schemes.count() > 0:
                 scheme = schemes[0]
                 self.schemes.add(scheme)
@@ -842,8 +843,28 @@ class Problem(models.Model):
             if expers.count() > 0:
                 #exper = expers[0]
                 self.experiments.add(expers)
+            #вид искомых кинетических параметров: 1 - константы, 2 - энергии активации
+            temp_param = Dict_calc_param.objects.get(pk = 34)
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 1, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
             #границы поиска
-
+            temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)    
+            temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)   
+            temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)    
+            temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)
+            if scheme is not None:
+                steps = scheme.steps.all()
+                for step_i in steps:
+                    new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-7, calculation = new_calc, dict_param = temp_param_dir_down, step = step_i )[0]
+                    new_param.save() 
+                    new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e+10, calculation = new_calc, dict_param = temp_param_dir_up, step = step_i )[0]
+                    new_param.save()
+                    if step_i.is_revers:
+                        new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-7, calculation = new_calc, dict_param = temp_param_inv_down, step = step_i )[0]
+                        new_param.save() 
+                        new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e+10, calculation = new_calc, dict_param = temp_param_inv_up, step = step_i )[0]
+                        new_param.save()             
+                    
             #метод и настройки метода прямой задачи
             #метод и настройки метода обратной задачи
         except:
@@ -945,8 +966,8 @@ class Calc_param(models.Model):
     value = models.DecimalField(max_digits=20, decimal_places=7, verbose_name='Значение параметра')
     calculation = models.ForeignKey(Calculation, verbose_name='Расчет задачи', null=False, on_delete=models.PROTECT, related_name='Params')
     dict_param = models.ForeignKey(Dict_calc_param, verbose_name='Параметр', null=False, on_delete=models.PROTECT, related_name='+')
-    step = models.ForeignKey(Scheme_step, verbose_name='Стадия механизма', null=True, on_delete=models.PROTECT, related_name='+')
-    substance = models.ForeignKey( Reaction_subst, verbose_name='Вещество реакции', null=True, on_delete=models.PROTECT, related_name='+')
+    step = models.ForeignKey(Scheme_step, verbose_name='Стадия механизма', null=True, on_delete=models.PROTECT, related_name='+', default = None)
+    substance = models.ForeignKey( Reaction_subst, verbose_name='Вещество реакции', null=True, on_delete=models.PROTECT, related_name='+', default = None)
 
     class Meta:
         verbose_name = ('Параметр расчета')
