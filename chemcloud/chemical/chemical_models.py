@@ -848,10 +848,10 @@ class Problem(models.Model):
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 1, calculation = new_calc, dict_param = temp_param )[0]
             new_param.save()
             #границы поиска
-            temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)    
-            temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)   
-            temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)    
-            temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)
+            temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->    
+            temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-       
+            temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->        
+            temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<-    
             if scheme is not None:
                 steps = scheme.steps.all()
                 for step_i in steps:
@@ -866,7 +866,46 @@ class Problem(models.Model):
                         new_param.save()             
                     
             #метод и настройки метода прямой задачи
+            _temp = Dict_calc_method.objects.get(pk = 1) #Мишельсена
+            new_calc.methods.add (_temp)
+
+            temp_param = Dict_calc_param.objects.get(pk = 35)#h0
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-4, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save() 
+            temp_param = Dict_calc_param.objects.get(pk = 36)#hmin
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-6, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save() 
+            temp_param = Dict_calc_param.objects.get(pk = 37)#hmax
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-3, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save() 
             #метод и настройки метода обратной задачи
+            _temp = Dict_calc_method.objects.get(pk = 6) #генетический алгоритм
+            new_calc.methods.add (_temp)
+
+            temp_param = Dict_calc_param.objects.get(pk = 38)#itercount
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e+6, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save() 
+            temp_param = Dict_calc_param.objects.get(pk = 39)#processor count
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 1, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
+            temp_param = Dict_calc_param.objects.get(pk = 41)#use ln
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 1, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
+            temp_param = Dict_calc_param.objects.get(pk = 64)#crossingPercent
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 100, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
+            temp_param = Dict_calc_param.objects.get(pk = 65)#mutationPercent
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 20, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
+            temp_param = Dict_calc_param.objects.get(pk = 66)#generation
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 20, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
+            temp_param = Dict_calc_param.objects.get(pk = 67)#generation-percent
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 50, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
+            temp_param = Dict_calc_param.objects.get(pk = 69)#exititer
+            new_param = Calc_param.objects.get_or_create( is_input = True, value = 40, calculation = new_calc, dict_param = temp_param )[0]
+            new_param.save()
         except:
             return -1
         return new_calc
