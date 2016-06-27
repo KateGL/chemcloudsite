@@ -186,12 +186,7 @@ def populate():
    add_dict_exper_subst_param(0,'Не задано')
    add_dict_exper_subst_param(1,'Период индукции')
    add_dict_exper_subst_param(2,'Начальная скорость')
-   add_dict_subst_role(0,'Не задано')
-   add_dict_subst_role(1,'Исходное')
-   add_dict_subst_role(2,'Промежуточное')
-   add_dict_subst_role(3,'Продукт')
-   add_dict_subst_role(4,'В реакцию не вступает')
-
+ 
    add_dict_calc_criteria_constraints(1,'Сравнение значений концентраций наблюдаемых веществ между расчетом и экспериментом')
    add_dict_calc_criteria_constraints(2,'Сравнение значений периодов индукции наблюдаемых веществ между расчетом и экспериментом')
    add_dict_calc_criteria_constraints(3,'Сравнение значений начальных скоростей изменения концентраций веществ между расчетом и экспериментом')

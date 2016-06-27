@@ -722,8 +722,7 @@ class Exper_subst (models.Model):
     experiment = models.ForeignKey(Experiment, null=False, on_delete=models.CASCADE, related_name='exper_substs')
     reaction_subst = models.ForeignKey(Reaction_subst, null=False, on_delete=models.PROTECT, related_name='+')
     is_observed = models.BooleanField(default=False, verbose_name='Наблюдаемое', null=False)
-    init_func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Начальная концентрация',
-         null=False, default=0)
+    init_func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Начальная концентрация', null=False, default=0)
     standard_error = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Погрешность ', null=False, default=0)
 
     def __unicode__(self):
@@ -821,6 +820,7 @@ class Problem(models.Model):
 
     def create_new_calculation(self):
         try:
+            print('tut')
             calcs = self.calculations
             calc_status = Dict_calc_status.objects.get(pk = 1)
             new_calc = Calculation.objects.get_or_create( problem = self, status = calc_status)[0]
@@ -906,7 +906,10 @@ class Problem(models.Model):
             temp_param = Dict_calc_param.objects.get(pk = 69)#exititer
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 40, calculation = new_calc, dict_param = temp_param )[0]
             new_param.save()
+            print('good')
+            print (new_calc)
         except:
+            print('except')
             return -1
         return new_calc
 
@@ -942,7 +945,7 @@ class Dict_calc_functional(models.Model):
 class Dict_calc_param(models.Model):
     id_dict_param = models.AutoField(primary_key=True, verbose_name='ИД')
     name  = models.CharField(max_length=250, unique=True, verbose_name='Название параметра')
-    mask  = models.CharField(max_length=20, unique=True, verbose_name='Маска')
+    mask  = models.CharField(max_length=50, unique=True, verbose_name='Маска')
     class Meta:
         verbose_name = ('Параметр решения задачи')
         verbose_name_plural = ('Параметры решения задачи')

@@ -701,7 +701,9 @@ def problem_new(request, id_reaction, id_problem_type):
             problem.reaction = react.reaction
             form.save()
             
+            print('before create_new_calculation')
             calculation = problem.create_new_calculation()
+            print('after create_new_calculation')    
             return redirect('problem_init', id_reaction, problem.pk)
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)

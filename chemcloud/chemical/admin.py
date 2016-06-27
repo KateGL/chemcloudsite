@@ -142,8 +142,8 @@ admin.site.register(Dict_measure_unit,Dict_measure_unitAdmin)
 
 #Вещества реакции в эксперименте
 class Exper_substAdmin(admin.ModelAdmin):
-    fields = ['experiment', 'reaction_subst', 'is_observed', 'init_func_val', 'standard_error']
-    list_display = ('experiment', 'reaction_subst', 'is_observed', 'init_func_val', 'standard_error')
+  fields = ['experiment', 'reaction_subst', 'is_observed', 'init_func_val', 'standard_error']
+  list_display = ('experiment', 'reaction_subst', 'is_observed', 'init_func_val', 'standard_error')
 
 admin.site.register(Exper_subst, Exper_substAdmin)
 
