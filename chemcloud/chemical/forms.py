@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 #from bootstrap3_datetime.widgets import DateTimePicker
 from django import forms
+from django.utils import timezone
 #from django.forms.util import flatatt
 from .chemical_models import Reaction_scheme, Substance, Reaction, Experiment, Reaction_subst, Problem, Exper_serie
 import re
 from chemical.utils import check_blocks
 
+
+class DateWithPickerField(forms.DateTimeField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('input_formats', ("%d.%m.%Y %H:%M",))
+        super(DateWithPickerField, self).__init__(*args, **kwargs)
 
 #Реакции
 class ReactionForm(forms.ModelForm):
@@ -70,7 +76,7 @@ class ExperSerieForm(forms.ModelForm):
 
 #Эксперименты
 class ExperimentForm(forms.ModelForm):
-
+    exper_date = DateWithPickerField(initial=timezone.now, label="Дата проведения")
     class Meta:
         model = Experiment
         fields = ('name', 'exper_date', 'description', 'exper_serie', 'is_favorite', 'func', 'function_measure', 'arg',
