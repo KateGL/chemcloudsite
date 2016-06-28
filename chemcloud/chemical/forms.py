@@ -81,4 +81,8 @@ class ExperimentForm(forms.ModelForm):
 class ProblemForm(forms.ModelForm):
     class Meta:
         model = Problem
-        fields = ('problem_type', 'description', )
+        fields = ('problem_type', 'description' )
+
+
+
+

@@ -14,7 +14,7 @@ from chemical.chemical_models import Reaction_subst, Experiment, Exper_serie, Re
 from chemical.chemical_models import Scheme_step, Substance_synonym, Dict_feature
 from chemical.chemical_models import Reaction_feature,Exper_subst,Dict_model_function
 from chemical.chemical_models import Problem, Dict_problem_type,Dict_model_argument,Dict_measure_unit
-from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
+from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional, Dict_calc_param
 
 
 def owner_required(f):
@@ -379,35 +379,66 @@ class Chemistry(models.Model):
         return dict_calc_functional
 
     # вернуть контекст для каждой задачи: параметры задачи, а также всевозможные выпадающие списки и т.д.
-    def get_problem_context(self, problem, page_num):
+    def get_problem_context(self, calculation, page_num):
         try:
             problem_context = {}
+            problem = calculation.problem
             id_problem_type = problem.problem_type.id_problem_type
             if id_problem_type==2:#обратная задача
-                problem_context = self.get_inverse_problem_context(problem, page_num)
+                problem_context = self.get_inverse_problem_context(calculation, page_num)
         except:
             raise Http404("Error in getting problem context")
         return problem_context
 
-    def get_inverse_problem_context(self, problem, page_num):
+    def get_inverse_problem_context(self, calculation, page_num):
         try:
-            print('tut')
+            problem = calculation.problem
             problem_context = {}
-            criteria_list = {}
-            constraints_list = {}
-            functional_list = {}
-            print(page_num)
             if page_num == 1: #init - постановка задачи
+                criteria_list_combo = []
+                constraints_list_combo = []
+                functional_list_combo = []
+                functional_value = None # бд позволяет. Но пока так не умеем считать. Пока что один вид функционала на все ограничения и критерии
+                criteria_value  = None #значение выбранного критерия. Пока что однокритериальные задачи
+                constraints_value_list = [] #значения выбранных ограничений.
+                scheme = None #выбранный механизм реакции
+                schemes_list_combo = []#список всех механизмов реакции
+                expers_list_combo = []#список всех экспериментов реакции
+                expers_value_list = [] #список выбранных экспериментов
+                left_bound_value_list = []  
+                rigth_bound_value_list = []               
+                print('tetst')
                 id_problem_type = problem.problem_type.id_problem_type
-                criteria_list    = self.dict_criteria_filter(id_problem_type)
-                #criteria_value   = Dict_calc_param.objects.get(pk=_id)
-                constraints_list = self.dict_constraints_filter(id_problem_type)
-                functional_list  = self.dict_calc_functional_all()
+                criteria_list_combo    = self.dict_criteria_filter(id_problem_type)
+                criteria_value   = calculation.constraints.filter(is_constraint = False)[0] #обязательно должно существовать
+                constraints_list_combo = self.dict_constraints_filter(id_problem_type)
+                constraints_value_list = calculation.constraints.filter(is_constraint = True)
+                functional_list_combo  = self.dict_calc_functional_all()
+                functional_value = criteria_value.functional
+                
+                schemes_list_combo = problem.reaction.schemes.all()                
+                scheme = None
+                p_schemes = problem.schemes.all()
+                if p_schemes.count()>0:
+                    scheme = p_schemes[0]
+                expers_list_combo = problem.reaction.experiments.all()
+                expers_value_list = problem.expers.all()
+                #границы
+                if scheme is not None:
+                    temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->    
+                    temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-       
+                    temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->        
+                    temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<- 
+                    left_bound_value_list.append(calculation.params.filter(dict_param = temp_param_dir_down).order_by('step__order') )
+                    temp_list = calculation.params.filter(dict_param = temp_param_inv_down).order_by('step__order')  
+                    if temp_list.count()>0:
+                        left_bound_value_list.append(temp_list)
+                    rigth_bound_value_list.append(calculation.params.filter(dict_param = temp_param_dir_up).order_by('step__order'))
+                    temp_list = calculation.params.filter(dict_param = temp_param_inv_up).order_by('step__order')   
+                    if temp_list.count()>0:
+                        rigth_bound_value_list.append(temp_list)
+                problem_context = {'criteria_list_combo': criteria_list_combo, 'criteria_value': criteria_value,  'constraints_list_combo': constraints_list_combo, 'constraints_value_list': constraints_value_list, 'functional_list_combo':functional_list_combo, 'functional_value':functional_value, 'schemes_list_combo':schemes_list_combo, 'scheme':scheme, 'expers_list_combo':expers_list_combo, 'expers_value_list':expers_value_list, 'left_bound_value_list':left_bound_value_list, 'rigth_bound_value_list':rigth_bound_value_list}
 
-            print('tut3')
-            problem_context = {'criteria_list': criteria_list,  'constraints_list': constraints_list, 'functional_list':functional_list}
-            print('problem_context' )
-            print(problem_context )
         except:
             raise Http404("Error in getting inverse problem context")
         return problem_context
