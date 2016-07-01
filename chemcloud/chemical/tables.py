@@ -70,7 +70,7 @@ class ConsistTable(tables.Table):
 class ReactionTable(tables.Table):
     detail_link = tables.LinkColumn('reaction_detail', args=[A('pk')], orderable=False, verbose_name='Ссылка', empty_values=())
     name = tables.Column(accessor='reaction.name')
-    is_favorite = tables.Column(accessor='reaction.is_favorite')
+    is_favorite = tables.BooleanColumn(accessor='reaction.is_favorite')
     description = tables.Column(accessor='reaction.description')
     updated_date = tables.Column(accessor='reaction.updated_date')
     user_rule = tables.Column(verbose_name='Права', orderable=False, empty_values=())

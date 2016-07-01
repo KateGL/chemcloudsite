@@ -4,3 +4,9 @@
 class React_Substance_with_Exper:
     react_subst = None
     exper_subst = None
+
+
+class Series_and_Exper:
+    serie = None
+    exper_count = 0
+    exper_table = None

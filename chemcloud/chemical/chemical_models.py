@@ -633,6 +633,7 @@ class Exper_serie (models.Model):
     is_archive = models.BooleanField(default=False, verbose_name='Поместить в Архив')
 
     class Meta:
+        ordering = ["name"]
         verbose_name = ('Серия экспериментов')
         verbose_name_plural = ('Серии экспериментов')
 

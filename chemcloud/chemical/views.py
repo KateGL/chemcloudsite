@@ -22,7 +22,7 @@ from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, React
 from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
 from .models import owner_required, substance_owner_required
-from .view_helpers import React_Substance_with_Exper
+from .view_helpers import React_Substance_with_Exper, Series_and_Exper
 
 # Вещество
 
@@ -597,9 +597,32 @@ def exper_serie_detail(request, id_reaction, id_exper_serie):
 # Эксперименты
 @login_required
 def experiment_all(request, id_reaction):
-    exp_table = ExperimentTable(request.user.chemistry.experiment_all(id_reaction))
-    RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
-    context_dict = {'experiments': exp_table, 'id_reaction': id_reaction}
+    exper_by_ser = {}
+    #сначала без серий
+    sae = Series_and_Exper()
+    exp_table = None
+    expers = request.user.chemistry.experiment_all_no_serie(id_reaction)
+    if len(expers) > 0:
+        exp_table = ExperimentTable(expers)
+        sae.exper_table = exp_table
+        sae.exper_count = len(expers)
+
+    exper_by_ser[0] = sae
+
+    series = request.user.chemistry.exper_serie_all(id_reaction)
+    for s in series:
+        expers = s.experiments.all()
+        if len(expers) > 0:
+            sae = Series_and_Exper()
+            sae.serie = s
+            exp_table = ExperimentTable(expers)
+            sae.exper_table = exp_table
+            sae.exper_count = len(expers)
+            exper_by_ser[s.pk] = sae
+
+    #exp_table = ExperimentTable(request.user.chemistry.experiment_all(id_reaction))
+    #RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
+    context_dict = {'exper_by_series': exper_by_ser, 'id_reaction': id_reaction}
     return render(request, 'chemical/experiment_all.html', context_dict)
 
 
