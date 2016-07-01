@@ -79,6 +79,10 @@ class ReactionTable(tables.Table):
         link = reverse('chemical.views.reaction_detail', args=[record.reaction.pk])
         return make_detail_link(link)
 
+    def render_name(self, record):
+        link = reverse('chemical.views.reaction_detail', args=[record.reaction.pk])
+        return make_name_link(link, record.reaction.name)
+
     def render_user_rule(self, record):
         if record.is_owner:
             return 'Чтение, Редактирование, Поделиться'
