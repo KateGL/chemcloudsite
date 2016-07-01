@@ -12,6 +12,7 @@ from chemical.chemical_models import Exper_point,Exper_serie
 from chemical.chemical_models import Dict_problem_type, Problem
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
 from chemical.chemical_models import Dict_calc_param, Dict_calc_status, Calculation, Dict_problem_class, Dict_calc_method, Calc_log, Calc_param, Calc_criteria_constraint
+from chemical.chemical_models import Exper_func_point, Exper_arg_value
 from chemical.models import Chemistry
 
 
@@ -40,6 +41,9 @@ class ReactionAdmin(admin.ModelAdmin):
 admin.site.register(Reaction, ReactionAdmin)
 
 admin.site.register(Chemistry)
+
+admin.site.register(Exper_func_point)
+admin.site.register(Exper_arg_value)
 
 #  механизмы реакции
 

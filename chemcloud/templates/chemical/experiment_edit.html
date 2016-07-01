@@ -1,5 +1,6 @@
 {% extends 'chemical/base_reaction.html' %}
 {% load staticfiles %}
+{% load experiment_filters %}
 
 
 {% block body_block %}
@@ -126,28 +127,46 @@
         </label>       
         </div>
         
-        <table class="paleblue">
+        
+        
+        
+         <table class="paleblue">
     <tr>
-       <th>{{ experiment.arg.name }} ({{experiment.argument_measure.code }})<br>/{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
+      <th > {{ experiment.arg.name }} ({{experiment.argument_measure.code }})/<br>{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
        
-           <th> вещество 1</th><th> вещество 1</th><th> вещество 1</th>
-           </tr>
-    {% if exp_points %}
-        {% for exp_point in exp_points %}
-        <tr>
-            <td>{{exp_point.arg_val}} </td>
-            <td>{{exp_point.exper_subst.reaction_subst.brutto_formula_short}}</td>
-            <td>{{exp_point.func_val}} </td>
-        </tr>
-        {% endfor %}
+       {% for key, value in react_with_exper.items %}
+     {% if value.exper_subst %}
+        <th>
+        <span class='cptn-alias'> {{ value.react_subst.alias }}  </span>
+        <span class ='cptn-brutto_formula_short'>{{ value.react_subst.brutto_formula_short_formatted | safe }} </span>
+        </th>
+     {% endif%}
+    {%endfor%}
+        
+            
+    {% for  vl in arg_vals%}
+       <tr>
+       <td>{{vl.value}}</td>
+       {% for key, value in react_with_exper.items %}
+     {% if value.exper_subst %}
+        <td>
+         {{vl|get_points_from_arg_by_expersubst:value.exper_subst.pk}}  
+         
+        </td>
+     {% endif%}
+    {%endfor%}
+       
+       </tr>
+    
+    {%endfor%}    
+   
 
-    {% else %}
-        <strong> Не удалось получить точки эксперимента </strong>
-    {% endif %}
-			
-
-
+    
 </table>
+        
+        
+        
+        
         
         </div>
         

@@ -618,7 +618,7 @@ def experiment_edit(request, id_reaction, id_experiment):
     # получаем список веществ эксперимента
     react_subst = request.user.chemistry.react_subst_all(id_reaction)
     exp_substs = request.user.chemistry.exper_subst_all(id_reaction, id_experiment)
-    exp_points = {}#request.user.chemistry.exper_points_all(id_reaction, id_experiment)
+    exp_points = {}  # request.user.chemistry.exper_points_all(id_reaction, id_experiment)
 
     # добавим сюда ссылку на точку эксперимента
     react_with_exper = {}
@@ -631,10 +631,11 @@ def experiment_edit(request, id_reaction, id_experiment):
         react_with_exper[exp_s.reaction_subst.pk].exper_subst = exp_s
 
     #print(react_with_exper)
-    print(exp_points)
+    print(exper_dict['experiment'])
+    print(exper_dict['experiment'].arg_values.all())
     context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'],
         "is_owner": exper_dict['is_owner'], 'react_with_exper': react_with_exper,
-        'exp_points': exp_points}
+        'exp_points': exp_points, 'arg_vals': exper_dict['experiment'].arg_values.all()}
     return render(request, 'chemical/experiment_edit.html', context)
 
 
@@ -663,7 +664,7 @@ def experiment_new(request, id_reaction, id_exper_serie=''):
     if request.method == 'POST':
         if form.is_valid():
             experiment = form.save(commit=False)
-            experiment.reaction = react.reaction
+            experiment.reaction = react.reactiono
             form.save()
             return redirect('experiment_detail', id_reaction, experiment.pk)
 
@@ -700,10 +701,10 @@ def problem_new(request, id_reaction, id_problem_type):
             problem = form.save(commit=False)
             problem.reaction = react.reaction
             form.save()
-            
+
             print('before create_new_calculation')
             calculation = problem.create_new_calculation()
-            print('after create_new_calculation')    
+            print('after create_new_calculation')
             return redirect('problem_init', id_reaction, problem.pk)
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)

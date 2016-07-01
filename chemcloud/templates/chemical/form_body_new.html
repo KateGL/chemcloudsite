@@ -10,7 +10,8 @@
  
  <tr>										
  
-  <td class="detail_caption">{{field.label}} {% if field.field.required %} * {% endif %} </td>
+  <td class="detail_caption"><label for="id_{{field.name}}">
+  {{field.label}} {% if field.field.required %} * {% endif %} </label></td>
   <td class="detail_value"> 
     {% if  field|widget_type == "checkboxinput" %}{{field}}
     {% elif field|widget_type == "datetimeinput" %}
