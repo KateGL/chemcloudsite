@@ -23,6 +23,7 @@ from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
 from .models import owner_required, substance_owner_required
 from .view_helpers import React_Substance_with_Exper, Series_and_Exper
+from .urls_utils import make_detail_link
 
 # Вещество
 
@@ -597,8 +598,24 @@ def exper_serie_detail(request, id_reaction, id_exper_serie):
 # Эксперименты
 @login_required
 def experiment_all(request, id_reaction):
-    exper_by_ser = {}
+    exper_by_ser = []
     #сначала без серий
+    sae = Series_and_Exper()
+    exp_table = None
+    expers = None
+
+    series = request.user.chemistry.exper_serie_all(id_reaction)
+    for s in series:
+        expers = s.experiments.all()
+        sae = Series_and_Exper()
+        sae.serie = s
+        link = reverse('chemical.views.exper_serie_detail', args=[id_reaction, s.pk])
+        sae.serie_detail_link = make_detail_link(link)
+        exp_table = ExperimentTable(expers)
+        sae.exper_table = exp_table
+        sae.exper_count = len(expers)
+        exper_by_ser.append(sae)
+
     sae = Series_and_Exper()
     exp_table = None
     expers = request.user.chemistry.experiment_all_no_serie(id_reaction)
@@ -607,18 +624,7 @@ def experiment_all(request, id_reaction):
         sae.exper_table = exp_table
         sae.exper_count = len(expers)
 
-    exper_by_ser[0] = sae
-
-    series = request.user.chemistry.exper_serie_all(id_reaction)
-    for s in series:
-        expers = s.experiments.all()
-        if len(expers) > 0:
-            sae = Series_and_Exper()
-            sae.serie = s
-            exp_table = ExperimentTable(expers)
-            sae.exper_table = exp_table
-            sae.exper_count = len(expers)
-            exper_by_ser[s.pk] = sae
+    exper_by_ser.append(sae)
 
     #exp_table = ExperimentTable(request.user.chemistry.experiment_all(id_reaction))
     #RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)

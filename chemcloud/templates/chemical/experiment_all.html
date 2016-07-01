@@ -18,21 +18,26 @@
 				</div>
 			</div>
 
-            {% for key, value in exper_by_series.items %}
-            {%if value.exper_table%}
+            {% for value in exper_by_series %}
+    
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
-          <a data-toggle="collapse" href="#serie{{key}}">
-          {%if value.serie%} {{value.serie.name}}{% else %}Без серии{%endif%} ({{value.exper_count}} шт.)</a>
+          <a data-toggle="collapse" href="#serie{{value.serie.pk}}">
+          {%if value.serie%} {{value.serie.name}}{% else %}Без серии{%endif%} ({{value.exper_count}} шт.)   {{value.serie_detail_link|safe}}</a>
+            
         </h4>
       </div>
-      <div id="serie{{key}}" class="panel-collapse {%if value.serie%} collapse {% else %} collapsed {%endif%} ">
-        <div class="panel-body">{% render_table value.exper_table %}</div>
+      <div id="serie{{value.serie.pk}}" class="panel-collapse {%if value.exper_count > 0%} collapsed {% else %} collapse {%endif%} ">
+        <div class="panel-body">
+        {%if value.exper_count > 0%}
+        {% render_table value.exper_table %}
+        {%endif%}
+        </div>
         
       </div>
     </div>
-          {%endif%}
+          
             
 				
             {%endfor%}
