@@ -847,33 +847,34 @@ class Problem(models.Model):
 
     def create_new_calculation(self):
         try:
-            print('tut')
-            calcs = self.calculations
+            calcs = self.calculations.all()
             calc_status = Dict_calc_status.objects.get(pk = 1)
             new_calc = Calculation.objects.get_or_create( problem = self, status = calc_status)[0]
             new_calc.save()
             self.calculations.add(new_calc)
+
             #создание настроек по умолчанию
             #критерий невязки
             dict_func = Dict_calc_functional.objects.get(pk = 1)
             dict_criteria = Dict_calc_criteria_constraints.objects.get(pk = 1)
             new_criteria = Calc_criteria_constraint.objects.get_or_create( is_constraint = False, calculation = new_calc, functional = dict_func, criteria = dict_criteria)[0]
             new_criteria.save()
-            #по умолчанию первый механизм
-            schemes = self.reaction.schemes.objects.all()
+
+            #по умолчанию вставляем первый механизм
+            schemes = self.reaction.schemes.all()
             scheme  = None
             if schemes.count() > 0:
                 scheme = schemes[0]
                 self.schemes.add(scheme)
             #по умолчанию все эксперименты
-            expers = self.reaction.experiments.objects.all()
-            if expers.count() > 0:
-                #exper = expers[0]
-                self.experiments.add(expers)
+            expers_temp = self.reaction.experiments.all()
+            for exper in expers_temp:
+                self.expers.add(exper)
             #вид искомых кинетических параметров: 1 - константы, 2 - энергии активации
             temp_param = Dict_calc_param.objects.get(pk = 34)
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 1, calculation = new_calc, dict_param = temp_param )[0]
             new_param.save()
+
             #границы поиска
             temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->
             temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-
@@ -930,11 +931,9 @@ class Problem(models.Model):
             temp_param = Dict_calc_param.objects.get(pk = 67)#generation-percent
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 50, calculation = new_calc, dict_param = temp_param )[0]
             new_param.save()
-            temp_param = Dict_calc_param.objects.get(pk = 69)#exititer
+            temp_param = Dict_calc_param.objects.get(pk = 68)#exititer
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 40, calculation = new_calc, dict_param = temp_param )[0]
             new_param.save()
-            print('good')
-            print (new_calc)
         except:
             print('except')
             return -1
@@ -945,7 +944,8 @@ class Problem(models.Model):
         verbose_name_plural = ('Задачи')
 
     def __unicode__(self):
-        return self.id_problem
+        return str(self.id_problem)
+
 
 class Dict_calc_criteria_constraints(models.Model):
     id_criteria = models.AutoField(primary_key=True, verbose_name='ИД')
@@ -997,7 +997,7 @@ class Calculation(models.Model):
     id_calc = models.AutoField(primary_key=True, verbose_name='ИД')
     is_approved = models.BooleanField(default=False, verbose_name='Утвержден', null=False)
     status = models.ForeignKey(Dict_calc_status, verbose_name='Статус задачи', null=False, on_delete=models.PROTECT, related_name='+')
-    problem = models.ForeignKey(Problem, verbose_name='Задача', null=False, on_delete=models.CASCADE, related_name='Calculations')
+    problem = models.ForeignKey(Problem, verbose_name='Задача', null=False, on_delete=models.CASCADE, related_name='calculations')
     version = models.IntegerField(default=1,verbose_name='Версия', null=False)
     calc_time = models.DecimalField(max_digits=11, decimal_places=2, verbose_name='Время расчета', default = 0)
     calc_start_date = models.DateTimeField (null = False, default=timezone.now, verbose_name='Дата и время запуска расчета')
@@ -1015,7 +1015,7 @@ class Calculation(models.Model):
         verbose_name_plural = ('Расчеты')
 
     def __unicode__(self):
-        return self.id_calc
+        return str(self.id_calc)
 
 
 class Calc_log(models.Model):
@@ -1027,13 +1027,13 @@ class Calc_log(models.Model):
         verbose_name_plural = ('Логи расчета')
 
     def __unicode__(self):
-        return self.id_id_calc_log
+        return str(self.id_id_calc_log)
 
 class Calc_param(models.Model):
     id_calc_param = models.AutoField(primary_key=True, verbose_name='ИД')
     is_input = models.BooleanField(verbose_name='Флаг входного параметра', null=False)
     value = models.DecimalField(max_digits=20, decimal_places=7, verbose_name='Значение параметра')
-    calculation = models.ForeignKey(Calculation, verbose_name='Расчет задачи', null=False, on_delete=models.PROTECT, related_name='Params')
+    calculation = models.ForeignKey(Calculation, verbose_name='Расчет задачи', null=False, on_delete=models.CASCADE, related_name='params')
     dict_param = models.ForeignKey(Dict_calc_param, verbose_name='Параметр', null=False, on_delete=models.PROTECT, related_name='+')
     step = models.ForeignKey(Scheme_step, verbose_name='Стадия механизма', null=True, on_delete=models.PROTECT, related_name='+', default = None)
     substance = models.ForeignKey( Reaction_subst, verbose_name='Вещество реакции', null=True, on_delete=models.PROTECT, related_name='+', default = None)
@@ -1043,12 +1043,12 @@ class Calc_param(models.Model):
         verbose_name_plural = ('Параметры расчета')
 
     def __unicode__(self):
-        return self.id_calc_param
+        return str(self.id_calc_param)
 
 class Calc_criteria_constraint(models.Model):
     id_ccc = models.AutoField(primary_key=True, verbose_name='ИД')
     is_constraint = models.BooleanField(verbose_name='Флаг ограничения', null=False)
-    calculation = models.ForeignKey(Calculation, verbose_name='Расчет задачи', null=False, on_delete=models.PROTECT, related_name='constraints')
+    calculation = models.ForeignKey(Calculation, verbose_name='Расчет задачи', null=False, on_delete=models.CASCADE, related_name='constraints')
     criteria = models.ForeignKey(Dict_calc_criteria_constraints, verbose_name='Критерий/ограничение задачи', null=False, on_delete=models.PROTECT, related_name='+')
     functional = models.ForeignKey(Dict_calc_functional, verbose_name='Вид функционала', null=False, on_delete=models.PROTECT, related_name='+')
 
@@ -1058,6 +1058,6 @@ class Calc_criteria_constraint(models.Model):
         unique_together = ('calculation', 'criteria')
 
     def __unicode__(self):
-        return self.id_ccc
+        return str(self.id_ccc)
 
 

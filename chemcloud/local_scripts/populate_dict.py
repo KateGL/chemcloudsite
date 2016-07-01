@@ -15,11 +15,16 @@ from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_f
 from chemical.chemical_models import Dict_calc_method, Dict_problem_class
 from chemical.chemical_models import Dict_calc_param, Dict_calc_status, Reaction_feature,Experiment,Exper_subst
 from chemical.chemical_models import Exper_point
+from chemical.chemical_models import Calculation, Calc_log, Calc_param, Calc_criteria_constraint, Problem
 from django.contrib.auth.models import User
 
 
 def drop_all():
-
+     Calc_log.objects.all().delete()
+     Calc_param.objects.all().delete()
+     Calc_criteria_constraint.objects.all().delete()
+     Calculation.objects.all().delete()
+     Problem.objects.all().delete()
      Dict_atom.objects.all().delete()
      Dict_exper_subst_param.objects.all().delete()
      Dict_exper_param.objects.all().delete()
@@ -281,9 +286,9 @@ def populate():
    add_dict_calc_param   (64, 'Процент скрещивания', 'crossingPercent')
    add_dict_calc_param   (65, 'Процент мутации', 'mutationPercent')
    add_dict_calc_param   (66, 'Размер популяции', 'generation')
-   add_dict_calc_param   (67, 'Имя результирующего файла', 'resultFileName')
-   add_dict_calc_param   (68, 'Какой-то процент', 'generation-percent')
-   add_dict_calc_param   (69, 'Оборвать расчет через заданное число итераций при отсутствии улучшения минимума', 'exitIter')
+   add_dict_calc_param   (67, 'Какой-то процент', 'generation-percent')
+   add_dict_calc_param   (68, 'Оборвать расчет через заданное число итераций при отсутствии улучшения минимума', 'exitIter')
+#   add_dict_calc_param   (67, 'Имя результирующего файла', 'resultFileName')
 
    add_dict_calc_status   (1, 'Черновик', 'Редактируется. Расчет не запущен')
    add_dict_calc_status   (2, 'В очереди на рассчет', 'Расчет запущен и ждет своей очереди')

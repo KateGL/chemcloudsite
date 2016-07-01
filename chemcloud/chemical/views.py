@@ -702,9 +702,7 @@ def problem_new(request, id_reaction, id_problem_type):
             problem.reaction = react.reaction
             form.save()
 
-            print('before create_new_calculation')
             calculation = problem.create_new_calculation()
-            print('after create_new_calculation')
             return redirect('problem_init', id_reaction, problem.pk)
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)
@@ -723,12 +721,15 @@ def problem_edit(request, id_reaction, id_problem):
 def problem_init(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
     context = {}
-    context['problem'] = problem_dict['problem']
+    problem = problem_dict['problem']
+    calculation = problem.calculations.all()[0] #на самом деле один к одному. И всегда создается хотя бы черновик расчета при создании задачи
+    context['problem'] = problem
+    context['calculation'] = calculation
     context['id_reaction'] = id_reaction
     context["is_owner"] = problem_dict['is_owner']
     context['step_name'] = 'problem_init'
-
-    problem_context = request.user.chemistry.get_problem_context(context['problem'], 1)
+    print('tut init')
+    problem_context = request.user.chemistry.get_problem_context(calculation, 1)
     context['problem_context'] = problem_context
     return render(request, 'chemical/problem_init.html', context)
 
