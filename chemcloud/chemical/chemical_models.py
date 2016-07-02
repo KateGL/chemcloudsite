@@ -9,7 +9,7 @@ import numpy as np
 # Create your models here.
 
 from .utils import decorate_formula
-
+from annoying.fields import AutoOneToOneField
 
 # Атом
 class Dict_atom(models.Model):
@@ -842,18 +842,13 @@ class Problem(models.Model):
     problem_type = models.ForeignKey(Dict_problem_type, verbose_name='Вид задачи', null=False, on_delete=models.PROTECT, related_name='+')
     description = models.TextField(blank=True, verbose_name='Описание')
     created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
-    schemes      = models.ManyToManyField(Reaction_scheme)
+    scheme      = models.ForeignKey(Reaction_scheme, null=True, on_delete=models.CASCADE, related_name='problems')#models.ManyToManyField(Reaction_scheme)
     expers       = models.ManyToManyField(Experiment)
     exper_points = models.ManyToManyField(Exper_point)
 
-    def create_new_calculation(self):
+    def set_default_calculation_props(self):
         try:
-            calcs = self.calculations.all()
-            calc_status = Dict_calc_status.objects.get(pk = 1)
-            new_calc = Calculation.objects.get_or_create( problem = self, status = calc_status)[0]
-            new_calc.save()
-            self.calculations.add(new_calc)
-
+            new_calc = self.calculation
             #создание настроек по умолчанию
             #критерий невязки
             dict_func = Dict_calc_functional.objects.get(pk = 2)
@@ -863,10 +858,9 @@ class Problem(models.Model):
 
             #по умолчанию вставляем первый механизм
             schemes = self.reaction.schemes.all()
-            scheme  = None
+            self.scheme  = None
             if schemes.count() > 0:
-                scheme = schemes[0]
-                self.schemes.add(scheme)
+                self.scheme = schemes[0]
             #по умолчанию все эксперименты
             expers_temp = self.reaction.experiments.all()
             for exper in expers_temp:
@@ -881,8 +875,8 @@ class Problem(models.Model):
             temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-
             temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->
             temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<-
-            if scheme is not None:
-                steps = scheme.steps.all()
+            if self.scheme is not None:
+                steps = self.scheme.steps.all()
                 for step_i in steps:
                     new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-7, calculation = new_calc, dict_param = temp_param_dir_down, step = step_i )[0]
                     new_param.save()
@@ -936,7 +930,7 @@ class Problem(models.Model):
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 40, calculation = new_calc, dict_param = temp_param )[0]
             new_param.save()
         except:
-            print('except')
+            print('except create_new_calculation')
             return -1
         return new_calc
 
@@ -985,6 +979,7 @@ class Dict_calc_param(models.Model):
 
 
 class Dict_calc_status(models.Model):
+    DEFAULT_PK = 1
     id_status = models.AutoField(primary_key=True, verbose_name='ИД')
     name  = models.CharField(max_length=250, unique=True, verbose_name='Название статуса')
     note  = models.CharField(max_length=250, unique=True, verbose_name='Примечание')
@@ -999,8 +994,9 @@ class Dict_calc_status(models.Model):
 class Calculation(models.Model):
     id_calc = models.AutoField(primary_key=True, verbose_name='ИД')
     is_approved = models.BooleanField(default=False, verbose_name='Утвержден', null=False)
-    status = models.ForeignKey(Dict_calc_status, verbose_name='Статус задачи', null=False, on_delete=models.PROTECT, related_name='+')
-    problem = models.ForeignKey(Problem, verbose_name='Задача', null=False, on_delete=models.CASCADE, related_name='calculations')
+    status = models.ForeignKey(Dict_calc_status, verbose_name='Статус задачи', null=False, on_delete=models.PROTECT, related_name='+', default=Dict_calc_status.DEFAULT_PK)
+    #problem = models.OneToOneField(Problem, verbose_name='Задача', null=False, on_delete=models.CASCADE)
+    problem = AutoOneToOneField(Problem, verbose_name='Задача', null=False, on_delete=models.CASCADE)
     version = models.IntegerField(default=1,verbose_name='Версия', null=False)
     calc_time = models.DecimalField(max_digits=11, decimal_places=2, verbose_name='Время расчета', default = 0)
     calc_start_date = models.DateTimeField (null = False, default=timezone.now, verbose_name='Дата и время запуска расчета')
