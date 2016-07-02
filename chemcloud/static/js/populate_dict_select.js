@@ -16,9 +16,9 @@ function populate_dict(md_name, url_str, selector, value_init, is_enabled){
         success: function(data){
               //alert(md_name);
               if (is_enabled == true){
-                    selector.append('<select class="box_input"></select>')
+                    selector.append('<select class="box_input form-control"></select>')
                   }
-              else {selector.append('<select disabled="disabled" class="box_input"></select>')}
+              else {selector.append('<select disabled="disabled" class="box_input form-control"></select>')}
               var sel = selector.children().last();
 
               $.each(data, function(k, v) {

@@ -1,4 +1,6 @@
 <!-- Обратная задача химической кинетики-->  
+{% load staticfiles %}
+
 {% block body_block %}
        {% if problem_context %}
 
@@ -35,22 +37,13 @@
         <div class="panel-body">
             <div class="form-group">
                 <label class="col-xs-3 control-label">Вид критерия:</label>
-                <div class="col-xs-9 selectContainer">
-                    <select class="form-control" name="criteria" value = "{{problem_context.criteria_value.id_criteria}}">
-                        {% for temp_i in problem_context.criteria_list_combo %}
-<option value="{{temp_i.id_criteria}}">{{temp_i.name}}</option>
-                        {% endfor %}
-                    </select>
+                <div class="col-xs-9 dict_selector" data-init-value="{{ problem_context.criteria_value.criteria.id_criteria }}" data-model="Dict_calc_criteria_constraints" data-url="{% url 'dictionary_get' %}">
                 </div>
             </div>
+
             <div class="form-group">
                 <label class="col-xs-3 control-label">Вид функционала:</label>
-                <div class="col-xs-9 selectContainer">
-                    <select class="selectpicker" name="functional" value = "{{problem_context.functional_value.id_func}}">
-                        {% for temp_i in problem_context.functional_list_combo %}
-<option value="{{temp_i.id_func}}" >{{temp_i.name}}</option>
-                        {% endfor %}
-                    </select>
+                <div class="col-xs-9 dict_selector" data-init-value="{{ problem_context.functional_value.id_func }}" data-model="Dict_calc_functional" data-url="{% url 'dictionary_get' %}">
                 </div>
             </div>
         </div>
@@ -117,4 +110,12 @@
       </div>
     </div>
 {% endif %}
+
+
+<script src="{% static "js/populate_dict_select.js" %}"></script>
+
 {% endblock %}
+
+
+
+

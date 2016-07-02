@@ -1,6 +1,6 @@
 //JS for Problem
 $(document).ready(function(){
-
+    process_selector($('.dict_selector'), true);
 
     $('.checkbox_slider_with_collapse').on('change', function() {
     // From the other examples
