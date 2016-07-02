@@ -5,19 +5,20 @@
 		<div class="btn-group btn-breadcrumb col-xs-12" >      
       
 <a type="button" 
-class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_init' %} btn-primary {% else %}btn-default {% endif %} "
-href = "{% url 'problem_init' id_reaction problem.pk %}">1. Постановка задачи</a>
-
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_init' %} btn-primary {% else %}btn-default {% endif %} " 
+href = "#">1. Постановка задачи</a>
+<!--{% url 'problem_init' id_reaction problem.pk %} -->
 <a type="button" 
-class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_calc_options' %} btn-primary {% else %}btn-default {% endif %} "
-href = "{% url 'problem_calc_options' id_reaction problem.pk %}">2. Настройка метода</a>
-
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_calc_options' %} btn-primary {% else %}btn-default {% endif %} "  
+href = "#">2. Настройка метода</a>
+<!--{% url 'problem_calc_options' id_reaction problem.pk %} -->
 <a type="button" id="problem_calc_state" 
-class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_calc_state' %} btn-primary {% else %}btn-default {% endif %} "
-href = "{% url 'problem_calc_state' id_reaction problem.pk %}">3. Состояние решения</a>
-
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_calc_state' %} btn-primary {% else %}btn-default {% endif %} " 
+href = "#">3. Состояние решения</a>
+<!--{% url 'problem_calc_state' id_reaction problem.pk %} -->
 <a type="button" id="problem_results" 
-class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_results' %} btn-primary {% else %}btn-default {% endif %}"
-href = "{% url 'problem_results' id_reaction problem.pk %}">4. Результат решения</a>
+class="btn  btn-arrow-right col-xs-3  {% if step_name == 'problem_results' %} btn-primary {% else %}btn-default {% endif %}" 
+href = "#">4. Результат решения</a>
+<!--{% url 'problem_results' id_reaction problem.pk %} -->
 <br><br>
 </div>

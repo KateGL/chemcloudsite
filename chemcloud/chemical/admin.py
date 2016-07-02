@@ -79,8 +79,8 @@ admin.site.register(Reaction_subst,Reaction_substAdmin)
 
 #  Эксперименты
 class ExperimentAdmin(admin.ModelAdmin):
-  fields = ['name','reaction','arg','argument_measure','func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date']
-  list_display = ('name','reaction','arg','argument_measure','func','function_measure','init_function_measure','description','exper_date','is_favorite','created_date','created_by','updated_by','updated_date')
+  fields = ['name','reaction','arg','argument_measure','func','function_measure','init_function_measure','description', 'exper_serie', 'exper_date','is_favorite','created_date','created_by','updated_by','updated_date']
+  list_display = ('name','reaction','arg','argument_measure','func','function_measure','init_function_measure','description', 'exper_serie','exper_date','is_favorite','created_date','created_by','updated_by','updated_date')
 
 admin.site.register(Experiment,ExperimentAdmin)
 

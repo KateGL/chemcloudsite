@@ -3,7 +3,7 @@
 
 {% block body_block %}
        {% if problem_context %}
-
+<form>
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
@@ -87,7 +87,7 @@
                 <table class="table table-bordered ">
                     <thread>
                         <tr>
-                            <th> Серия </th>
+                            <th id="column1"> Серия </th>
                             <th> Название эксперимента </th>
                             <th> Выбрать </th>
                             <th hidden> Настроить </th>
@@ -110,11 +110,15 @@
                 </table>
             </div>
             </div>
-        </div>
+        
+         <div class="form-group" hidden>   
+            <h4>Начальные концентрации исходных веществ </h4>
+        <div>
+
        <!-- <div class="panel-footer">Panel Footer</div> -->
       </div>
     </div>
-    
+    </div>
    <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
@@ -122,8 +126,16 @@
         </h4>
       </div>
       <div id="step5" class="panel-collapse collapse">
-        <div class="panel-body">Panel Body</div>
-        <div class="panel-footer">Panel Footer</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <label class="col-xs-3 control-label">Схема механизма/маршрута:</label>
+                <div class="col-xs-9 dict_selector" data-init-value="{{ problem_context.functional_value.id_func }}" data-model="Dict_calc_functional" data-url="{% url 'dictionary_get' %}">
+                </div>
+            </div>
+
+
+        </div>
+        <!--<div class="panel-footer">Panel Footer</div> -->
       </div>
     </div>
     
@@ -139,7 +151,7 @@
       </div>
     </div>
 {% endif %}
-
+</form>
 
 <script src="{% static "js/populate_dict_select.js" %}"></script>
 

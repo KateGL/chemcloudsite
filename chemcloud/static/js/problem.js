@@ -1,6 +1,12 @@
 //JS for Problem
 $(document).ready(function(){
     process_selector($('.dict_selector'), true);
+    
+ //   var $table = $('#table'); 
+ //   $table.bootstrapTable('refreshOptions', {
+ //   groupBy: True,
+ //   groupByField: 'column1'
+ //   });
 
     $('.checkbox_slider_with_collapse').on('change', function() {
     // From the other examples
