@@ -700,12 +700,18 @@ def experiment_copy(request, id_reaction, id_experiment):
 @owner_required
 def experiment_new(request, id_reaction, id_exper_serie=''):
     react = request.user.chemistry.reaction_get(id_reaction)
+    if id_exper_serie == '':
+        exper_serie = None
+    else:
+        exper_serie = request.user.chemistry.exper_serie_get(id_reaction, id_exper_serie)
 
-    form = ExperimentForm(request.POST or None)
+    print(exper_serie['exper_serie'])
+
+    form = ExperimentForm(request.POST or None, initial={'exper_serie': exper_serie['exper_serie'], 'name': 'Эксперимент №<введите номер>'})
     if request.method == 'POST':
         if form.is_valid():
             experiment = form.save(commit=False)
-            experiment.reaction = react.reactiono
+            experiment.reaction = react.reaction
             form.save()
             return redirect('experiment_detail', id_reaction, experiment.pk)
 
