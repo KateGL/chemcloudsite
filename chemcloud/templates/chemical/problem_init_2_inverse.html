@@ -2,7 +2,6 @@
 {% block body_block %}
        {% if problem_context %}
 
-		
     <div class="panel panel-default">
       <div class="panel-heading">
         <h4 class="panel-title">
@@ -14,7 +13,7 @@
             <div class="form-group">
                 <label class="col-xs-3 control-label">Искомые параметры:</label>
                 <div class="col-xs-8 selectContainer">
-                    <select class="form-control" name="search_params">
+                    <select class="form-control" name="search_params" value="EaAk">
                         <option value="const">Константы скоростей элементарных стадий</option>
                         <option value="EaAk">Энергии активации и предэкспоненциальные множители</option>
                     </select>
@@ -36,24 +35,26 @@
         <div class="panel-body">
             <div class="form-group">
                 <label class="col-xs-3 control-label">Вид критерия:</label>
-                <div class="col-xs-8 selectContainer">
-                    <select class="form-control" name="search_params">
-                        <option value="1">расчитанными и экспериментальными значениями концентраций наблюдаемых веществ</option>
-                        <option value="2">периодами индукции наблюдаемых веществ</option>
+                <div class="col-xs-9 selectContainer">
+                    <select class="form-control" name="criteria" value = "{{problem_context.criteria_value.id_criteria}}">
+                        {% for temp_i in problem_context.criteria_list_combo %}
+<option value="{{temp_i.id_criteria}}">{{temp_i.name}}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-xs-3 control-label">Вид функционала:</label>
-                <div class="col-xs-8 selectContainer">
-                    <select class="form-control" name="search_params">
-                        <option value="1">расчитанными и экспериментальными значениями концентраций наблюдаемых веществ</option>
-                        <option value="2">периодами индукции наблюдаемых веществ</option>
+                <div class="col-xs-9 selectContainer">
+                    <select class="selectpicker" name="functional" value = "{{problem_context.functional_value.id_func}}">
+                        {% for temp_i in problem_context.functional_list_combo %}
+<option value="{{temp_i.id_func}}" >{{temp_i.name}}</option>
+                        {% endfor %}
                     </select>
                 </div>
             </div>
         </div>
-        <!--<div class="panel-footer">Panel Footer</div>-->
+        <!--<div class="panel-footer">Panel Footer</div> -->
       </div>
     </div>
     

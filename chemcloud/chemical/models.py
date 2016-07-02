@@ -438,7 +438,6 @@ class Chemistry(models.Model):
                     if temp_list.count()>0:
                         rigth_bound_value_list.append(temp_list)
                 problem_context = {'criteria_list_combo': criteria_list_combo, 'criteria_value': criteria_value,  'constraints_list_combo': constraints_list_combo, 'constraints_value_list': constraints_value_list, 'functional_list_combo':functional_list_combo, 'functional_value':functional_value, 'schemes_list_combo':schemes_list_combo, 'scheme':scheme, 'expers_list_combo':expers_list_combo, 'expers_value_list':expers_value_list, 'left_bound_value_list':left_bound_value_list, 'rigth_bound_value_list':rigth_bound_value_list}
-
         except:
             raise Http404("Error in getting inverse problem context")
         return problem_context

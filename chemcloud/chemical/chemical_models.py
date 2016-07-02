@@ -828,7 +828,7 @@ class Problem(models.Model):
                         
             #создание настроек по умолчанию
             #критерий невязки
-            dict_func = Dict_calc_functional.objects.get(pk = 1)
+            dict_func = Dict_calc_functional.objects.get(pk = 2)
             dict_criteria = Dict_calc_criteria_constraints.objects.get(pk = 1)
             new_criteria = Calc_criteria_constraint.objects.get_or_create( is_constraint = False, calculation = new_calc, functional = dict_func, criteria = dict_criteria)[0]
             new_criteria.save()
@@ -926,6 +926,7 @@ class Dict_calc_criteria_constraints(models.Model):
     class Meta:
         verbose_name = ('Тип критерия/ограничения')
         verbose_name_plural = ('Типы критериев/ограничений')
+        ordering = ["id_criteria"]
 
     def __unicode__(self):
         return self.name
@@ -937,6 +938,7 @@ class Dict_calc_functional(models.Model):
     class Meta:
         verbose_name = ('Вид функционала невязки')
         verbose_name_plural = ('Виды функционалов невязки')
+        ordering = ["id_func"]
 
     def __unicode__(self):
         return self.name

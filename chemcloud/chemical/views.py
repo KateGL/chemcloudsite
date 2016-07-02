@@ -730,6 +730,7 @@ def problem_init(request, id_reaction, id_problem):
     print('tut init')
     problem_context = request.user.chemistry.get_problem_context(calculation, 1)
     context['problem_context'] = problem_context
+    print(problem_context['functional_value'].name)
     return render(request, 'chemical/problem_init.html', context)
 
 
