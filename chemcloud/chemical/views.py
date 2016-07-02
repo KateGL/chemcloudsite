@@ -22,7 +22,8 @@ from chemical.forms import SubstanceForm, ReactionForm, ReactionSubstForm, React
 from .forms import ReacSchemeForm, ExperimentForm
 from .models import substance_get_isomer_count, substance_get_isomer
 from .models import owner_required, substance_owner_required
-from .view_helpers import React_Substance_with_Exper
+from .view_helpers import React_Substance_with_Exper, Series_and_Exper
+from .urls_utils import make_detail_link
 
 # Вещество
 
@@ -108,10 +109,15 @@ def dictionaries(request):
 
 # Реакции
 @login_required
-def reaction_all(request):
-    reaction_table = ReactionTable(request.user.chemistry.reaction_all())
+def reaction_all(request, searched=''):
+    print(searched)
+    if searched == '':
+        reactions = request.user.chemistry.reaction_all()
+    else:
+        reactions = request.user.chemistry.reaction_search(searched)
+    reaction_table = ReactionTable(reactions)
     RequestConfig(request, paginate={"per_page": 15}).configure(reaction_table)
-    return render(request, 'chemical/reaction_all.html', {"reaction": reaction_table})
+    return render(request, 'chemical/reaction_all.html', {"reaction": reaction_table, "searched": searched})
 
 
 @login_required
@@ -597,10 +603,47 @@ def exper_serie_detail(request, id_reaction, id_exper_serie):
 # Эксперименты
 @login_required
 def experiment_all(request, id_reaction):
-    exp_table = ExperimentTable(request.user.chemistry.experiment_all(id_reaction))
-    RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
-    context_dict = {'experiments': exp_table, 'id_reaction': id_reaction}
+    exper_by_ser = []
+    #сначала без серий
+    sae = Series_and_Exper()
+    exp_table = None
+    expers = None
+
+    series = request.user.chemistry.exper_serie_all(id_reaction)
+    for s in series:
+        expers = s.experiments.all()
+        sae = Series_and_Exper()
+        sae.serie = s
+        link = reverse('chemical.views.exper_serie_detail', args=[id_reaction, s.pk])
+        sae.serie_detail_link = make_detail_link(link)
+        exp_table = ExperimentTable(expers)
+        sae.exper_table = exp_table
+        sae.exper_count = len(expers)
+        exper_by_ser.append(sae)
+
+    sae = Series_and_Exper()
+    exp_table = None
+    expers = request.user.chemistry.experiment_all_no_serie(id_reaction)
+    if len(expers) > 0:
+        exp_table = ExperimentTable(expers)
+        sae.exper_table = exp_table
+        sae.exper_count = len(expers)
+
+    exper_by_ser.append(sae)
+
+    context_dict = {'exper_by_series': exper_by_ser, 'id_reaction': id_reaction}
     return render(request, 'chemical/experiment_all.html', context_dict)
+
+
+@login_required
+def experiment_all_search(request, id_reaction, searched=""):
+    if searched.strip() == '':
+        return experiment_all(request, id_reaction)
+
+    exp_table = ExperimentTable(request.user.chemistry.experiment_search(id_reaction, searched))
+    RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
+    context_dict = {'exper_table': exp_table, 'id_reaction': id_reaction, 'searched': searched}
+    return render(request, 'chemical/experiment_search.html', context_dict)
 
 
 @login_required
@@ -618,7 +661,7 @@ def experiment_edit(request, id_reaction, id_experiment):
     # получаем список веществ эксперимента
     react_subst = request.user.chemistry.react_subst_all(id_reaction)
     exp_substs = request.user.chemistry.exper_subst_all(id_reaction, id_experiment)
-    exp_points = {}#request.user.chemistry.exper_points_all(id_reaction, id_experiment)
+    exp_points = {}  # request.user.chemistry.exper_points_all(id_reaction, id_experiment)
 
     # добавим сюда ссылку на точку эксперимента
     react_with_exper = {}
@@ -631,10 +674,11 @@ def experiment_edit(request, id_reaction, id_experiment):
         react_with_exper[exp_s.reaction_subst.pk].exper_subst = exp_s
 
     #print(react_with_exper)
-    print(exp_points)
+    print(exper_dict['experiment'])
+    print(exper_dict['experiment'].arg_values.all())
     context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'],
         "is_owner": exper_dict['is_owner'], 'react_with_exper': react_with_exper,
-        'exp_points': exp_points}
+        'exp_points': exp_points, 'arg_vals': exper_dict['experiment'].arg_values.all()}
     return render(request, 'chemical/experiment_edit.html', context)
 
 
@@ -663,7 +707,7 @@ def experiment_new(request, id_reaction, id_exper_serie=''):
     if request.method == 'POST':
         if form.is_valid():
             experiment = form.save(commit=False)
-            experiment.reaction = react.reaction
+            experiment.reaction = react.reactiono
             form.save()
             return redirect('experiment_detail', id_reaction, experiment.pk)
 
@@ -700,7 +744,7 @@ def problem_new(request, id_reaction, id_problem_type):
             problem = form.save(commit=False)
             problem.reaction = react.reaction
             form.save()
-            
+
             calculation = problem.create_new_calculation()
             return redirect('problem_init', id_reaction, problem.pk)
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}

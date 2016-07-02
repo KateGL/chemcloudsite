@@ -52,6 +52,7 @@ def substance_get_isomer_count(consist_as_string):
     return Substance.objects.filter(filter_search).count()
 
 
+
 #Объект для доступа к химии
 class Chemistry(models.Model):
     user = AutoOneToOneField(User, primary_key=True, null=False, on_delete=models.CASCADE)
@@ -89,6 +90,13 @@ class Chemistry(models.Model):
 
     def reaction_all(self):
         return self.user.reactions.all()
+
+    def reaction_search(self, searched):
+        if searched == '':
+            return self.reaction_all()
+        else:
+            filter_search = Q(reaction__name__icontains=searched) | Q(reaction__description__icontains=searched)
+            return self.user.reactions.filter(filter_search)
 
     def is_owner(self, id_reaction):
         try:
@@ -136,7 +144,7 @@ class Chemistry(models.Model):
             if subst_list.count() == 0:
                 raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
         except:
-            return {}   
+            return {}
 #        except Reaction_subst.DoesNotExist:
 #            raise Http404("There are no any reaction substance with alias: '"+ alias_str + "'")
         subst_dict = {}
@@ -192,6 +200,15 @@ class Chemistry(models.Model):
         react = self.reaction_get(id_reaction)
         return react.reaction.experiments.all()
 
+    def experiment_search(self, id_reaction, searched):
+        react = self.reaction_get(id_reaction)
+        filter_search = Q(name__icontains=searched) | Q(description__icontains=searched) | Q(exper_serie__name__icontains=searched) | Q(exper_serie__description__icontains=searched)
+        return react.reaction.experiments.filter(filter_search)
+
+    def experiment_all_no_serie(self, id_reaction):
+        react = self.reaction_get(id_reaction)
+        return react.reaction.experiments.filter(exper_serie=None)
+
     def experiment_get(self, id_reaction, id_experiment):
         react = self.reaction_get(id_reaction)
         try:
@@ -205,7 +222,7 @@ class Chemistry(models.Model):
 
     def exper_serie_all(self, id_reaction):
         react = self.reaction_get(id_reaction)
-        return react.reaction.exper_series.all()
+        return react.reaction.exper_series.all().order_by('name')
 
     def exper_serie_get(self, id_reaction, id_experserie):
         react = self.reaction_get(id_reaction)
@@ -405,8 +422,8 @@ class Chemistry(models.Model):
                 schemes_list_combo = []#список всех механизмов реакции
                 expers_list_combo = []#список всех экспериментов реакции
                 expers_value_list = [] #список выбранных экспериментов
-                left_bound_value_list = []  
-                rigth_bound_value_list = []               
+                left_bound_value_list = []
+                rigth_bound_value_list = []
                 print('tetst')
                 id_problem_type = problem.problem_type.id_problem_type
                 criteria_list_combo    = self.dict_criteria_filter(id_problem_type)
@@ -415,8 +432,8 @@ class Chemistry(models.Model):
                 constraints_value_list = calculation.constraints.filter(is_constraint = True)
                 functional_list_combo  = self.dict_calc_functional_all()
                 functional_value = criteria_value.functional
-                
-                schemes_list_combo = problem.reaction.schemes.all()                
+
+                schemes_list_combo = problem.reaction.schemes.all()
                 scheme = None
                 p_schemes = problem.schemes.all()
                 if p_schemes.count()>0:
@@ -425,16 +442,16 @@ class Chemistry(models.Model):
                 expers_value_list = problem.expers.all()
                 #границы
                 if scheme is not None:
-                    temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->    
-                    temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-       
-                    temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->        
-                    temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<- 
+                    temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->
+                    temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-
+                    temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->
+                    temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<-
                     left_bound_value_list.append(calculation.params.filter(dict_param = temp_param_dir_down).order_by('step__order') )
-                    temp_list = calculation.params.filter(dict_param = temp_param_inv_down).order_by('step__order')  
+                    temp_list = calculation.params.filter(dict_param = temp_param_inv_down).order_by('step__order')
                     if temp_list.count()>0:
                         left_bound_value_list.append(temp_list)
                     rigth_bound_value_list.append(calculation.params.filter(dict_param = temp_param_dir_up).order_by('step__order'))
-                    temp_list = calculation.params.filter(dict_param = temp_param_inv_up).order_by('step__order')   
+                    temp_list = calculation.params.filter(dict_param = temp_param_inv_up).order_by('step__order')
                     if temp_list.count()>0:
                         rigth_bound_value_list.append(temp_list)
                 problem_context = {'criteria_list_combo': criteria_list_combo, 'criteria_value': criteria_value,  'constraints_list_combo': constraints_list_combo, 'constraints_value_list': constraints_value_list, 'functional_list_combo':functional_list_combo, 'functional_value':functional_value, 'schemes_list_combo':schemes_list_combo, 'scheme':scheme, 'expers_list_combo':expers_list_combo, 'expers_value_list':expers_value_list, 'left_bound_value_list':left_bound_value_list, 'rigth_bound_value_list':rigth_bound_value_list}

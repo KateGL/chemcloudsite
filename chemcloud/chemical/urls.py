@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^substance/isomers/$', views.substance_isomers, name='substance_isomers'),
     url(r'^substance/isomers/(?P<consist_string>[\w\-\.]+)/$', views.substance_isomers, name='substance_isomers'),
     url(r'^substance/search/$', views.substance_all_search, name='substance_all_search'),
-    url(r'^substance/search/(?P<searched>[\w\-]+)/$', views.substance_all_search, name='substance_all_search'),
+    url(r'^substance/search/(?P<searched>[\w\-\.\,\!\?\\\:\;\s]+)/$', views.substance_all_search, name='substance_all_search'),
     url(r'^substance/(?P<id_substance>[0-9]+)/detail/$', views.substance_detail, name='substance_detail'),
     url(r'^substance/new/$', views.substance_new, name='substance_new'),
 
@@ -23,6 +23,7 @@ urlpatterns = [
 
 #Реакции
     url(r'^reaction/all/$', views.reaction_all, name='reaction_all'),
+    url(r'^reaction/all/(?P<searched>[\w\-\.\,\!\?\\\:\;\s]+)/$', views.reaction_all, name='reaction_all'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/detail/$', views.reaction_detail, name='reaction_detail'),
     url(r'^reaction/new/$', views.reaction_new, name='reaction_new'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/delete/$', views.reaction_delete, name='reaction_delete'),
@@ -63,6 +64,10 @@ urlpatterns = [
 
 #Эксперименты
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/search/$', views.experiment_all_search, name='experiment_all_search'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/search/(?P<searched>[\w\-\.\,\!\?\\\:\;\s]+)/$',
+        views.experiment_all_search, name='experiment_all_search'),
+
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail/$',
         views.experiment_detail, name='experiment_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),

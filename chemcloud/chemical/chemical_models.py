@@ -633,6 +633,7 @@ class Exper_serie (models.Model):
     is_archive = models.BooleanField(default=False, verbose_name='Поместить в Архив')
 
     class Meta:
+        ordering = ["name"]
         verbose_name = ('Серия экспериментов')
         verbose_name_plural = ('Серии экспериментов')
 
@@ -688,8 +689,8 @@ class Dict_exper_param (models.Model):
 
     class Meta:
         ordering = ["id_experparam"]
-        verbose_name = ('Дополнительные данные эксперимента')
-        verbose_name_plural = ('Дополнительные данные эксперимента')
+        verbose_name = ('Эксперимент: Дополнительные данные')
+        verbose_name_plural = ('Эксперимент: Дополнительные данные')
 
 
 class Dict_exper_subst_param (models.Model):
@@ -713,8 +714,8 @@ class Exper_data (models.Model):
     dict_unit_id_unit = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT, related_name='+', default=0)
 
     class Meta:
-        verbose_name = ('Дополнительная информация эксперимента')
-        verbose_name_plural = ('Дополнительная информация эксперимента')
+        verbose_name = ('Эксперимент: Дополнительная информация')
+        verbose_name_plural = ('Эксперимент: Дополнительная информация')
 
 
 class Exper_subst (models.Model):
@@ -726,20 +727,47 @@ class Exper_subst (models.Model):
     standard_error = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Погрешность ', null=False, default=0)
 
     def __unicode__(self):
-        return self.reaction_subst.alias
-
-# азные интервалы времени
-    def get_distinct_arg_val(self):
-        return {}
-
-    def get_points_by_arg(self, arg_value):
-        return {}
+        return self.experiment.name + ': ' + self.reaction_subst.alias
 
     class Meta:
         #order_with_respect_to = 'reaction_subst'
         unique_together = (('experiment', 'reaction_subst'))
-        verbose_name = ('Вещество реакции в эксперименте')
-        verbose_name_plural = ('Вещества реакции в эксперименте')
+        verbose_name = ('Эксперимент: Вещество реакции')
+        verbose_name_plural = ('Эксперимент: Вещества реакции')
+
+
+#Точка аргумента. Например, если аргумент это у нас время, то это множествно уникальных моментов времени для Эксперимента
+class Exper_arg_value(models.Model):
+    id_exper_arg_value = models.AutoField(primary_key=True, verbose_name='ИД')
+    experiment = models.ForeignKey(Experiment, null=False, on_delete=models.CASCADE, related_name='arg_values')
+    value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение аргумента')
+
+    def __unicode__(self):
+        return self.experiment.name + ': ' + str(self.value.normalize())
+
+
+    class Meta:
+        ordering = ["value"]
+        verbose_name = ('Эксперимент: аргумент')
+        verbose_name_plural = ('Эксперимент: аргументы')
+
+
+#Точка результата
+class Exper_func_point (models.Model):
+    id_exper_func_point = models.AutoField(primary_key=True, verbose_name='ИД')
+    exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.CASCADE,
+        related_name='exper_func_points', verbose_name='Эксперимент: вещество')
+    argument = models.ForeignKey(Exper_arg_value, null=False, on_delete=models.CASCADE,
+        related_name='exper_func_points', verbose_name='Эксперимент: аргумент')
+    func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
+
+    def __unicode__(self):
+        return self.exper_subst.reaction_subst.alias
+
+    class Meta:
+        unique_together = (('argument', 'exper_subst'))
+        verbose_name = ('Эксперимент: данные')
+        verbose_name_plural = ('Эксперимент: данные')
 
 
 class Exper_subst_data (models.Model):
@@ -766,8 +794,8 @@ class Exper_point (models.Model):
 
     class Meta:
         ordering = ["arg_val"]
-        verbose_name = ('Экспериментальные данные')
-        verbose_name_plural = ('Экспериментальные данные')
+        verbose_name = ('Эксперимент: данные (старое)')
+        verbose_name_plural = ('Эксперимент: данные (старое)')
 
 
 #Задачи
@@ -825,7 +853,7 @@ class Problem(models.Model):
             new_calc = Calculation.objects.get_or_create( problem = self, status = calc_status)[0]
             new_calc.save()
             self.calculations.add(new_calc)
-                        
+
             #создание настроек по умолчанию
             #критерий невязки
             dict_func = Dict_calc_functional.objects.get(pk = 2)
@@ -849,43 +877,43 @@ class Problem(models.Model):
             new_param.save()
 
             #границы поиска
-            temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->    
-            temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-       
-            temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->        
-            temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<-    
+            temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->
+            temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-
+            temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->
+            temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<-
             if scheme is not None:
                 steps = scheme.steps.all()
                 for step_i in steps:
                     new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-7, calculation = new_calc, dict_param = temp_param_dir_down, step = step_i )[0]
-                    new_param.save() 
+                    new_param.save()
                     new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e+10, calculation = new_calc, dict_param = temp_param_dir_up, step = step_i )[0]
                     new_param.save()
                     if step_i.is_revers:
                         new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-7, calculation = new_calc, dict_param = temp_param_inv_down, step = step_i )[0]
-                        new_param.save() 
+                        new_param.save()
                         new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e+10, calculation = new_calc, dict_param = temp_param_inv_up, step = step_i )[0]
-                        new_param.save()             
-                    
+                        new_param.save()
+
             #метод и настройки метода прямой задачи
             _temp = Dict_calc_method.objects.get(pk = 1) #Мишельсена
             new_calc.methods.add (_temp)
 
             temp_param = Dict_calc_param.objects.get(pk = 35)#h0
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-4, calculation = new_calc, dict_param = temp_param )[0]
-            new_param.save() 
+            new_param.save()
             temp_param = Dict_calc_param.objects.get(pk = 36)#hmin
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-6, calculation = new_calc, dict_param = temp_param )[0]
-            new_param.save() 
+            new_param.save()
             temp_param = Dict_calc_param.objects.get(pk = 37)#hmax
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e-3, calculation = new_calc, dict_param = temp_param )[0]
-            new_param.save() 
+            new_param.save()
             #метод и настройки метода обратной задачи
             _temp = Dict_calc_method.objects.get(pk = 6) #генетический алгоритм
             new_calc.methods.add (_temp)
 
             temp_param = Dict_calc_param.objects.get(pk = 38)#itercount
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 1.0e+6, calculation = new_calc, dict_param = temp_param )[0]
-            new_param.save() 
+            new_param.save()
             temp_param = Dict_calc_param.objects.get(pk = 39)#processor count
             new_param = Calc_param.objects.get_or_create( is_input = True, value = 1, calculation = new_calc, dict_param = temp_param )[0]
             new_param.save()
@@ -918,7 +946,8 @@ class Problem(models.Model):
 
     def __unicode__(self):
         return str(self.id_problem)
- 
+
+
 class Dict_calc_criteria_constraints(models.Model):
     id_criteria = models.AutoField(primary_key=True, verbose_name='ИД')
     name  = models.CharField(max_length=250, unique=True, verbose_name='Тип критерия/ограничения')
@@ -967,7 +996,7 @@ class Dict_calc_status(models.Model):
         return self.name
 
 
-class Calculation(models.Model): 
+class Calculation(models.Model):
     id_calc = models.AutoField(primary_key=True, verbose_name='ИД')
     is_approved = models.BooleanField(default=False, verbose_name='Утвержден', null=False)
     status = models.ForeignKey(Dict_calc_status, verbose_name='Статус задачи', null=False, on_delete=models.PROTECT, related_name='+')
@@ -993,7 +1022,7 @@ class Calculation(models.Model):
 
 
 class Calc_log(models.Model):
-    id_calc_log = models.AutoField(primary_key=True, verbose_name='ИД')    
+    id_calc_log = models.AutoField(primary_key=True, verbose_name='ИД')
     calc = models.OneToOneField(Calculation, on_delete=models.SET_NULL, null=True)
     _log = models.BinaryField ( verbose_name='Лог решения задачи', null=True)
     class Meta:

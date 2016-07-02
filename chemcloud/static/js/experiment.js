@@ -22,4 +22,5 @@ $(document).ready(function(){
     });
 
     process_selector($('.dict_selector'), true);
+
 });

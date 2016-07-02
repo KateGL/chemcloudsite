@@ -35,7 +35,8 @@ def set_field_value_to_model(field_name, value_tmp, my_model):
             #print(rel_model)
             value = rel_model.objects.get(pk=value_tmp)
             #print(value)
-        except ObjectDoesNotExist:
+        except:  # ахтунг! не очень клево, т.к. может скрыть ошибки
+            #print(value)
             value = None
         #если это булево поле
     elif isinstance(field_object, models.BooleanField):
@@ -46,11 +47,14 @@ def set_field_value_to_model(field_name, value_tmp, my_model):
         value = tmp_val
     elif isinstance(field_object, models.DecimalField):
         tmp_val = value_tmp.strip(' \t\n\r')
-        print(tmp_val)
+        #print(tmp_val)
         value = Decimal(tmp_val)
     else:
         value = value_tmp
 
+    #print(my_model)
+    #print(field_name)
+    #print(value)
     setattr(my_model, field_name, value)
     return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value}
 
@@ -169,7 +173,7 @@ def react_substance_detail_edit(request, id_reaction, id_react_substance):
     subst_dict = request.user.chemistry.react_subst_get(id_reaction, id_react_substance)
     rsubst = subst_dict['substance']
     fv_dict = set_field_and_value_from_request(request, rsubst)
-
+    print(fv_dict)
     if (fv_dict['is_error'] is False):
         if fv_dict['field_name'] == 'brutto_formula_short':
             rsubst.after_create()
