@@ -155,9 +155,13 @@ class MechanizmTable(tables.Table):
 class ReactionSubstTable(tables.Table):
     detail_link = tables.LinkColumn('reaction_subst_detail', orderable=False, verbose_name='Ссылка', empty_values=())
     name = tables.Column(accessor='substance.name')
+    formula_brutto_formatted = tables.Column(accessor='substance.formula_brutto_formatted')
 
     def render_brutto_formula_short_formatted(self, record):
         return mark_safe(record.brutto_formula_short_formatted)
+
+    def render_formula_brutto_formatted(self, record):
+        return mark_safe(record.substance.formula_brutto_formatted)
 
     def render_detail_link(self, record):
         link = reverse('chemical.views.react_substance_detail', args=[record.reaction.id_reaction, record.pk])
@@ -166,8 +170,8 @@ class ReactionSubstTable(tables.Table):
     class Meta:
         model = Reaction_subst
         attrs = {"class": "paleblue"}
-        fields = ("alias", "brutto_formula_short_formatted", "name", "detail_link")
-        sequence = ("alias", "brutto_formula_short_formatted", "name", "detail_link")
+        fields = ("alias", "brutto_formula_short_formatted", "formula_brutto_formatted", "name", "detail_link")
+        sequence = ("alias", "brutto_formula_short_formatted", "formula_brutto_formatted", "name", "detail_link")
 
 #Стадии механизма
 class StepsTable(tables.Table):

@@ -15,6 +15,94 @@ function getCookie(name) {
     return cookieValue;
 }
 
+
+/*
+На самом деле надо переписать без возврата значения через присвоение.
+возможно надо не использовать метод clone, а копировать html  + что-то специфическое для компонента
+надо поэкспериментировать
+*/
+
+//Конкретные методы компонент
+function formatSubstance(subst){
+
+    if(typeof subst.name != 'undefined')
+        {
+     return subst.name+' ('+subst.formula_brutto_formatted+') '+ subst.detail_link;
+     }
+    else
+
+     { return subst.text}
+    }
+
+function setinitSelect2(subst_serch_element, id_value, str_value)
+{
+    var cntr = subst_serch_element.parent().find('.select2-container');
+    cntr.width('100%');
+
+    var opt_selected = new Option(str_value, id_value, true)
+    subst_serch_element.append(opt_selected);
+    subst_serch_element.trigger('change');
+    }
+
+function applySelect2(subst_serch_element){
+
+    var url_str = subst_serch_element.attr('data-check-url');
+
+subst_serch_element.select2({
+
+  ajax: {
+    url: url_str,
+    dataType: 'json',
+    delay: 50,
+    data: function (params) {
+      return {
+        q: params.term, // search term
+        page: params.page
+      };
+    },
+    processResults: function (data, params) {
+       // alert(JSON.stringify(data));
+      // parse the results into the format expected by Select2
+      // since we are using custom formatting functions we do not need to
+      // alter the remote JSON data, except to indicate that infinite
+      // scrolling can be used
+      params.page = params.page || 1;
+
+      return {
+        results: data.items,
+        pagination: {
+          more: (params.page * 10) < data.total_count
+        }
+      };
+    },
+    cache: true
+  },
+  'language': "ru",
+  //tags: "true",
+  placeholder: '',
+  escapeMarkup: function (markup) { return markup; }, // let our custom formatter work
+  minimumInputLength: 1,
+  allowClear: true,
+  templateResult: formatSubstance, // omitted for brevity, see the source of this page
+  templateSelection: formatSubstance // omitted for brevity, see the source of this page
+});
+
+
+
+    }
+
+
+function applySelect2withInit(subst_serch_element){
+    //applySelect2(subst_serch_element);
+    subst_serch_element.select2({placeholder: '', escapeMarkup: function (markup) { return markup; }});
+    var id_value = subst_serch_element.attr('data-init-id');
+    var str_value = subst_serch_element.attr('data-init-name');
+
+    setinitSelect2(subst_serch_element, id_value, str_value)
+    }
+
+
+
 function applyDatetimePicker(dtp){
     dtp.datetimepicker({
                 language: 'ru',
@@ -23,6 +111,10 @@ function applyDatetimePicker(dtp){
                 pick12HourFormat: false
                 });
     }
+
+//методы для деталей
+
+
 
 function get_editbox_value(ebox){
     if (ebox.attr('type') == 'checkbox'){
@@ -35,11 +127,11 @@ function get_editbox_value(ebox){
         ebox = dtp.children().first();
         }
     }
-    //alert(ebox.val());
+
     return ebox.val();
     }
 
-function set_readbox_value(rbox, value){
+function set_readbox_value(rbox, value, ebox){
     if (rbox.attr('type') == 'checkbox'){
 
         if(value == 'True'){
@@ -55,6 +147,15 @@ function set_readbox_value(rbox, value){
     if(dtp != false){
         rbox = dtp.children().first();
         }
+    }
+
+    if (rbox.hasClass('select2')){
+    var str_value = ebox.parent().find('#select2-id_substance-container').html();
+    // ахтунг! размножаются крестики. Пока считаю этот баг не критичным
+    setinitSelect2(rbox, value, str_value);
+    //alert(value);
+    //alert(str_value);
+    return false;
     }
 
     rbox.val(value);
@@ -90,7 +191,12 @@ function append_clone_rbox(rbox, edt_td){
         }
 
         if (clone.hasClass('select2')){
+            clone.val(rbox.val());
+           // alert('clone!');
+            //alert(clone.val());
             applySelect2(clone);
+            setinitSelect2(clone);
+
             }
 
         return clone;
@@ -116,7 +222,7 @@ function after_save_value(json_msg, btn_save, val_td, edt_td, ebox, evalue){
          //   }catch(e){alert(target);}
 
         //hide input
-        set_readbox_value(val_td.children(":first"),evalue);
+        set_readbox_value(val_td.children(":first"),evalue, ebox);
         edt_td.html('');
         edt_td.hide();
         val_td.show();
@@ -150,9 +256,16 @@ $(document).ready(function(){
     $('.detail_btn_cancel').addClass('btn btn-sm btn-link').html('<span class="glyphicon glyphicon-remove"></span>').hide();
 
     if ($('.datetimepicker') != false){
-        var dtp = $('.datetimepicker')
+        var dtp = $('.datetimepicker');
         if (dtp.hasClass('date')){
             applyDatetimePicker(dtp);
+        }
+    }
+
+    if ($('.select2') != false){
+        var sl2 = $("#id_substance");
+        if (sl2.hasClass('select2')){
+        applySelect2withInit($("#id_substance"));
         }
     }
 
@@ -248,6 +361,13 @@ $(document).ready(function(){
 
 
 
+
+
+
+});
+
+
+
 /*remove to snippet!
     $(document.body).on("focusout", '#editbox', function(event){
         var edt_td = $(this).parent('td');
@@ -271,7 +391,5 @@ $(document).ready(function(){
     );
 */
 
-
-});
 
 
