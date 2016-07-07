@@ -28,6 +28,8 @@
                 <div class="input-group col-md-12">
                     <input type="text" id="search" class="form-control input-md" placeholder="Введите строку для поиска" 
                      value= {% if searched %} "{{searched}}"{% else %} ""{% endif %}
+                     data-search-url="{% url 'reaction_all' '___' %}"
+                     data-all-url="{% url 'reaction_all' %}"
                     />
                     <span class="input-group-btn">
                         <button class="btn btn-info btn-md" type="button" id="search_btn">
@@ -56,4 +58,9 @@
                       
                       
                        
+{% endblock %}
+
+
+{% block footer_block %}
+<script src="{% static "js/reaction_all.js" %}"></script>
 {% endblock %}

@@ -52,6 +52,7 @@ def substance_get_isomer_count(consist_as_string):
     return Substance.objects.filter(filter_search).count()
 
 
+
 #Объект для доступа к химии
 class Chemistry(models.Model):
     user = AutoOneToOneField(User, primary_key=True, null=False, on_delete=models.CASCADE)
@@ -89,6 +90,13 @@ class Chemistry(models.Model):
 
     def reaction_all(self):
         return self.user.reactions.all()
+
+    def reaction_search(self, searched):
+        if searched == '':
+            return self.reaction_all()
+        else:
+            filter_search = Q(reaction__name__icontains=searched) | Q(reaction__description__icontains=searched)
+            return self.user.reactions.filter(filter_search)
 
     def is_owner(self, id_reaction):
         try:

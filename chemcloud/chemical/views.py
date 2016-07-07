@@ -109,10 +109,15 @@ def dictionaries(request):
 
 # Реакции
 @login_required
-def reaction_all(request):
-    reaction_table = ReactionTable(request.user.chemistry.reaction_all())
+def reaction_all(request, searched=''):
+    print(searched)
+    if searched == '':
+        reactions = request.user.chemistry.reaction_all()
+    else:
+        reactions = request.user.chemistry.reaction_search(searched)
+    reaction_table = ReactionTable(reactions)
     RequestConfig(request, paginate={"per_page": 15}).configure(reaction_table)
-    return render(request, 'chemical/reaction_all.html', {"reaction": reaction_table})
+    return render(request, 'chemical/reaction_all.html', {"reaction": reaction_table, "searched": searched})
 
 
 @login_required

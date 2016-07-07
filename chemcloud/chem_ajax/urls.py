@@ -7,7 +7,7 @@ from chem_ajax import views
 urlpatterns = [
 #Вещества
 
-    url(r'^substance/search_hint/(?P<searched>[\w\-]+)/(?P<top_count>[0-9]+)/$',
+    url(r'^substance/search_hint/(?P<searched>[\w\-\.\,\!\?\\\:\;\s]+)/(?P<top_count>[0-9]+)/$',
         views.substance_search_hint, name='substance_search_hint'),
 
     url(r'^substance/search_list/$', views.substance_search_list, name='substance_search_list'),
