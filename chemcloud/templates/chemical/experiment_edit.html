@@ -40,34 +40,24 @@
     <tr >
         <th class='cptn-alias'> </th>
         <th class ='cptn-brutto_formula_short'> </th>
-        <th> Погрешность, % </th>
+        
         <th> Начальная концентрация, {{ experiment.init_function_measure.code }}</th>
         <th>Наблюдаемое</th>
+        <th> Погрешность, % </th>
     </tr>   
     {% for key, value in react_with_exper.items %}
     <tr>
         <td class='cptn-alias'> {{ value.react_subst.alias }}  </td>
         <td class ='cptn-brutto_formula_short'>{{ value.react_subst.brutto_formula_short_formatted | safe }} </td>
         
-        <td>         <!--Погрешность -->   
-            <span class="detail_value"><input class="box_input"  type="text" disabled="disabled" 
-              value={% if value.exper_subst %} "{{ value.exper_subst.standard_error}}"{%else%}"0"{% endif%}/></span>
-        {% if is_owner %}
-        <span class="detail_edit" > </span>
-        <span class="detail_btns" 
-           field_name="standard_error" 
-           record_id="{{ value.react_subst.pk}}">
-        </span>
-        {% endif %}
-        </td>
         
         <td>   <!--Начальная концентрация -->          
-            <span class="detail_value"><input class="box_input"  type="text" disabled="disabled" 
+            <span class="detail_value col-xs-8"><input class="box_input"  type="text" disabled="disabled" 
               value={% if value.exper_subst %} "{{ value.exper_subst.init_func_val}}"{%else%}"0"{% endif%}
               /></span>
         {% if is_owner %}
-        <span class="detail_edit" > </span>
-        <span class="detail_btns" 
+        <span class="detail_edit col-xs-8" > </span>
+        <span class="detail_btns col-xs-4" 
             field_name="init_func_val"
             record_id="{{ value.react_subst.pk}}">
         </span>
@@ -76,19 +66,30 @@
         
         
         <td>      <!--Наблюдаемое -->       
-            <span class="detail_value"><input class="box_input"  type="checkbox" disabled="disabled" 
+            <span class="detail_value col-xs-8"><input class="box_input"  type="checkbox" disabled="disabled" 
               value={% if value.exper_subst %} "{{ value.exper_subst.is_observed}}"{%else%}"False"{% endif%}
               {% if value.exper_subst %} {% if value.exper_subst.is_observed %} checked="checked" {% endif %}{% endif%}              
               /></span>
         {% if is_owner %}
-        <span class="detail_edit" > </span>
-        <span class="detail_btns" 
+        <span class="detail_edit col-xs-8" > </span>
+        <span class="detail_btns col-xs-4" 
             field_name="is_observed"
             record_id="{{ value.react_subst.pk}}">
         </span>
         {% endif %}
         </td>
         
+        <td>         <!--Погрешность -->   
+            <span class="detail_value col-xs-8"><input class="box_input"  type="text" disabled="disabled" 
+              value={% if value.exper_subst %} "{{ value.exper_subst.standard_error}}"{%else%}"0"{% endif%}/></span>
+        {% if is_owner %}
+        <span class="detail_edit col-xs-8" > </span>
+        <span class="detail_btns col-xs-4" 
+           field_name="standard_error" 
+           record_id="{{ value.react_subst.pk}}">
+        </span>
+        {% endif %}
+        </td>
         
     </tr>
    {% endfor %}

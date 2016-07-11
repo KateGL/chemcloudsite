@@ -560,8 +560,8 @@ class Dict_feature(models.Model):
         return self.name
 
     class Meta:
-        verbose_name = ('Свойство')
-        verbose_name_plural = ('Свойства')
+        verbose_name = ('Справочник: Свойство реакции')
+        verbose_name_plural = ('Справочник: Свойства реакции')
         ordering = ["id_feature"]
 
 
@@ -572,8 +572,8 @@ class Reaction_feature(models.Model):
     feature = models.ForeignKey(Dict_feature, null = True, on_delete=models.PROTECT, related_name='+',default=0, verbose_name='Свойство')
 
     class Meta:
-      verbose_name = ('Свойство реакции')
-      verbose_name_plural = ('Свойства реакции')
+      verbose_name = ('Реакция: Свойство реакции')
+      verbose_name_plural = ('Реакция: Свойства реакции')
       ordering = ["id_reaction_feature"]
 
 
@@ -778,8 +778,8 @@ class Exper_subst_data (models.Model):
     unit = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT, related_name='+', default=0)
 
     class Meta:
-        verbose_name = ('Дополнительные экспериментальные данные')
-        verbose_name_plural = ('Дополнительные экспериментальные данные')
+        verbose_name = ('Эксперимент: Дополнительные данные')
+        verbose_name_plural = ('Эксперимент: Дополнительные данные')
 
 
 class Exper_point (models.Model):
