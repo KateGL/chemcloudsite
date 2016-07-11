@@ -200,6 +200,11 @@ class Chemistry(models.Model):
         react = self.reaction_get(id_reaction)
         return react.reaction.experiments.all()
 
+    def experiment_search(self, id_reaction, searched):
+        react = self.reaction_get(id_reaction)
+        filter_search = Q(name__icontains=searched) | Q(description__icontains=searched) | Q(exper_serie__name__icontains=searched) | Q(exper_serie__description__icontains=searched)
+        return react.reaction.experiments.filter(filter_search)
+
     def experiment_all_no_serie(self, id_reaction):
         react = self.reaction_get(id_reaction)
         return react.reaction.experiments.filter(exper_serie=None)

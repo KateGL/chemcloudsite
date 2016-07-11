@@ -631,10 +631,19 @@ def experiment_all(request, id_reaction):
 
     exper_by_ser.append(sae)
 
-    #exp_table = ExperimentTable(request.user.chemistry.experiment_all(id_reaction))
-    #RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
     context_dict = {'exper_by_series': exper_by_ser, 'id_reaction': id_reaction}
     return render(request, 'chemical/experiment_all.html', context_dict)
+
+
+@login_required
+def experiment_all_search(request, id_reaction, searched=""):
+    if searched.strip() == '':
+        return experiment_all(request, id_reaction)
+
+    exp_table = ExperimentTable(request.user.chemistry.experiment_search(id_reaction, searched))
+    RequestConfig(request, paginate={"per_page": 25}).configure(exp_table)
+    context_dict = {'exper_table': exp_table, 'id_reaction': id_reaction, 'searched': searched}
+    return render(request, 'chemical/experiment_search.html', context_dict)
 
 
 @login_required

@@ -64,6 +64,10 @@ urlpatterns = [
 
 #Эксперименты
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/all/$', views.experiment_all, name='experiment_all'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/search/$', views.experiment_all_search, name='experiment_all_search'),
+    url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/search/(?P<searched>[\w\-\.\,\!\?\\\:\;\s]+)/$',
+        views.experiment_all_search, name='experiment_all_search'),
+
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/(?P<id_experiment>[0-9]+)/detail/$',
         views.experiment_detail, name='experiment_detail'),
     url(r'^reaction/(?P<id_reaction>[0-9]+)/experiment/new/$', views.experiment_new, name='experiment_new'),
