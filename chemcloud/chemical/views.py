@@ -423,7 +423,6 @@ def scheme_cell_update(request, table_str, id_str, field_str, value_str ):
         if not balance_bool:
             #mess = balance_mess[0]
             #tr_class = 'danger'
-            print(balance_mess[0])
             info_iconName = 'glyphicon glyphicon-exclamation-sign glyphicon-bad_balance'
             info_iconText = balance_mess[0]
     data = '{"result":"' + result  +'", "errorText": "' + errorText + '", "messageText": "' + mess + '", "tr_class":"'+ tr_class +'", "info_iconText": "' + info_iconText + '", "info_iconName":"'+ info_iconName +'" }'
@@ -468,7 +467,6 @@ def step_new(request, id_reaction, id_scheme):
     data = '{"id_step":"' + str(new_step.id_step) +'", "order":"'+str(new_step.order) + '", "name": "'+new_step.name+'", "url_detail": "'+ link_detail+'", "url_changeorder": "' + link_changeorder+'", "url_delete": "' + link_delete +'"}'
     #fv_dict = {"id_step": new_step.id_step, "order":new_step.order, "name": new_step.name, "url_detail": link_detail, "url_changeorder": link_changeorder}
     xml_bytes = json.dumps(data)
-    print (xml_bytes)
     return HttpResponse(xml_bytes,'application/json')
 
 
@@ -743,16 +741,13 @@ def problem_detail(request, id_reaction, id_problem):
 def problem_new(request, id_reaction, id_problem_type):
     react = request.user.chemistry.reaction_get(id_reaction)
     problem_type = request.user.chemistry.dict_problem_type_get(id_problem_type)
-    #print(problem_type.name)
-
     form = ProblemForm(request.POST or None, initial={'problem_type': problem_type})
     if request.method == 'POST':
         if form.is_valid():
             problem = form.save(commit=False)
             problem.reaction = react.reaction
             form.save()
-
-            calculation = problem.create_new_calculation()
+            calculation = problem.set_default_calculation_props()
             return redirect('problem_init', id_reaction, problem.pk)
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)
@@ -772,16 +767,14 @@ def problem_init(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
     context = {}
     problem = problem_dict['problem']
-    calculation = problem.calculations.all()[0] #на самом деле один к одному. И всегда создается хотя бы черновик расчета при создании задачи
+    calculation = problem.calculation #на самом деле один к одному. И всегда создается хотя бы черновик расчета при создании задачи
     context['problem'] = problem
     context['calculation'] = calculation
     context['id_reaction'] = id_reaction
     context["is_owner"] = problem_dict['is_owner']
     context['step_name'] = 'problem_init'
-    print('tut init')
     problem_context = request.user.chemistry.get_problem_context(calculation, 1)
     context['problem_context'] = problem_context
-    print(problem_context['functional_value'].name)
     return render(request, 'chemical/problem_init.html', context)
 
 

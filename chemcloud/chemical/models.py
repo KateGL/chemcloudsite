@@ -412,34 +412,33 @@ class Chemistry(models.Model):
             problem = calculation.problem
             problem_context = {}
             if page_num == 1: #init - постановка задачи
-                criteria_list_combo = []
-                constraints_list_combo = []
-                functional_list_combo = []
                 functional_value = None # бд позволяет. Но пока так не умеем считать. Пока что один вид функционала на все ограничения и критерии
                 criteria_value  = None #значение выбранного критерия. Пока что однокритериальные задачи
                 constraints_value_list = [] #значения выбранных ограничений.
                 scheme = None #выбранный механизм реакции
                 schemes_list_combo = []#список всех механизмов реакции
-                expers_list_combo = []#список всех экспериментов реакции
-                expers_value_list = [] #список выбранных экспериментов
+                expers_value_list = [] #список всех экспериментов реакции с пометкой, выбран эксперимент в задаче или нет
                 left_bound_value_list = []
                 rigth_bound_value_list = []
-                print('tetst')
+                
                 id_problem_type = problem.problem_type.id_problem_type
-                criteria_list_combo    = self.dict_criteria_filter(id_problem_type)
                 criteria_value   = calculation.constraints.filter(is_constraint = False)[0] #обязательно должно существовать
-                constraints_list_combo = self.dict_constraints_filter(id_problem_type)
                 constraints_value_list = calculation.constraints.filter(is_constraint = True)
-                functional_list_combo  = self.dict_calc_functional_all()
                 functional_value = criteria_value.functional
 
                 schemes_list_combo = problem.reaction.schemes.all()
-                scheme = None
-                p_schemes = problem.schemes.all()
-                if p_schemes.count()>0:
-                    scheme = p_schemes[0]
-                expers_list_combo = problem.reaction.experiments.all()
-                expers_value_list = problem.expers.all()
+                scheme = problem.scheme
+                exper_list = problem.reaction.experiments.all()
+                problem_exper_list = problem.expers.all()
+                problem_exper_list = list(problem_exper_list)
+                for exper in exper_list:
+                    pos_exper = problem_exper_list.index(exper)
+                    temp_list = [exper]
+                    if  pos_exper < 0: 
+                        temp_list.append(False) 
+                    else:
+                        temp_list.append(True) 
+                    expers_value_list.append(temp_list)  
                 #границы
                 if scheme is not None:
                     temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->
@@ -454,7 +453,7 @@ class Chemistry(models.Model):
                     temp_list = calculation.params.filter(dict_param = temp_param_inv_up).order_by('step__order')
                     if temp_list.count()>0:
                         rigth_bound_value_list.append(temp_list)
-                problem_context = {'criteria_list_combo': criteria_list_combo, 'criteria_value': criteria_value,  'constraints_list_combo': constraints_list_combo, 'constraints_value_list': constraints_value_list, 'functional_list_combo':functional_list_combo, 'functional_value':functional_value, 'schemes_list_combo':schemes_list_combo, 'scheme':scheme, 'expers_list_combo':expers_list_combo, 'expers_value_list':expers_value_list, 'left_bound_value_list':left_bound_value_list, 'rigth_bound_value_list':rigth_bound_value_list}
+                problem_context = { 'criteria_value': criteria_value,  'constraints_value_list': constraints_value_list,  'functional_value':functional_value, 'schemes_list_combo':schemes_list_combo, 'scheme':scheme, 'expers_value_list':expers_value_list, 'left_bound_value_list':left_bound_value_list, 'rigth_bound_value_list':rigth_bound_value_list}
         except:
             raise Http404("Error in getting inverse problem context")
         return problem_context
