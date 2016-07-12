@@ -705,11 +705,12 @@ def experiment_new(request, id_reaction, id_exper_serie=''):
     if id_exper_serie == '':
         exper_serie = None
     else:
-        exper_serie = request.user.chemistry.exper_serie_get(id_reaction, id_exper_serie)
+        exper_serie_dict = request.user.chemistry.exper_serie_get(id_reaction, id_exper_serie)
+        exper_serie = exper_serie_dict['exper_serie']
 
-    print(exper_serie['exper_serie'])
+    #print(exper_serie['exper_serie'])
 
-    form = ExperimentForm(request.POST or None, initial={'exper_serie': exper_serie['exper_serie'], 'name': 'Эксперимент №<введите номер>'})
+    form = ExperimentForm(request.POST or None, initial={'exper_serie': exper_serie, 'name': 'Эксперимент №<введите номер>'})
     if request.method == 'POST':
         if form.is_valid():
             experiment = form.save(commit=False)
