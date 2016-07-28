@@ -187,6 +187,10 @@ function append_clone_rbox(rbox, edt_td){
 */
         if(clone.hasClass('datetime')){
         var dtp = clone.find('.datetimepicker');
+        dtp.removeAttr('disabled');
+        var fctrl = dtp.children().first();
+        fctrl.removeAttr('disabled');
+
         applyDatetimePicker(dtp);
         }
 

@@ -45,10 +45,10 @@
 						
 						<td class="detail_value">
 	     <!-- Инициализация виджета "Bootstrap datetimepicker" -->
-    <div class="form-group datetime">
+    <div class="form-group datetime" >
       <!-- Элемент HTML с id равным datetimepicker1 -->
-      <div class="input-group date datetimepicker">
-        <input type="text" class="form-control" value="{{  experiment.exper_date|date:'d.m.Y H:i' }}"/>
+      <div class="input-group date datetimepicker" >
+        <input type="text" class="form-control" disabled="disabled" value="{{  experiment.exper_date|date:'d.m.Y H:i' }}"/>
         <span class="input-group-addon">
           <span class="glyphicon glyphicon-calendar"></span>
         </span>
