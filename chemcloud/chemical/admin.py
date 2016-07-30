@@ -11,9 +11,10 @@ from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exp
 from chemical.chemical_models import Exper_point,Exper_serie
 from chemical.chemical_models import Dict_problem_type, Problem
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
-from chemical.chemical_models import Dict_calc_param, Dict_calc_status, Calculation, Dict_problem_class, Dict_calc_method, Calc_log, Calc_param, Calc_criteria_constraint
+from chemical.chemical_models import Dict_calc_param, Dict_problem_class, Dict_calc_method, Calc_param, Calc_criteria_constraint
 from chemical.chemical_models import Exper_func_point, Exper_arg_value
 from chemical.models import Chemistry
+#from chemical.chemical_models import Calc_log, Dict_calc_status
 
 
 class Dict_atomAdmin(admin.ModelAdmin):
@@ -211,36 +212,29 @@ admin.site.register(Dict_calc_param,Dict_calc_paramAdmin)
 
 
 #Справочник статусов решения задачи
-class Dict_calc_statusAdmin(admin.ModelAdmin):
-  fields = ['id_status','name']
-  list_display = ('id_status','name')
+#class Dict_calc_statusAdmin(admin.ModelAdmin):
+#  fields = ['id_status','name']
+#  list_display = ('id_status','name')
 
-admin.site.register(Dict_calc_status,Dict_calc_statusAdmin)
-
-#Расчет
-class CalculationAdmin(admin.ModelAdmin):
-  fields = ['id_calc','is_approved', 'status', 'problem', 'version', 'calc_time', 'calc_start_date', 'calc_end_date', 'updated_by', 'updated_date', 'created_date', 'created_by'  , 'data_archive', 'methods' ]
-  list_display = ('id_calc','is_approved', 'status', 'problem', 'version', 'calc_time', 'calc_start_date', 'calc_end_date', 'updated_by', 'updated_date', 'created_date', 'created_by', 'data_archive'  )
-
-admin.site.register(Calculation,CalculationAdmin)
+#admin.site.register(Dict_calc_status,Dict_calc_statusAdmin)
 
 class Calc_criteria_constraintAdmin(admin.ModelAdmin):
-  fields = ['id_ccc', 'is_constraint', 'calculation', 'criteria', 'functional' ]
-  list_display = ('id_ccc', 'is_constraint', 'calculation', 'criteria', 'functional'  )
+  fields = ['id_ccc', 'is_constraint', 'problem', 'criteria', 'functional' ]
+  list_display = ('id_ccc', 'is_constraint', 'problem', 'criteria', 'functional'  )
 
 admin.site.register(Calc_criteria_constraint,Calc_criteria_constraintAdmin)
 
 class Calc_paramAdmin(admin.ModelAdmin):
-  fields = ['id_calc_param', 'is_input', 'value', 'calculation', 'dict_param', 'step', 'substance' ]
-  list_display = ('id_calc_param', 'is_input', 'value', 'calculation', 'dict_param', 'step', 'substance'  )
+  fields = ['id_calc_param', 'is_input', 'value', 'problem', 'dict_param', 'step', 'substance' ]
+  list_display = ('id_calc_param', 'is_input', 'value', 'problem', 'dict_param', 'step', 'substance'  )
 
 admin.site.register(Calc_param,Calc_paramAdmin)
 
-class Calc_logAdmin(admin.ModelAdmin):
-  fields = ['id_calc_log', 'calc', '_log' ]
-  list_display = ('id_calc_log', 'calc', '_log'  )
-
-admin.site.register(Calc_log,Calc_logAdmin)
+#class Calc_logAdmin(admin.ModelAdmin):
+#  fields = ['id_calc_log', 'calc', '_log' ]
+#  list_display = ('id_calc_log', 'calc', '_log'  )
+#
+#admin.site.register(Calc_log,Calc_logAdmin)
 
 class Dict_calc_functionalAdmin(admin.ModelAdmin):
   fields = ['id_func', 'name' ]
@@ -249,8 +243,8 @@ class Dict_calc_functionalAdmin(admin.ModelAdmin):
 admin.site.register(Dict_calc_functional,Dict_calc_functionalAdmin)
 
 class ProblemAdmin(admin.ModelAdmin):
-  fields = ['id_problem', 'reaction', 'problem_type', 'description', 'created_date', 'schemes', 'expers', 'exper_points' ]
-  list_display = ('id_problem', 'reaction', 'problem_type', 'description', 'created_date' )
+  fields = ['id_problem', 'reaction', 'problem_type', 'description', 'created_date', 'schemes', 'expers', 'exper_points', 'is_approved' ]
+  list_display = ('id_problem', 'reaction', 'problem_type', 'description', 'created_date', 'is_approved' )
 
 admin.site.register(Problem,ProblemAdmin)
 

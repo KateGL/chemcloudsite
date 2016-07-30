@@ -396,20 +396,17 @@ class Chemistry(models.Model):
         return dict_calc_functional
 
     # вернуть контекст для каждой задачи: параметры задачи, а также всевозможные выпадающие списки и т.д.
-    def get_problem_context(self, calculation, page_num):
+    def get_problem_context(self, problem, page_num):
         try:
-            problem_context = {}
-            problem = calculation.problem
             id_problem_type = problem.problem_type.id_problem_type
             if id_problem_type==2:#обратная задача
-                problem_context = self.get_inverse_problem_context(calculation, page_num)
+                problem_context = self.get_inverse_problem_context(problem, page_num)
         except:
             raise Http404("Error in getting problem context")
         return problem_context
 
-    def get_inverse_problem_context(self, calculation, page_num):
+    def get_inverse_problem_context(self, problem, page_num):
         try:
-            problem = calculation.problem
             problem_context = {}
             if page_num == 1: #init - постановка задачи
                 functional_value = None # бд позволяет. Но пока так не умеем считать. Пока что один вид функционала на все ограничения и критерии
@@ -422,8 +419,8 @@ class Chemistry(models.Model):
                 rigth_bound_value_list = []
                 
                 id_problem_type = problem.problem_type.id_problem_type
-                criteria_value   = calculation.constraints.filter(is_constraint = False)[0] #обязательно должно существовать
-                constraints_value_list = calculation.constraints.filter(is_constraint = True)
+                criteria_value   = problem.constraints.filter(is_constraint = False)[0] #обязательно должно существовать
+                constraints_value_list = problem.constraints.filter(is_constraint = True)
                 functional_value = criteria_value.functional
 
                 schemes_list_combo = problem.reaction.schemes.all()
@@ -445,12 +442,12 @@ class Chemistry(models.Model):
                     temp_param_inv_down = Dict_calc_param.objects.get(pk = 6)#min k<-
                     temp_param_dir_up   = Dict_calc_param.objects.get(pk = 11)#max k->
                     temp_param_inv_up   = Dict_calc_param.objects.get(pk = 12)#max k<-
-                    left_bound_value_list.append(calculation.params.filter(dict_param = temp_param_dir_down).order_by('step__order') )
-                    temp_list = calculation.params.filter(dict_param = temp_param_inv_down).order_by('step__order')
+                    left_bound_value_list.append(problem.params.filter(dict_param = temp_param_dir_down).order_by('step__order') )
+                    temp_list = problem.params.filter(dict_param = temp_param_inv_down).order_by('step__order')
                     if temp_list.count()>0:
                         left_bound_value_list.append(temp_list)
-                    rigth_bound_value_list.append(calculation.params.filter(dict_param = temp_param_dir_up).order_by('step__order'))
-                    temp_list = calculation.params.filter(dict_param = temp_param_inv_up).order_by('step__order')
+                    rigth_bound_value_list.append(problem.params.filter(dict_param = temp_param_dir_up).order_by('step__order'))
+                    temp_list = problem.params.filter(dict_param = temp_param_inv_up).order_by('step__order')
                     if temp_list.count()>0:
                         rigth_bound_value_list.append(temp_list)
                 problem_context = { 'criteria_value': criteria_value,  'constraints_value_list': constraints_value_list,  'functional_value':functional_value, 'schemes_list_combo':schemes_list_combo, 'scheme':scheme, 'expers_value_list':expers_value_list, 'left_bound_value_list':left_bound_value_list, 'rigth_bound_value_list':rigth_bound_value_list}

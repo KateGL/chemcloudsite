@@ -13,18 +13,15 @@ from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param
 from chemical.chemical_models import Dict_problem_type
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
 from chemical.chemical_models import Dict_calc_method, Dict_problem_class
-from chemical.chemical_models import Dict_calc_param, Dict_calc_status, Reaction_feature,Experiment,Exper_subst
+from chemical.chemical_models import Dict_calc_param,  Reaction_feature,Experiment,Exper_subst
 from chemical.chemical_models import Exper_point
-from chemical.chemical_models import Calculation, Calc_log, Calc_param, Calc_criteria_constraint, Problem
+from chemical.chemical_models import Calc_param, Calc_criteria_constraint, Problem
 from django.contrib.auth.models import User
 
 
 def drop_all():
-     Calc_log.objects.all().delete()
      Calc_param.objects.all().delete()
      Calc_criteria_constraint.objects.all().delete()
-     Calculation.objects.all().delete()
-     Problem.objects.all().delete()
      Dict_atom.objects.all().delete()
      Dict_exper_subst_param.objects.all().delete()
      Dict_exper_param.objects.all().delete()
@@ -32,7 +29,6 @@ def drop_all():
      Dict_calc_criteria_constraints.objects.all().delete()
      Dict_calc_functional.objects.all().delete()
      Dict_calc_param.objects.all().delete()
-     Dict_calc_status.objects.all().delete()
      Dict_calc_method.objects.all().delete()
      Dict_problem_class.objects.all().delete()
      Reaction_feature.objects.all().delete()
@@ -43,6 +39,7 @@ def drop_all():
      Dict_model_function.objects.all().delete()
      Dict_model_argument.objects.all().delete()
      Dict_measure_unit.objects.all().delete()
+     #Problem.objects.all().delete()
      print "dropped all dictionaries data"
 
 
@@ -290,11 +287,11 @@ def populate():
    add_dict_calc_param   (68, 'Оборвать расчет через заданное число итераций при отсутствии улучшения минимума', 'exitIter')
 #   add_dict_calc_param   (67, 'Имя результирующего файла', 'resultFileName')
 
-   add_dict_calc_status   (1, 'Черновик', 'Редактируется. Расчет не запущен')
-   add_dict_calc_status   (2, 'В очереди на рассчет', 'Расчет запущен и ждет своей очереди')
-   add_dict_calc_status   (3, 'В процессе решения', 'Расчет запущен и считается')
-   add_dict_calc_status   (4, 'Расчет завершен', 'Самозавершение расчета или по требованию пользователя')
-   add_dict_calc_status   (5, 'Расчет отменен', 'Расчет отменен пользователем, не дождавшись своей очереди')
+#   add_dict_calc_status   (1, 'Черновик', 'Редактируется. Расчет не запущен')
+#   add_dict_calc_status   (2, 'В очереди на рассчет', 'Расчет запущен и ждет своей очереди')
+#   add_dict_calc_status   (3, 'В процессе решения', 'Расчет запущен и считается')
+#   add_dict_calc_status   (4, 'Расчет завершен', 'Самозавершение расчета или по требованию пользователя')
+#   add_dict_calc_status   (5, 'Расчет отменен', 'Расчет отменен пользователем, не дождавшись своей очереди')
 
    add_dict_problem_class   (1, 'Задача Коши')
    add_dict_problem_class   (2, 'Глобальная оптимизация')
@@ -328,10 +325,10 @@ def populate():
    add_dict_problem_type(7,'Расчет энергий активаций с помощью МНК', [10])
    add_dict_problem_type(8,'Выделение маршрутов механизма реакции',[9])
 
-def add_dict_calc_status(id, nm, nt):
-    a = Dict_calc_status.objects.get_or_create(id_status=id, name=nm, note=nt)[0]
-    a.save()
-    return a
+#def add_dict_calc_status(id, nm, nt):
+#    a = Dict_calc_status.objects.get_or_create(id_status=id, name=nm, note=nt)[0]
+#    a.save()
+#    return a
 
 def add_dict_calc_method(id, nm, ds, prblm_cls_lst):
     a = Dict_calc_method.objects.get_or_create(id_method=id, name=nm, description=ds)[0]

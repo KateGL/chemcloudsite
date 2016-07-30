@@ -747,7 +747,8 @@ def problem_new(request, id_reaction, id_problem_type):
             problem = form.save(commit=False)
             problem.reaction = react.reaction
             form.save()
-            calculation = problem.set_default_calculation_props()
+            if problem.set_default_problem_props() != 1:
+                raise Http404("Ошибка формирования параметров задачи по умолчанию")
             return redirect('problem_init', id_reaction, problem.pk)
     context = {'id_reaction': id_reaction, 'id_problem_type':id_problem_type, 'form': form}
     return render(request, 'chemical/problem_new.html', context)
@@ -767,13 +768,11 @@ def problem_init(request, id_reaction, id_problem):
     problem_dict = request.user.chemistry.problem_get(id_reaction, id_problem)
     context = {}
     problem = problem_dict['problem']
-    calculation = problem.calculation #на самом деле один к одному. И всегда создается хотя бы черновик расчета при создании задачи
     context['problem'] = problem
-    context['calculation'] = calculation
     context['id_reaction'] = id_reaction
     context["is_owner"] = problem_dict['is_owner']
     context['step_name'] = 'problem_init'
-    problem_context = request.user.chemistry.get_problem_context(calculation, 1)
+    problem_context = request.user.chemistry.get_problem_context(problem, 1)
     context['problem_context'] = problem_context
     return render(request, 'chemical/problem_init.html', context)
 
