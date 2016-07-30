@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'chemmain',  # main pages of site
     'chemical',  # models and views of main chemical entyties: atom, substance, reaction, mechanism, etc
     'chem_ajax',  # for ajax methods
+    'cluster_calc',  #for calculations on clusters
 ]
 
 MIDDLEWARE_CLASSES = []
