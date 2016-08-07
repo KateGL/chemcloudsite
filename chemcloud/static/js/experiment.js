@@ -9,13 +9,13 @@ function ChangeVisibleByCheckBox(checkbox, class_name){
 
 
 $(document).ready(function(){
-    ChangeVisibleByCheckBox($('#chbox_alias'),'.cptn-alias');
+    //ChangeVisibleByCheckBox($('#chbox_alias'),'.cptn-alias');
     ChangeVisibleByCheckBox($('#chbox_brutto_short'),'.cptn-brutto_formula_short');
 
-
+/*
     $('#chbox_alias').click(function() {
       ChangeVisibleByCheckBox($('#chbox_alias'),'.cptn-alias');
-    });
+    });*/
 
     $('#chbox_brutto_short').click(function() {
       ChangeVisibleByCheckBox($('#chbox_brutto_short'),'.cptn-brutto_formula_short');

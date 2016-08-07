@@ -13,21 +13,22 @@ from chemical.chemical_models import Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Reaction, User_reaction,Substance,Substance_synonym
 from chemical.chemical_models import Reaction_subst,Reaction_scheme,Scheme_step,Scheme_step_subst
 from chemical.chemical_models import Experiment,Substance_consist,Dict_exper_param,Dict_exper_subst_param
-from chemical.chemical_models import Exper_subst_data,Exper_subst,Exper_data,Exper_serie
-from chemical.chemical_models import Exper_point,Reaction_feature
+from chemical.chemical_models import Exper_subst_extradata,Exper_subst,Exper_extradata,Exper_serie
+from chemical.chemical_models import Exper_arg_value, Exper_func_point,Reaction_feature
 from django.contrib.auth.models import User
 
 def drop_all():
      User_reaction.objects.all().delete()
      Substance_synonym.objects.all().delete()
-     Exper_subst_data.objects.all().delete()
-     Exper_point.objects.all().delete()
+     Exper_subst_extradata.objects.all().delete()
+     Exper_func_point.objects.all().delete()
+     Exper_arg_value.objects.all().delete()
      Exper_subst.objects.all().delete()
      Reaction_subst.objects.all().delete()
      Substance.objects.all().delete()
-     Exper_data.objects.all().delete()
-     Exper_serie.objects.all().delete()
+     Exper_extradata.objects.all().delete()
      Experiment.objects.all().delete()
+     Exper_serie.objects.all().delete()
      Reaction_feature.objects.all().delete()
      Reaction.objects.all().delete()
      Reaction_scheme.objects.all().delete()
@@ -164,14 +165,16 @@ def populate():
    add_exper_subst(5,a,d,1,34)
 
    # данные Эксперимента 1
+   exper = Experiment.objects.get(id_experiment=1)
+   av = Exper_arg_value.objects.get_or_create(experiment=exper,value=0.02)[0]
    c = Exper_subst.objects.get(id_expersubst=1)
-   add_exper_point(1,c,0.02,0.04)
+   add_exper_point(1,c,av,0.04)
    c = Exper_subst.objects.get(id_expersubst=3)
-   add_exper_point(2,c,0.02,10.09)
+   add_exper_point(2,c,av,10.09)
    c = Exper_subst.objects.get(id_expersubst=4)
-   add_exper_point(3,c,0.02,5.18)
+   add_exper_point(3,c,av,5.18)
    c = Exper_subst.objects.get(id_expersubst=5)
-   add_exper_point(4,c,0.02,83.26)
+   add_exper_point(4,c,av,83.26)
 
    # Эксперимент 2
    b = Reaction.objects.get(id_reaction=1)
@@ -210,17 +213,21 @@ def populate():
    add_exper_subst(10,a,d,1,34)
 
    # данные Эксперимента 2
+   exper = Experiment.objects.get(id_experiment=2)
+   av = Exper_arg_value.objects.get_or_create(experiment=exper,value=0.02)[0]
+   av2 = Exper_arg_value.objects.get_or_create(experiment=exper,value=0.03)[0]
+
    c = Exper_subst.objects.get(id_expersubst=6)
-   add_exper_point(5,c,0.02,0.03)
-   add_exper_point(6,c,0.03,0.04)
+   add_exper_point(5,c,av,0.03)
+   add_exper_point(6,c,av2,0.04)
    c = Exper_subst.objects.get(id_expersubst=8)
-   add_exper_point(7,c,0.02,9.94)
-   add_exper_point(8,c,0.03,10.94)
+   add_exper_point(7,c,av,9.94)
+   add_exper_point(8,c,av2,10.94)
    c = Exper_subst.objects.get(id_expersubst=9)
-   add_exper_point(9,c,0.02,3.83)
+   add_exper_point(9,c,av,3.83)
    c = Exper_subst.objects.get(id_expersubst=10)
-   add_exper_point(10,c,0.02,84.99)
-   add_exper_point(11,c,0.03,89.94)
+   add_exper_point(10,c,av,84.99)
+   add_exper_point(11,c,av2,89.94)
 
 
    # Print out what we have added to the user.
@@ -291,7 +298,7 @@ def add_exper_serie(id_s,react,n,d):
 
 
 def add_exper_point(ip,es,av,fv):
-    a = Exper_point.objects.get_or_create(id_point=ip,exper_subst=es,arg_val=av,func_val=fv)[0]
+    a = Exper_func_point.objects.get_or_create(id_exper_func_point=ip,exper_subst=es,argument=av,func_val=fv)[0]
     a.save()
     return a
 

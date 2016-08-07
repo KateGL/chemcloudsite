@@ -7,8 +7,8 @@ from chemical.chemical_models import Dict_atom, Substance, Reaction, Reaction_sc
 from chemical.chemical_models import Scheme_step, Scheme_step_subst
 from chemical.chemical_models import Reaction_subst,Substance_synonym,Reaction_tag,Dict_feature,Reaction_feature, Dict_model_function, Dict_model_argument, Dict_measure_unit
 from chemical.chemical_models import User_reaction,Substance_consist,Exper_subst
-from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exper_data,Exper_subst_data
-from chemical.chemical_models import Exper_point,Exper_serie
+from chemical.chemical_models import Dict_exper_param,Dict_exper_subst_param,Exper_extradata,Exper_subst_extradata
+from chemical.chemical_models import Exper_serie
 from chemical.chemical_models import Dict_problem_type, Problem
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
 from chemical.chemical_models import Dict_calc_param, Dict_problem_class, Dict_calc_method, Calc_param, Calc_criteria_constraint
@@ -168,26 +168,19 @@ class Dict_exper_subst_paramAdmin(admin.ModelAdmin):
 admin.site.register(Dict_exper_subst_param,Dict_exper_subst_paramAdmin)
 
 #Дополнительная информация эксперимента
-class Exper_dataAdmin(admin.ModelAdmin):
+class Exper_extradataAdmin(admin.ModelAdmin):
   fields = ['experiment','value','exper_param','dict_unit_id_unit']
   list_display = ('experiment','value','exper_param','dict_unit_id_unit')
 
-admin.site.register(Exper_data,Exper_dataAdmin)
+admin.site.register(Exper_extradata,Exper_extradataAdmin)
 
 
 #Дополнительные экспериментальные данные
-class Exper_subst_dataAdmin(admin.ModelAdmin):
+class Exper_subst_extradataAdmin(admin.ModelAdmin):
     fields = ['exper_subst', 'value', 'subst_param', 'unit']
     list_display = ('exper_subst', 'value', 'subst_param', 'unit')
 
-admin.site.register(Exper_subst_data, Exper_subst_dataAdmin)
-
-#Экспериментальные данные
-class Exper_pointAdmin(admin.ModelAdmin):
-  fields = ['exper_subst','arg_val','func_val']
-  list_display = ('exper_subst','arg_val','func_val')
-
-admin.site.register(Exper_point,Exper_pointAdmin)
+admin.site.register(Exper_subst_extradata, Exper_subst_extradataAdmin)
 
 
 #Серии экспериентов

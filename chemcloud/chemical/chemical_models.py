@@ -670,9 +670,6 @@ class Experiment (models.Model):
     def __unicode__(self):
         return self.name
 
-    #возвращает отсортированный массив разных аргументов для exper_point
-    def get_distinct_point_arg_val(self):
-        return {}
 
     class Meta:
         ordering = ["id_experiment"]
@@ -706,9 +703,9 @@ class Dict_exper_subst_param (models.Model):
       verbose_name_plural = ('Дополнительная информация о веществе реакции')
 
 
-class Exper_data (models.Model):
+class Exper_extradata (models.Model):
     id_exper_data = models.AutoField(primary_key=True, verbose_name='ИД')
-    experiment = models.ForeignKey(Experiment, null=False, on_delete=models.CASCADE, related_name='exper_data')
+    experiment = models.ForeignKey(Experiment, null=False, on_delete=models.CASCADE, related_name='exper_extradata')
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
     exper_param = models.ForeignKey(Dict_exper_param, null=False, on_delete=models.PROTECT, related_name='+', default=0)
     dict_unit_id_unit = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT, related_name='+', default=0)
@@ -770,32 +767,32 @@ class Exper_func_point (models.Model):
         verbose_name_plural = ('Эксперимент: данные')
 
 
-class Exper_subst_data (models.Model):
+class Exper_subst_extradata (models.Model):
     id_exper_subst_data = models.AutoField(primary_key=True, verbose_name='ИД')
-    exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.PROTECT, related_name='exper_subst_data')
+    exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.PROTECT, related_name='exper_subst_extradata')
     value = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение')
     subst_param = models.ForeignKey(Dict_exper_subst_param, null=False, on_delete=models.PROTECT, related_name='+', default=0)
     unit = models.ForeignKey(Dict_measure_unit, null=False, on_delete=models.PROTECT, related_name='+', default=0)
 
     class Meta:
-        verbose_name = ('Эксперимент: Дополнительные данные')
-        verbose_name_plural = ('Эксперимент: Дополнительные данные')
+        verbose_name = ('Эксперимент: Дополнительные данные по веществу')
+        verbose_name_plural = ('Эксперимент: Дополнительные данные по веществу')
 
 
-class Exper_point (models.Model):
-    id_point = models.AutoField(primary_key=True, verbose_name='ИД')
-    exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.CASCADE,
-        related_name='exper_points', verbose_name='Вещество эксперимента')
-    arg_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение аргумента')
-    func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение концентрации')
+#class Exper_point (models.Model):
+    #id_point = models.AutoField(primary_key=True, verbose_name='ИД')
+    #exper_subst = models.ForeignKey(Exper_subst, null=False, on_delete=models.CASCADE,
+        #related_name='exper_points', verbose_name='Вещество эксперимента')
+    #arg_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение аргумента')
+    #func_val = models.DecimalField(max_digits=11, decimal_places=7, verbose_name='Значение концентрации')
 
-    def __unicode__(self):
-        return self.exper_subst.reaction_subst.alias
+    #def __unicode__(self):
+        #return self.exper_subst.reaction_subst.alias
 
-    class Meta:
-        ordering = ["arg_val"]
-        verbose_name = ('Эксперимент: данные (старое)')
-        verbose_name_plural = ('Эксперимент: данные (старое)')
+    #class Meta:
+        #ordering = ["arg_val"]
+        #verbose_name = ('Эксперимент: данные (старое)')
+        #verbose_name_plural = ('Эксперимент: данные (старое)')
 
 
 #Задачи
@@ -845,7 +842,7 @@ class Problem(models.Model):
     created_date = models.DateTimeField(default=timezone.now, verbose_name='Дата создания')
     scheme      = models.ForeignKey(Reaction_scheme, null=True, on_delete=models.CASCADE, related_name='problems')#models.ManyToManyField(Reaction_scheme)
     expers       = models.ManyToManyField(Experiment)
-    exper_points = models.ManyToManyField(Exper_point)
+    #exper_points = models.ManyToManyField(Exper_point)
     methods = models.ManyToManyField(Dict_calc_method)
     def set_default_problem_props(self):
         try:
