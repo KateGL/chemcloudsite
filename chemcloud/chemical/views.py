@@ -659,24 +659,25 @@ def experiment_edit(request, id_reaction, id_experiment):
     # получаем список веществ эксперимента
     react_subst = request.user.chemistry.react_subst_all(id_reaction)
     exp_substs = request.user.chemistry.exper_subst_all(id_reaction, id_experiment)
-    exp_points = {}  # request.user.chemistry.exper_points_all(id_reaction, id_experiment)
+    #print(type(exp_substs))
 
     # добавим сюда ссылку на точку эксперимента
-    react_with_exper = {}
+    react_with_exper = []
     for react_s in react_subst:
         rswe = React_Substance_with_Exper()
         rswe.react_subst = react_s
-        react_with_exper[react_s.pk] = rswe
+        rswe.exper_subst = exp_substs.filter(reaction_subst=react_s)[0]
+        react_with_exper.append(rswe)
+        #print(rswe.react_subst)
 
-    for exp_s in exp_substs:  # все экспериментальные вещества
-        react_with_exper[exp_s.reaction_subst.pk].exper_subst = exp_s
+    #for exp_s in exp_substs:  # все экспериментальные вещества
+    #    react_with_exper[exp_s.reaction_subst.pk].exper_subst = exp_s
 
-    #print(react_with_exper)
-    print(exper_dict['experiment'])
-    print(exper_dict['experiment'].arg_values.all())
+    #print(exper_dict['experiment'])
+    #print(exper_dict['experiment'].arg_values.all())
     context = {'id_reaction': id_reaction, 'experiment': exper_dict['experiment'],
         "is_owner": exper_dict['is_owner'], 'react_with_exper': react_with_exper,
-        'exp_points': exp_points, 'arg_vals': exper_dict['experiment'].arg_values.all()}
+        'arg_vals': exper_dict['experiment'].arg_values.all()}
     return render(request, 'chemical/experiment_edit.html', context)
 
 

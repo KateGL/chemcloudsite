@@ -122,7 +122,7 @@ class Chemistry(models.Model):
 
     def react_subst_all(self, id_reaction):
         react = self.reaction_get(id_reaction)
-        return react.reaction.substances.all()
+        return react.reaction.substances.all().order_by('alias')
 
     def react_subst_get(self, id_reaction, id_react_subst):
         react = self.reaction_get(id_reaction)
@@ -238,7 +238,7 @@ class Chemistry(models.Model):
     # получить вещества эксперимента
     def exper_subst_all(self, id_reaction, id_experiment):
         exper_dict = self.experiment_get(id_reaction, id_experiment)
-        return exper_dict['experiment'].exper_substs.all()
+        return exper_dict['experiment'].exper_substs.all().order_by('reaction_subst__alias')
 
     #по id вещества эксперимента получить вещество эксперимента
     def exper_subst_get(self, id_expersubst):
@@ -417,7 +417,7 @@ class Chemistry(models.Model):
                 expers_value_list = [] #список всех экспериментов реакции с пометкой, выбран эксперимент в задаче или нет
                 left_bound_value_list = []
                 rigth_bound_value_list = []
-                
+
                 id_problem_type = problem.problem_type.id_problem_type
                 criteria_value   = problem.constraints.filter(is_constraint = False)[0] #обязательно должно существовать
                 constraints_value_list = problem.constraints.filter(is_constraint = True)
@@ -431,11 +431,11 @@ class Chemistry(models.Model):
                 for exper in exper_list:
                     pos_exper = problem_exper_list.index(exper)
                     temp_list = [exper]
-                    if  pos_exper < 0: 
-                        temp_list.append(False) 
+                    if  pos_exper < 0:
+                        temp_list.append(False)
                     else:
-                        temp_list.append(True) 
-                    expers_value_list.append(temp_list)  
+                        temp_list.append(True)
+                    expers_value_list.append(temp_list)
                 #границы
                 if scheme is not None:
                     temp_param_dir_down = Dict_calc_param.objects.get(pk = 5)#min k->

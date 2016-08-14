@@ -46,7 +46,7 @@
         <th>Наблюдаемое</th>
         <th> Погрешность, % </th>
     </tr>   
-    {% for key, value in react_with_exper.items %}
+    {% for value in react_with_exper %}
     <tr>
         <td class='cptn-alias'> {{ value.react_subst.alias }}  </td>
         <td class ='cptn-brutto_formula_short'>{{ value.react_subst.brutto_formula_short_formatted | safe }} </td>
@@ -136,7 +136,7 @@
     <tr>
       <th > {{ experiment.arg.name }} ({{experiment.argument_measure.code }})/<br>{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
        
-       {% for key, value in react_with_exper.items %}
+       {% for  value in react_with_exper %}
      {% if value.exper_subst %}
         <th>
         <span class='cptn-alias'> {{ value.react_subst.alias }}  </span>
@@ -149,12 +149,27 @@
     {% for  vl in arg_vals%}
        <tr>
        <td>{{vl.value}}</td>
-       {% for key, value in react_with_exper.items %}
+       {% for  value in react_with_exper %}
      {% if value.exper_subst %}
         <td>
          {{vl|get_points_from_arg_by_expersubst:value.exper_subst.pk}}  
          
         </td>
+        
+       <!-- 
+         <td>         Погрешность    
+            <span class="detail_value col-xs-8"><input class="box_input"  type="text" disabled="disabled" 
+              value={% if value.exper_subst %} "{{ value.exper_subst.standard_error}}"{%else%}"0"{% endif%}/></span>
+        {% if is_owner %}
+        <span class="detail_edit col-xs-8" > </span>
+        <span class="detail_btns col-xs-4" 
+           field_name="standard_error" 
+           record_id="{{ value.react_subst.pk}}">
+        </span>
+        {% endif %}
+        </td> -->
+        
+        
      {% endif%}
     {%endfor%}
        
