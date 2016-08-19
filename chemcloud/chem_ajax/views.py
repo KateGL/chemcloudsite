@@ -20,7 +20,7 @@ from chemical.urls_utils import make_name_link, make_detail_link
 from chemical.urls_utils import get_subst_detail_link
 from chemical.utils import decorate_formula
 from chemical.models import substance_get_isomer, substance_get_isomer_count
-from chemical.chemical_models import consist_to_string, Exper_subst
+from chemical.chemical_models import consist_to_string, Exper_subst, Exper_func_point
 # Create your views here.
 
 
@@ -257,6 +257,25 @@ def get_fvr_dict(request):
     return {"is_error": True, "err_msg": data}
 
 
+def get_point_fvr_dict(request):
+    if request.is_ajax():
+        if request.method == 'POST':
+            body_unicode = request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            #print(body)
+            field_name = body['field_name']
+            value_tmp = body['value']
+            arg_id = body['argument_id']
+            subst_id = body['substance_id']
+            #print(field_name)
+            data = '{"result":"True", "message":"ok"}'
+            return {"is_error": False, "err_msg": data, "field_name": field_name, "value": value_tmp, "argument_id": arg_id,
+                "substance_id": subst_id}
+
+    data = '{"result":"False", "message":"Request not Ajax or not POST"}'
+    return {"is_error": True, "err_msg": data}
+
+
 @login_required
 @owner_required
 def experiment_edit_subst(request, id_reaction, id_experiment):
@@ -278,11 +297,37 @@ def experiment_edit_subst(request, id_reaction, id_experiment):
     #get or create exper_subst
 
     fv_dict = set_field_value_to_model(fvr_dict['field_name'], fvr_dict['value'], exper_subst)
-    print(fv_dict)
+    #print(fv_dict)
     if (fv_dict['is_error'] is False):
         exper_subst.save()
 
     xml_bytes = json.dumps(fv_dict['err_msg'])
+    return HttpResponse(xml_bytes, 'application/json')
+
+
+@login_required
+@owner_required
+def experiment_edit_point(request, id_reaction, id_experiment):
+    #exper_dict = request.user.chemistry.experiment_get(id_reaction, id_experiment)
+    #exper = exper_dict['experiment']
+    #value = None
+    fvr_dict = get_point_fvr_dict(request)
+    point = request.user.chemistry.exper_point_get(fvr_dict['substance_id'], fvr_dict['argument_id'])
+    print(point)
+
+    if point is None:
+        #print('make new point')
+        esubst = request.user.chemistry.exper_subst_get(fvr_dict['substance_id'])
+        arg = request.user.chemistry.exper_arg_get(fvr_dict['argument_id'])
+        new_point = Exper_func_point(exper_subst=esubst, argument=arg, func_val=fvr_dict['value'])
+        new_point.save()
+        #esubst.exper_func_points.add(new_point, bulk=False)
+    else:
+        print('edit point')#тупо редактируем аргумент
+        point.func_val = fvr_dict['value']
+        point.save()
+
+    xml_bytes = json.dumps(fvr_dict['err_msg'])
     return HttpResponse(xml_bytes, 'application/json')
 
 

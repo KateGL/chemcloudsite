@@ -9,9 +9,11 @@ register = template.Library()
 @register.filter
 def get_points_from_arg_by_expersubst(value, arg):
     point = value.exper_func_points.filter(exper_subst__pk=arg)
-    if len(point)>0:
+    if len(point) > 0:
         return point[0].func_val
     else:
-        return ''
+        return '0.0'
+
+
 
 #register.filter('get_points_from_arg_by_expersubst', get_points_from_arg_by_expersubst)

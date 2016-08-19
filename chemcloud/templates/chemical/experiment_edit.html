@@ -132,7 +132,7 @@
         
         
         
-         <table class="paleblue">
+         <table class="paleblue" id="exper_edit_points" model_name="Exper_func_point" url_edit="{% url 'experiment_edit_point' id_reaction experiment.pk %}">
     <tr>
       <th > {{ experiment.arg.name }} ({{experiment.argument_measure.code }})/<br>{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
        
@@ -152,23 +152,24 @@
        {% for  value in react_with_exper %}
      {% if value.exper_subst %}
         <td>
-         {{vl|get_points_from_arg_by_expersubst:value.exper_subst.pk}}  
+           
          
-        </td>
-        
-       <!-- 
-         <td>         Погрешность    
-            <span class="detail_value col-xs-8"><input class="box_input"  type="text" disabled="disabled" 
-              value={% if value.exper_subst %} "{{ value.exper_subst.standard_error}}"{%else%}"0"{% endif%}/></span>
+         <span class="detail_value col-xs-8"><input class="box_input"  type="text" disabled="disabled" 
+              value={{vl|get_points_from_arg_by_expersubst:value.exper_subst.pk}}
+              /></span>
         {% if is_owner %}
         <span class="detail_edit col-xs-8" > </span>
         <span class="detail_btns col-xs-4" 
-           field_name="standard_error" 
-           record_id="{{ value.react_subst.pk}}">
+            field_name="func_val"
+            arg_id="{{vl.pk}}"
+            subst_id="{{value.exper_subst.pk}}"
+            >
         </span>
         {% endif %}
-        </td> -->
+         
+        </td>
         
+    
         
      {% endif%}
     {%endfor%}
@@ -225,4 +226,5 @@
 <script src="{% static "js/populate_dict_select.js" %}"></script>
 <script src="{% static "js/details.js" %}"></script>
 <script src="{% static "js/experiment.js" %}"></script>
+<script src="{% static "js/exper_edit_detail.js" %}"></script>
 {% endblock %}

@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from chemical.chemical_models import Dict_atom, Substance, Reaction, User_reaction
 from chemical.chemical_models import Reaction_subst, Experiment, Exper_serie, Reaction_scheme
 from chemical.chemical_models import Scheme_step, Substance_synonym, Dict_feature
-from chemical.chemical_models import Reaction_feature,Exper_subst,Dict_model_function
+from chemical.chemical_models import Reaction_feature,Exper_subst,Dict_model_function, Exper_arg_value
 from chemical.chemical_models import Problem, Dict_problem_type,Dict_model_argument,Dict_measure_unit
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional, Dict_calc_param
 
@@ -248,23 +248,25 @@ class Chemistry(models.Model):
             raise Http404("Experiment substance does not exist or access denied")
         return exper_subst
 
+    def exper_arg_get(self, id_argument):
+        try:
+            exper_arg = Exper_arg_value.objects.get(pk=id_argument)
+        except Exper_arg_value.DoesNotExist:
+            raise Http404("Experiment argument does not exist or access denied")
+        return exper_arg
+
     #по id вещества эксперимента получить экспериментальные точки
     def exper_points(self, id_expersubst):
         exp_subst = self.exper_subst_get(id_expersubst)
-        return exp_subst.exper_points.all()
+        return exp_subst.exper_func_points.all()
 
-    # получить все экспериментальные точки по id эксперимента и id реакции
-    #def exper_points_all(self,id_reaction,id_experiment):
-        #exp_substs = self.exper_subst_all(id_reaction,id_experiment)
-        #i = 0
-        #exp_point_all = []
-        #for exp_subst in exp_substs:
-            #if exp_subst.is_observed:
-                #exp_point_all.insert(i,self.exper_points(exp_subst.id_expersubst))
-                #i= i+1
-        #return exp_point_all
-
-
+    def exper_point_get(self, id_expersubst, id_argument):
+        exper_subst = self.exper_subst_get(id_expersubst)
+        point_list = exper_subst.exper_func_points.all().filter(argument__pk=id_argument)
+        if len(point_list) > 0:
+            return point_list[0]
+        else:
+            return None
 
     def dict_model_funct_all(self):
         return Dict_model_function.objects.all()
