@@ -14,7 +14,7 @@ from chemical.chemical_models import Dict_problem_type
 from chemical.chemical_models import Dict_calc_criteria_constraints, Dict_calc_functional
 from chemical.chemical_models import Dict_calc_method, Dict_problem_class
 from chemical.chemical_models import Dict_calc_param,  Reaction_feature,Experiment,Exper_subst
-from chemical.chemical_models import Exper_point
+#from chemical.chemical_models import Exper_point
 from chemical.chemical_models import Calc_param, Calc_criteria_constraint, Problem
 from django.contrib.auth.models import User
 
@@ -33,7 +33,7 @@ def drop_all():
      Dict_problem_class.objects.all().delete()
      Reaction_feature.objects.all().delete()
      Dict_feature.objects.all().delete()
-     Exper_point.objects.all().delete()
+     #Exper_point.objects.all().delete()
      Exper_subst.objects.all().delete()
      Experiment.objects.all().delete()
      Dict_model_function.objects.all().delete()

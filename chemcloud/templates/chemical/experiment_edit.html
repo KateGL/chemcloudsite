@@ -130,8 +130,19 @@
         </div>
         -->
         
-        
-        
+     {% if is_owner %}   
+<div class="panel panel-default">
+    <div class="btn-toolbar" role="toolbar">
+      <div class="btn-group">
+        <button type="button" id="add_point" class="btn btn-default"  data-toggle="tooltip" data-placement="top" title="Добавить строку (аргумент)"><span class="glyphicon glyphicon-plus"></span></button>        
+      <button type="button"  class="btn btn-default disabled"  data-toggle="tooltip" data-placement="top" title="Загрузить из файла"><span class="glyphicon glyphicon-cloud-upload" disabled="disabled"></span></button>
+      <button type="button"  class="btn btn-default disabled"  data-toggle="tooltip" data-placement="top" title="Сохранить в файл"><span class="glyphicon glyphicon-cloud-download" disabled="disabled"></span></button>
+    </div>
+</div>
+            </div>
+            
+         {% endif %}  
+            
          <table class="paleblue" id="exper_edit_points" model_name="Exper_func_point" url_edit="{% url 'experiment_edit_point' id_reaction experiment.pk %}">
     <tr>
       <th > {{ experiment.arg.name }} ({{experiment.argument_measure.code }})/<br>{{ experiment.func.name }} ({{experiment.function_measure.code }})</th>
@@ -144,7 +155,11 @@
         </th>
      {% endif%}
     {%endfor%}
-        
+            
+            {% if is_owner %} 
+            <th></th>
+            {% endif %} 
+             </tr>
             
     {% for  vl in arg_vals%}
        <tr>
@@ -172,8 +187,18 @@
     
         
      {% endif%}
-    {%endfor%}
+    {%endfor%}       
        
+       {% if is_owner %}
+       <td>
+        <button class="argument_delete" type="button" data-toggle="tooltip" data-placement="top" title="Удалить строку (аргумент)"
+           data_arg_id="{{vl.pk}}"
+           ><span class="glyphicon glyphicon-remove"></span></button> 
+
+           
+           
+       </td>
+       {% endif %}
        </tr>
     
     {%endfor%}    
