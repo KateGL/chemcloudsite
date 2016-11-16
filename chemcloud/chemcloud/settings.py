@@ -28,6 +28,20 @@ USE_DEBUG_TOOL = False
 
 ALLOWED_HOSTS = []
 
+# Celery settings
+
+#CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
+#CELERY_RESULT_BACKEND='djcelery.backends.database:DatabaseBackend'
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
+CELERY_RESULT_BACKEND = 'amqp://guest:guest@localhost//'
+#CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_ALWAYS_EAGER = False
+
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -41,6 +55,8 @@ INSTALLED_APPS = [
     'django_tables2',
     'widget_tweaks',
     'annoying',
+    'django_celery_beat',
+    'django_celery_results',
     'swapper',
     'chemmain',  # main pages of site
     'chemical',  # models and views of main chemical entyties: atom, substance, reaction, mechanism, etc

@@ -207,7 +207,7 @@ class Reaction_scheme (models.Model):
             if not b:
                 i = 0
                 steps = self.steps.all()
-                error_str = '';
+                error_str = ''
                 while i < stage_count:
                     error_str_temp = 'Стадия ' + str(steps[i])
                     k = 0

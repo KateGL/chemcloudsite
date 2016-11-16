@@ -25,6 +25,10 @@ from .models import owner_required, substance_owner_required
 from .view_helpers import React_Substance_with_Exper, Series_and_Exper
 from .urls_utils import make_detail_link
 
+from chemcloud.celery import add
+from celery.result import ResultBase
+from celery.result import AsyncResult
+import time
 # Вещество
 
 
@@ -820,9 +824,36 @@ def problem_delete(request, id_reaction, id_problem):
     return redirect('problem_all', id_reaction)  # или лушче на сообщение - "?"
 
 
+
+
 #Решения
 @login_required
 def calc_all(request, id_reaction):
+    #print('start add')
+    #result = add.delay(4, 4)
+    #print(result.ready())
+    #print('add ready')
+    #print(result.backend)
+    #print('add ready')
+    #print(result.ready())
+    #print(result.backend)
+    #print(result.as_tuple())
+
+    #result = celery.AsyncResult(task_id)
+    #print(add.name)
+    #print('start add')
+    #result = add.apply_async((2, 2))  #add.delay(7, 8)
+    #print(result.id)
+    #print(result.ready())
+
+    print('tmp 2 2')
+    a = add.delay(2,2)
+    tmp = add.AsyncResult(a.task_id).get()
+    print(a)
+    print(tmp)
+   # result = add.delay(4, 7)
+   # [v for v in result.collect()
+  #      if not isinstance(v, (ResultBase, tuple))]
     return render(request, 'chemical/calc_all.html', {"id_reaction": id_reaction})
 
 
