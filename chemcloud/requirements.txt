@@ -28,5 +28,5 @@ sqlparse==0.1.19
 swapper==0.3.0
 tornado==4.2
 Unidecode==0.4.19
-urllib3==1.14
+urllib3==1.24.2
 vine==1.1.3
